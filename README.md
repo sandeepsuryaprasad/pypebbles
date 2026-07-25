@@ -1,4 +1,4 @@
-### Professioanl Python Tips
+### Professional Python Tips
 
 ```python
 print("hello world")
