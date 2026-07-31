@@ -11,4 +11,6 @@ You are encouraged to modify and tailor these approaches according to your requi
 
 I hope the articles and code snippets shared here make you a more confident and effective Python programmer.
 
+Read my articles [HERE](content/articles.md)
+
 Happy coding!
