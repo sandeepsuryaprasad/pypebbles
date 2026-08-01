@@ -24,29 +24,13 @@ os_version = 17
 year = 2026
 manufacturer = Google LLC
 country = US
-
-[TEST]
-username = test_user
-url = http://www.test.demo.com
-port = 1234
-host = testhost
-
-[STAGE]
-username = stage_user
-url = http://www.stage.demo.com
-port = 8080
-host = stagehost
-
-[API]
-timeout = 30
-baseurl = http://www.baseurl.com
-
-[DATABASE]
-port = 9090
 ```
 The above config file has 6 different sections, lets see how we can use an
 object oriented design approach in reading the config values in different
 sections of the file.
+
+`config.py`
+
 ```python
 from configparser import ConfigParser
 from typing import Optional
@@ -150,9 +134,47 @@ And finally we have a nice string representation of our `config` object.
 Config("APPLE")
 ```
 ```python
->>> config = Config("STAGE")
+>>> config = Config("GOOGLE")
 >>> print(config)
-Config("STAGE")
+Config("GOOGLE")
 ```
+
+We can further enhance our script take inputs from console.
+
+`main.py`
+
+```python
+import argparse
+from config import Config
+
+def console_entry():
+    _parser = argparse.ArgumentParser()
+    _parser.add_argument(
+        "--section",
+        dest="section",
+        default="APPLE",
+        help= "Name of the section in config.ini"
+    )
+    parser = _parser.parse_args()
+    config = Config(parser.section)
+    return config
+
+
+if __name__ == "__main__":
+    config = console_entry()
+    print(config.serial_number.value)
+    print(config.model.value)
+    print(config.device_name.value)
+```
+
+Now we can pass the section from terminal.
+
+```commandline
+python3 main.py --section APPLE
+```
+```commandline
+python3 main.py --section GOOGLE
+```
+
 
 Back to  [Articles](../articles.md)
