@@ -3,7 +3,10 @@
 In this section we will learn how to read a configuration file, let's say `config.ini` using python's built-in
 `configparser` module
 
-Lets consider a `config.ini` with the following sections and contents.
+Lets consider the following config file.
+
+`config.ini`
+
 ```commandline
 [APPLE]
 serial_number = APL123456789
@@ -25,9 +28,9 @@ year = 2026
 manufacturer = Google LLC
 country = US
 ```
-The above config file has 6 different sections, lets see how we can use an
-object oriented design approach in reading the config values in different
-sections of the file.
+The above config file has 2 different sections `APPLE` and `GOOGLE`, 
+lets see how we can use an object oriented design approach in reading the 
+config values in different sections of the file.
 
 `config.py`
 
