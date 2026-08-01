@@ -185,7 +185,7 @@ Device Name: Demo iPhone
 ~$ python3 main.py --section GOOGLE
 Serial No: GGL987654321
 Model: Pixel-10
-Device Name: Demo Pixel.
+Device Name: Demo Pixel
 ```
 
 
