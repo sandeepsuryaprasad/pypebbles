@@ -125,12 +125,12 @@ of the attribute that we are trying to look up for in string format.
 
 In the above case the name of the attribute that we are trying to access is
 `device_name`. This attribute is passed as a string to `__getattr__` method.
-`__getattr__` method is called only for a missing attribute. In `__getattr__`
-method, I am setting instance attribute `_attr` that the user is trying to access
-and it returns `self`.
+`__getattr__` method gets called only for a missing attributes. In `__getattr__`
+method, we are setting instance attribute `_attr` that the user is trying to access
+and finally we `self`.
 
 So when `config.device_name` gets evaluated, `__getattr__` method sets the
-name of the attribute that i am trying to look up for and returns the config object itself.
+name of the attribute that we are trying to look up for and returns the config object itself.
 
 Now when a property `value` is called on `config.device_name`, the `value` property
 does a dictionary look-up and returns the value of the attribute `device_name`.
