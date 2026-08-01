@@ -1,3 +1,7 @@
 remote_theme: pages-themes/cayman@v0.2.0
 plugins:
 - jekyll-remote-theme
+title: pypebbles
+description: Practical Python tutorials, real-world coding techniques, object-oriented design approach, software engineering best practices.
+url: https://pypebbles.io
+lang: en-US
