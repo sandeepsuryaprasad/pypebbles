@@ -162,18 +162,25 @@ def console_entry():
 
 if __name__ == "__main__":
     config = console_entry()
-    print(config.serial_number.value)
-    print(config.model.value)
-    print(config.device_name.value)
+    print(f"Serial No: {config.serial_number.value}")
+    print(f"Model: {config.model.value}")
+    print(f"Device Name: {config.device_name.value}")
 ```
 
-Now we can pass the section from terminal.
+Now we can pass the section name from terminal and will result in the 
+following output
 
 ```commandline
 python3 main.py --section APPLE
+Serial No: APL123456789
+Model: iPhone-17
+Device Name: Demo iPhone
 ```
 ```commandline
 python3 main.py --section GOOGLE
+Serial No: GGL987654321
+Model: Pixel-10
+Device Name: Demo Pixel.
 ```
 
 
