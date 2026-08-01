@@ -15,13 +15,13 @@ device_name = Demo iPhone
 os_type = iOS
 os_version = 16
 year = 2026
-manufacturer = Apple Inc.
+manufacturer = Apple Inc
 country = US
 
 [GOOGLE]
 serial_number = GGL987654321
 model = Pixel-10
-device_name = Demo Pixel.
+device_name = Demo Pixel
 os_type = Android
 os_version = 17
 year = 2026
