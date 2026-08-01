@@ -1,9 +1,3 @@
----
-layout: default
-title: Reading Configuration Files Using an Object-Oriented Approach
-feedback: true
----
-
 ## Reading Configuration File Using Object-Oriented Approach 
 **Last Updated:** August 1, 2026
 
