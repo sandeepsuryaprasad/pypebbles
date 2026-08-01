@@ -1,4 +1,5 @@
 ## Reading Configuration File Using Object-Oriented Approach 
+**Last Updated:** August 1, 2026
 
 In this section we will learn how to read a configuration file, let's say `config.ini` using python's built-in
 `configparser` module
