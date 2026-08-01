@@ -29,12 +29,14 @@
 
     <main id="content" class="main-content" role="main">
       {{ content }}
-
+        {% if page.feedback %}
+        {% include feedback.html %}
+        {% endif %}
       <footer class="site-footer">
         {% if site.github.is_project_page %}
           <p>
             All source code examples published on this website are licensed under the
-            <a href="https://opensource.org/license/mit">MIT License.</a>
+            <a href="https://opensource.org/license/mit">MIT License</a>.
             <br/>
               Copyright (c) 2026, Sandeep Suryaprasad
           </p>
