@@ -3,9 +3,54 @@
 In this section we will learn how to read a configuration file, let's say `config.ini` using python's built-in
 `configparser` module
 
+Lets consider a `config.ini` with the following sections and contents.
+```commandline
+[APPLE]
+serial_number = APL123456789
+model = iPhone-17
+device_name = Demo iPhone
+os_type = iOS
+os_version = 16
+year = 2026
+manufacturer = Apple Inc.
+country = US
+
+[GOOGLE]
+serial_number = GGL987654321
+model = Pixel-10
+device_name = Demo Pixel.
+os_type = Android
+os_version = 17
+year = 2026
+manufacturer = Google LLC
+country = US
+
+[TEST.SETTINGS]
+username = test_user
+url = http://www.test.demo.com
+port = 1234
+host = testhost
+
+[STAGE.SETTINGS]
+username = stage_user
+url = http://www.stage.demo.com
+port = 8080
+host = stagehost
+
+[API]
+timeout = 30
+baseurl = http://www.baseurl.com
+
+[DATABASE]
+port = 9090
+```
+The above config file has 6 different sections, lets see how we can use an
+object oriented design approach in reading the config values in different
+sections of the file.
 ```python
 from configparser import ConfigParser
 from typing import Optional
+
 
 class Config:
     def __init__(self, section):
@@ -40,4 +85,3 @@ class Config:
     def __repr__(self):
         return f'Config("{self.section}")'
 ```
-This is demo
