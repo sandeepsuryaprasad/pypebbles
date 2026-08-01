@@ -143,4 +143,16 @@ When we try to access the section data that does not exist by saying
 the `value` property tries to look-up for key `phone_number` in the dictionary
 `self._data` which it cannot find and finally the `get` method returns an empty string.
 
+And finally we have a nice string representation of our `config` object.
+```python
+>>> config = Config("APPLE")
+>>> print(config)
+Config("APPLE")
+```
+```python
+>>> config = Config("STAGE")
+>>> print(config)
+Config("STAGE")
+```
+
 Back to  [Articles](../articles.md)
