@@ -175,13 +175,13 @@ Now we can pass the section name from terminal and will result in the
 following output
 
 ```commandline
-python3 main.py --section APPLE
+~$ python3 main.py --section APPLE
 Serial No: APL123456789
 Model: iPhone-17
 Device Name: Demo iPhone
 ```
 ```commandline
-python3 main.py --section GOOGLE
+~$ python3 main.py --section GOOGLE
 Serial No: GGL987654321
 Model: Pixel-10
 Device Name: Demo Pixel.
