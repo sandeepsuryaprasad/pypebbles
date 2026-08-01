@@ -143,7 +143,7 @@ Config("APPLE")
 Config("GOOGLE")
 ```
 
-#### Taking inputs from terminal
+### Taking inputs from terminal
 We can further enhance our script take inputs from terminal.
 
 `main.py`
