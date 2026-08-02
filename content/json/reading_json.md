@@ -1,7 +1,8 @@
 ## Reading JSON File Using Object-Oriented Approach
 **Last Updated:** August 2, 2026
-In this article, we will learn how to read a `json` file using object oriented approach
-consider below `json` file,
+
+In this article, we will learn how to read a `json` file using object oriented approach. 
+consider below `employees.json` file,
 
 `employees.json`
 ```json
@@ -24,10 +25,10 @@ consider below `json` file,
   }
 ]
 ```
-For demonstration purpose, the above `json` file has a list of only two employee
-records. Each employee has fields, `id`, `first_name`, `last_name`, `gender`, 
-`date_of_birth` and `nationality`. Lets write an object oriented design approach
-to read the above `json` file.
+For demonstration purpose, the above `json` file has a list of only two employee records. 
+Each employee has fields, `id`, `first_name`, `last_name`, `gender`, `date_of_birth` and `nationality`. 
+
+Let's design an object-oriented solution for reading and accessing data from the above JSON file.
 
 `employee.py`
 ```python
@@ -53,7 +54,9 @@ class Employee:
     @property
     def _load_json_data(self):
         """
-        Loads the JSON file and returns the employee data for the corresponding employee id
+        Loads the JSON file and returns the employee data for the employee corresponding 
+        to the employee ID supplied during object instantiation.
+
         Returns an empty dictionary if the employee id does not exist in the JSON file
         """
         with open(self._path, "r") as json_file:
