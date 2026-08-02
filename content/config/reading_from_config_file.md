@@ -82,7 +82,7 @@ can do,
 >>> config.model.value
 'iPhone-17'
 >>> config.manufacturer.value
-'Apple Inc.'
+'Apple Inc'
 >>> config.os_type.value
 'iOS'
 ```
@@ -98,7 +98,7 @@ of `Config` object,
 >>> config.country.value
 'US'
 >>> config.device_name.value
-'Demo Pixel.'
+'Demo Pixel'
 ```
 when you try to access the `section` data that does not exist, for example
 ```python
