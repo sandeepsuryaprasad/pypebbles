@@ -28,7 +28,7 @@ year = 2026
 manufacturer = Google LLC
 country = US
 ```
-The above config file has 2 different sections `APPLE` and `GOOGLE`, 
+The above config file has two different sections `APPLE` and `GOOGLE`, 
 lets see how we can use an object oriented design approach in reading the 
 config values in different sections of the file.
 
