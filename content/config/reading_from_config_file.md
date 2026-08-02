@@ -152,15 +152,15 @@ import argparse
 from config import Config
 
 def console_entry():
-    _parser = argparse.ArgumentParser()
-    _parser.add_argument(
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
         "--section",
         dest="section",
         default="APPLE",
         help= "Name of the section in config.ini"
     )
-    parser = _parser.parse_args()
-    config = Config(parser.section)
+    args = parser.parse_args()
+    config = Config(args.section)
     return config
 
 
