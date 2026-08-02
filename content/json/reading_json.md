@@ -151,7 +151,7 @@ In the above code, when we try to access an attribute on `EmployeeInfo` object b
 
 ```commandline
 >>> emp1 = Employee("1")
->>> emp1.info.first_name    # we are doing an attribute look-up in EmployeeInfo object
+>>> emp1.info.first_name    # we are doing an attribute look-up on EmployeeInfo object
 ```
 Here the name of the attribute that we are trying to do a look-up is `first_name`, which
 obviously does not exist on `EmployeeInfo` object itself (The only instance attribute that
@@ -160,9 +160,9 @@ obviously does not exist on `EmployeeInfo` object itself (The only instance attr
 the name the missing attribute is passed-in as a string to `__getattr__` method and that string 
 is collected by parameter `name`.
 
-In `__getattr__` method we are validating if the attribute that we are trying get the value,
+In `__getattr__` method we are validating if the attribute for which we are trying to get the value,
 in this case `first_name` is present as key of the dictionary `self._data`. If it is present
-then we are doing dictionary look-up and returning the value of key `first_name`.
+then we are doing a dictionary look-up and returning the value of key `first_name`.
 
 The same process happens for other employee attributes are well.
 
