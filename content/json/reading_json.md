@@ -133,5 +133,39 @@ I am going to run python interpreter in interactive mode,
 'United States'
 >>> 
 ```
+### Alternate Approach (`__getattr__` hack)
+The `EmployeeInfo` class, has five different `property` or `getter` methods, one for each
+employee info filed. If you feel that it's kind of boiler-plate code with many `getter` methods,
+you can use the magic of `__getattr__` method.
+```python
+class EmployeeInfo:
+    def __init__(self, data):
+        self._data = data
+
+    def __getattr__(self, name):
+        if name not in self._data.keys():
+            raise AttributeError(f"Employee has not attribute {name}")
+        return self._data.get(name)
+```
+In the above code, when we try to access an attribute on `EmployeeInfo` object by saying,
+
+```python
+>>> emp1 = Employee("1")
+>>> emp1.info.first_name    # we are doing an attribute look-up in EmployeeInfo object
+```
+Here the name of the attribute that we are trying to do a look-up is `first_name`, which
+obviously does not exist on `EmployeeInfo` object itself (The only instance attribute that
+`EmployeeInfo` has is `_data`). Since we are trying to access a missing attribute on
+`EmployeeInfo` object, `__getattr__` method gets automatically called for missing attributes and
+the name the missing attribute is passed-in as a string to `__getattr__` method and that string 
+is collected by parameter `name`.
+
+In `__getattr__` method i am validating if the attribute that we are trying get the value
+in this case `first_name` is present as key of the dictionary in `self._data`. If it present
+then i am doing dictionary look-up and returning the value of key `first_name`.
+
+The same process happens for other employee attributes are well.
+
+
 
 Back to  [Articles](../articles.md)
