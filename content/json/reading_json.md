@@ -2,7 +2,7 @@
 **Last Updated:** August 2, 2026
 
 In this article, we will learn how to read a `json` file using object oriented approach. 
-consider below `employees.json` file,
+Let's consider the below JSON file,
 
 `employees.json`
 ```json
@@ -37,8 +37,8 @@ from pathlib import Path
 
 
 class Employee:
-    def __init__(self, id: str):
-        self.id = str(id)
+    def __init__(self, emp_id: str):
+        self.emp_id = str(emp_id)
         self._path = self._json_file_path
         self._data = self._load_json_data
         self._info = None
@@ -62,7 +62,7 @@ class Employee:
         with open(self._path, "r") as json_file:
             json_object = load(json_file)
             for item in json_object:
-                if item["id"] == self.id:
+                if item["id"] == self.emp_id:
                     return item
             return {}
 
@@ -71,8 +71,8 @@ class Employee:
         if not self._info:
             self._info = EmployeeInfo(self._data)
         return self._info
-
-
+```
+```python
 class EmployeeInfo:
     def __init__(self, data):
         self._data = data
@@ -98,7 +98,7 @@ class EmployeeInfo:
         return self._data.get("nationality", "")
 ```
 In the above `employee.py` file, we have two levels of abstraction, 
-`Employee` and `EmployeeInfo`.
+`Employee` and `EmployeeInfo` (both classes are in the same python module).
 
 The `Employee` class encapsulates the logic for loading the JSON file and retrieving 
 the details of the employee corresponding to the employee ID supplied during object 
@@ -133,3 +133,5 @@ I am going to run python interpreter in interactive mode,
 'United States'
 >>> 
 ```
+
+Back to  [Articles](../articles.md)
