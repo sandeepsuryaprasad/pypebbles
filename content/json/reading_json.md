@@ -46,6 +46,7 @@ class Employee:
     @property
     def _json_file_path(self):
         """Returns a JSON file path object"""
+
         path = Path("employees.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
