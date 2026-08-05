@@ -372,7 +372,7 @@ Here is the magic,
 >>> emp2.info.company.catchPhrase
 'Proactive didactic contingency'
 ```
-The code `emp1.info.address` returns `Address` object, when we say `emp1.info.address.street`, we 
+Here `emp1.info.address` returns `Address` object, when we say `emp1.info.address.street`, we 
 are trying to look-up for an attribute by name `street` on `Address` object. Since `__getattr__` method
 is implemented in `Address` class, the name of the attribute, in this case `street` is passed-in to
 `__getattr__` method in string format. In `__getattr__` method, we are going to pull out the key `street`
