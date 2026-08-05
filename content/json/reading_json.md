@@ -352,6 +352,12 @@ Here is the magic,
 >>> emp1.info.address.zipcode
 '92998-3874'
 >>>
+>>> emp1.info.company.name
+'Romaguera-Crona'
+>>> emp1.info.company.catchPhrase
+'Multi-layered client-server neural-net'
+```
+```commandline
 >>> emp2 = Employee(2)
 >>> emp2.info.address.street
 'Victor Plains'
@@ -361,6 +367,11 @@ Here is the magic,
 'Wisokyburgh'
 >>> emp2.info.address.zipcode
 '90566-7771'
+>>>
+>>> emp2.info.company.name
+'Deckow-Crist'
+>>> emp2.info.company.catchPhrase
+'Proactive didactic contingency'
 ```
 The code `emp1.info.address` returns `Address` object, when we say `emp1.info.address.street`, we 
 are trying to look-up for an attribute by name `street` on `Address` object. Since `__getattr__` method
