@@ -173,48 +173,46 @@ The same process happens for other employee attributes are well.
 [
   {
     "id": 1,
-    "name": "Leanne Graham",
-    "username": "Bret",
-    "email": "Sincere@april.biz",
+    "name": "Michael Anderson",
+    "email": "michael.anderson@example.com",
     "address": {
-      "street": "Kulas Light",
-      "suite": "Apt. 556",
-      "city": "Gwenborough",
-      "zipcode": "92998-3874",
-      "geo": {
-        "lat": "-37.3159",
-        "lng": "81.1496"
+      "street": "245 Oakwood Drive",
+      "suite": "Suite 210",
+      "city": "Austin",
+      "state": "TX",
+      "zipcode": "78701",
+      "geo_location": {
+        "lat": "30.2672",
+        "lng": "-97.7431"
       }
     },
-    "phone": "1-770-736-8031 x56442",
-    "website": "hildegard.org",
+    "phone": "(000) 111-2222",
+    "website": "www.example.dev",
     "company": {
-      "name": "Romaguera-Crona",
-      "catchPhrase": "Multi-layered client-server neural-net",
-      "bs": "harness real-time e-markets"
+      "name": "Spam Technologies",
+      "industry": "Automobile"
     }
   },
   {
     "id": 2,
-    "name": "Ervin Howell",
-    "username": "Antonette",
-    "email": "Shanna@melissa.tv",
+    "name": "Emily Johnson",
+    "email": "emily.johnson@example.com",
     "address": {
-      "street": "Victor Plains",
-      "suite": "Suite 879",
-      "city": "Wisokyburgh",
-      "zipcode": "90566-7771",
-      "geo": {
-        "lat": "-43.9509",
-        "lng": "-34.4618"
+      "street": "1187 Pine Street",
+      "suite": "Apt. 5B",
+      "city": "Seattle",
+      "state": "WA",
+      "zipcode": "98101",
+      "geo_location": {
+        "lat": "47.6062",
+        "lng": "-122.3321"
       }
     },
-    "phone": "010-692-6593 x09125",
-    "website": "anastasia.net",
+    "phone": "(111) 333-4567",
+    "website": "www.spam.com",
     "company": {
-      "name": "Deckow-Crist",
-      "catchPhrase": "Proactive didactic contingency",
-      "bs": "synergize scalable supply-chains"
+      "name": "Demo Software",
+      "industry": "Software"
     }
   }
 ]
@@ -225,17 +223,17 @@ Let's run the code and see how it works for the new JSON object.
 
 ```commandline
 >>> emp1 = Employee(1)
->>> emp1.info.username
-'Bret'
+>>> emp1.info.name
+'Michael Anderson'
 >>> emp1.info.id
 1
 >>> emp1.info.email
-'Sincere@april.biz' 
+'michael.anderson@example.com'
 ```
 Now let's try to access `address` which returns one more JSON like object or inner dictionary.
 ```commandline
 >>> emp1.info.address
-{'street': 'Kulas Light', 'suite': 'Apt. 556', 'city': 'Gwenborough', 'zipcode': '92998-3874', 'geo': {'lat': '-37.3159', 'lng': '81.1496'}}
+{'street': '245 Oakwood Drive', 'suite': 'Suite 210', 'city': 'Austin', 'state': 'TX', 'zipcode': '78701', 'geo_location': {'lat': '30.2672', 'lng': '-97.7431'}}
 ```
 We got the correct output, which is the inner dictionary or nested dictionary for the key `address`.
 The nested dictionary has complete address information of an employee. Now if we want to access, let's say
@@ -261,41 +259,38 @@ of the dictionary.
 So the only way to make above code work is by doing something like this,
 ```commandline
 >>> emp1.info.address.get("street")  # on dict object we are using a metod `get`
-'Kulas Light'
+'245 Oakwood Drive'
 
 >>> emp1.info.address["street"]     # Indexing syntax to access the key of a dict
-'Kulas Light'
+'245 Oakwood Drive'
 ```
 Similarly, when we try to access `company`,
 ```commandline
 >>> emp1.info.company
-{'name': 'Romaguera-Crona', 'catchPhrase': 'Multi-layered client-server neural-net', 'bs': 'harness real-time e-markets'}
+{'name': 'Spam Technologies', 'industry': 'Automobile'}
 ```
-Now if we wanted to get `name` or `catchPhrase`, we would do something like this,
+Now if we wanted to get `name` or `industry`, we would do something like this,
 ```commandline
 >>> emp1.info.company.get("name")
-'Romaguera-Crona'
->>> emp1.info.company.get("catchPhrase")
-'Multi-layered client-server neural-net'
+'Spam Technologies'
+>>> emp1.info.company.get("industry")
+'Automobile'
 ```
 This is really akward! 
 
 The most elegant solution should look something like this,
 ```commandline
->>> emp1.info.address.street    # accessing address details
-'Kulas Light'
+>>> emp1.info.address.street
+'245 Oakwood Drive'
 >>> emp1.info.address.suite
-'Apt. 556'
->>> emp1.info.address.city
-'Gwenborough'
+'Suite 210'
 >>> emp1.info.address.zipcode
-'92998-3874'
+'78701'
 >>> 
->>> emp1.info.company.name  # accessing company details
-'Romaguera-Crona'
->>> emp1.info.company.catchPhrase
-'Multi-layered client-server neural-net'
->>> 
+>>> emp1.info.company.name
+'Spam Technologies'
+>>> emp1.info.company.industry
+'Automobile' 
 ```
 Let us take a look at the JSON file `employees.json`. In the above JSON , each employee has 
 two more JSON  like objects `address` and `company`. 
@@ -342,40 +337,113 @@ Here is the magic,
 
 ```commandline
 >>> emp1 = Employee(1)
->>> emp1.info.address.street    # address information
-'Kulas Light'
+>>> emp1.info.address.street    # accessing address information
+'245 Oakwood Drive'
 >>> emp1.info.address.suite
-'Apt. 556'
+'Suite 210'
 >>> emp1.info.address.city
-'Gwenborough'
+'Austin'
 >>> emp1.info.address.zipcode
-'92998-3874'
->>>
->>> emp1.info.company.name      # company information
-'Romaguera-Crona'
->>> emp1.info.company.catchPhrase
-'Multi-layered client-server neural-net'
+'78701'
+>>> 
+>>> emp1.info.company.name  # accessing company information
+'Spam Technologies'
+>>> emp1.info.company.industry
+'Automobile'
+>>> 
 ```
 ```commandline
 >>> emp2 = Employee(2)
 >>> emp2.info.address.street
-'Victor Plains'
+'1187 Pine Street'
 >>> emp2.info.address.suite
-'Suite 879'
+'Apt. 5B'
 >>> emp2.info.address.city
-'Wisokyburgh'
+'Seattle'
 >>> emp2.info.address.zipcode
-'90566-7771'
->>>
+'98101'
+>>> 
 >>> emp2.info.company.name
-'Deckow-Crist'
->>> emp2.info.company.catchPhrase
-'Proactive didactic contingency'
+'Demo Software'
+>>> emp2.info.company.industry
+'Software'
 ```
 Here `emp1.info.address` returns `Address` object, when we say `emp1.info.address.street`, we 
-are trying to look-up for an attribute by name `street` on `Address` object. Since `__getattr__` method
+are trying to look-up for an attribute `street` on `Address` object. Since `__getattr__` method
 is implemented in `Address` class, the name of the attribute, in this case `street` is passed-in to
 `__getattr__` method in string format. In `__getattr__` method, we are going to pull out the key `street`
 from internal dictionary `self._dict` of `Address` class.
+
+But we still have problem when we access `emp1.info.address.geo_location`. When `geo_location` 
+attribute is looked-up on `address` object, again a dictionary is returned, and we have to access
+that dictionary either using `get` or through indexing.
+
+So Here is what we can do to solve that,
+```python
+class Address:
+    def __init__(self, data):
+        self._data = data
+
+    def __getattr__(self, name):
+        if name == "geo_location":
+            return Location(self._data.get(name))
+        if name not in self._data.keys():
+            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
+        return self._data.get(name, "")
+
+class Location(Address):
+    """Subclass of Address"""
+    pass
+```
+
+```commandline
+>>> emp1.info.address.geo_location.lat
+'30.2672'
+>>> emp1.info.address.geo_location.lng
+'-97.7431'
+>>> 
+```
+In this way by creating multiple layers of abstraction for nested JSON objects, we can make our solution
+more readable, maintainable and scalable.
+
+The final solution may look something like this, 
+```python
+class EmployeeInfo:
+    def __init__(self, data):
+        self._data = data
+
+    def __getattr__(self, name):
+        if name not in self._data.keys():
+            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
+        if name == "address":
+            return Address(self._data.get(name))
+        if name == "company":
+            return Company(self._data.get(name))
+        return self._data.get(name)
+
+class Address:
+    def __init__(self, data):
+        self._data = data
+
+    def __getattr__(self, name):
+        if name not in self._data.keys():
+            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
+        if name == "geo_location":
+            return Location(self._data.get(name))
+        return self._data.get(name, "")
+
+class Company:
+    def __init__(self, data):
+        self._data = data
+
+    def __getattr__(self, name):
+        if name not in self._data.keys():
+            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
+        return self._data.get(name, "")
+
+class Location(Address):
+    """Subclass of Address"""
+    pass
+```
 
 Back to  [Articles](../articles.md)
