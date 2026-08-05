@@ -273,7 +273,7 @@ Now if we wanted to get `name` or `industry`, we would have to do something like
 >>> emp1.info.company.get("industry")
 'Automobile'
 ```
-This is really akward! 
+This is really akward! and doesn't compose well. 
 
 The most elegant solution should look something like this,
 ```commandline
