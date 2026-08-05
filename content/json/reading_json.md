@@ -343,7 +343,7 @@ Here is the magic,
 
 ```commandline
 >>> emp1 = Employee(1)
->>> emp1.info.address.street
+>>> emp1.info.address.street    # address information
 'Kulas Light'
 >>> emp1.info.address.suite
 'Apt. 556'
@@ -352,7 +352,7 @@ Here is the magic,
 >>> emp1.info.address.zipcode
 '92998-3874'
 >>>
->>> emp1.info.company.name
+>>> emp1.info.company.name      # company information
 'Romaguera-Crona'
 >>> emp1.info.company.catchPhrase
 'Multi-layered client-server neural-net'
