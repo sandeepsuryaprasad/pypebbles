@@ -46,7 +46,6 @@ class Employee:
     @property
     def _json_file_path(self):
         """Returns a JSON file path object"""
-
         path = Path("employees.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
@@ -145,7 +144,7 @@ class EmployeeInfo:
 
     def __getattr__(self, name):
         if name not in self._data.keys():
-            raise AttributeError(f"Employee has not attribute {name}")
+            raise AttributeError(f"{self.__class__.__name__} object has no attribute {name}")
         return self._data.get(name)
 ```
 In the above code, when we try to access an attribute on `EmployeeInfo` object by saying,
@@ -312,7 +311,7 @@ class Address:
 
     def __getattr__(self, name):
         if name not in self._data.keys():
-            raise AttributeError(f"Address has no attribute {name}")
+            raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
         return self._data.get(name)
 
 class Company:
@@ -321,7 +320,7 @@ class Company:
 
     def __getattr__(self, name):
         if name not in self._data.keys():
-            raise AttributeError(f"Company has no attribute {name}")
+            raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
         return self._data.get(name)
 ```
 Now let's change `EmployeeInfo` class implementation, 
@@ -332,7 +331,7 @@ class EmployeeInfo:
 
     def __getattr__(self, name):
         if name not in self._data.keys():
-            raise AttributeError(f"Employee has not attribute {name}")
+            raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
         if name == "address":
             return Address(self._data.get(name))
         if name == "company":
