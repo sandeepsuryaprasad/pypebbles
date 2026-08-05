@@ -8,7 +8,7 @@ Let's consider the below JSON file,
 ```json
 [
     {
-    "id": "1",
+    "id": 1,
     "first_name": "David",
     "last_name": "Brown",
     "gender": "Male",
@@ -16,7 +16,7 @@ Let's consider the below JSON file,
     "nationality": "United States"
   },
     {
-    "id": "2",
+    "id": 2,
     "first_name": "Laura",
     "last_name": "White",
     "gender": "Female",
@@ -37,8 +37,8 @@ from pathlib import Path
 
 
 class Employee:
-    def __init__(self, emp_id: str):
-        self.emp_id = str(emp_id)
+    def __init__(self, emp_id):
+        self.emp_id = emp_id
         self._path = self._json_file_path
         self._data = self._load_json_data
         self._info = None
