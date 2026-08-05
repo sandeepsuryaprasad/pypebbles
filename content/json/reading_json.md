@@ -168,7 +168,7 @@ then we are doing a dictionary look-up and returning the value of key `first_nam
 The same process happens for other employee attributes are well.
 
 ### Little more complicated JSON structure
-`employees_new.json`
+`employees.json`
 
 ```json
 [
@@ -298,7 +298,7 @@ The most elegant solution should look something like this,
 'Multi-layered client-server neural-net'
 >>> 
 ```
-Let us take a look at the JSON file `employees_new.json`. In the above JSON , each employee has 
+Let us take a look at the JSON file `employees.json`. In the above JSON , each employee has 
 two more JSON  like objects `address` and `company`. 
 
 In order to have complete object oriented approach to access the attributes of `address` and `company`
@@ -362,5 +362,10 @@ Here is the magic,
 >>> emp2.info.address.zipcode
 '90566-7771'
 ```
+The code `emp1.info.address` returns `Address` object, when we say `emp1.info.address.street`, we 
+are trying to look-up for an attribute by name `street` on `Address` object. Since `__getattr__` method
+is implemented in `Address` class, the name of the attribute, in this case `street` is passed-in to
+`__getattr__` method in string format. In `__getattr__` method, we are going to pull out the key `street`
+from internal dictionary `self._dict` of `Address` class.
 
 Back to  [Articles](../articles.md)
