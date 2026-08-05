@@ -228,13 +228,13 @@ Let's run the code and see how it works for the new JSON object.
 >>> emp1.info.email
 'michael.anderson@example.com'
 ```
-Now let's try to access `address` which returns one more JSON like object or inner dictionary.
+Now let's try to access `address` which returns one more JSON like object.
 ```commandline
 >>> emp1.info.address
 {'street': '245 Oakwood Drive', 'suite': 'Suite 210', 'city': 'Austin', 'state': 'TX', 'zipcode': '78701', 'geo_location': {'lat': '30.2672', 'lng': '-97.7431'}}
 ```
-We got the correct output, which is the inner dictionary or nested dictionary for the key `address`.
-The nested dictionary has complete address information of an employee. Now if we want to access, let's say
+We got the correct output, which is the nested JSON object for the key `address`.
+The nested JSON object has complete address information of an employee. Now if we want to access, let's say
 `street` or `city` and if we did something like below, we would get `AttributeError`
 
 ```commandline
@@ -249,24 +249,24 @@ Traceback (most recent call last):
 AttributeError: 'dict' object has no attribute 'city'
 ```
 Here is the problem, when we execute `emp1.info.address.street`, `emp1.info.address` returns a dictionary object.
-On a dictionary object, we are using dot operator to access `street` which is wrong. Because `dict` 
-object does not have an attribute `street`. We cannot be using `dot` operator to access the contents
-of the dictionary. 
+On a dictionary object, we are using dot operator to access `street` which is raises `AttributeError`. 
+Because `dict` object does not have an attribute `street`. 
+We cannot be using `dot` operator to access the contents of the dictionary. 
 
 So the only way to make above code work is by doing something like this,
 ```commandline
->>> emp1.info.address.get("street")  # on dict object we are using a metod `get`
+>>> emp1.info.address.get("street")  # On dict object we are using `get` method
 '245 Oakwood Drive'
 
 >>> emp1.info.address["street"]     # Indexing syntax to access the key of a dict
 '245 Oakwood Drive'
 ```
-Similarly, when we try to access `company`,
+Similarly, when access `company`,
 ```commandline
 >>> emp1.info.company
 {'name': 'Spam Technologies', 'industry': 'Automobile'}
 ```
-Now if we wanted to get `name` or `industry`, we would do something like this,
+Now if we wanted to get `name` or `industry`, we would have to do something like this,
 ```commandline
 >>> emp1.info.company.get("name")
 'Spam Technologies'
@@ -290,7 +290,7 @@ The most elegant solution should look something like this,
 'Automobile' 
 ```
 Let us take a look at the JSON file `employees.json`. In the above JSON , each employee has 
-two more JSON  like objects `address` and `company`. 
+two more nested JSON  like objects `address` and `company`. 
 
 In order to have complete object oriented approach to access the attributes of `address` and `company`
 let's introduce two more levels of abstraction for the above scenario. 
@@ -381,11 +381,12 @@ class Address:
         self._data = data
 
     def __getattr__(self, name):
-        if name == "geo_location":
-            return Location(self._data.get(name))
         if name not in self._data.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
+        if name == "geo_location":
+            return Location(self._data.get(name))
         return self._data.get(name, "")
+
 
 class Location(Address):
     """Subclass of Address"""
@@ -398,8 +399,10 @@ class Location(Address):
 >>> emp1.info.address.geo_location.lng
 '-97.7431'
 ```
-In this way by creating multiple layers of abstraction for nested JSON objects, we can make our solution
-more readable, maintainable and scalable.
+By introducing multiple layers of abstraction for nested JSON objects, 
+we create a solution that is easier to read, maintain, and extend. 
+Encapsulating the underlying JSON structure within dedicated classes results in cleaner, 
+more modular code and provides a simple, intuitive interface for accessing nested data.
 
 The final solution may look something like this, 
 ```python
