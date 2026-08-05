@@ -118,7 +118,6 @@ I am going to run python interpreter in interactive mode,
 'Brown'
 >>> emp1.info.gender
 'Male'
->>>
 ```
 
 ```commandline
@@ -131,11 +130,10 @@ I am going to run python interpreter in interactive mode,
 '1993-05-17'
 >>> emp2.info.nationality
 'United States'
->>> 
 ```
 ### Alternate Approach: Dynamic Attribute Access Using `__getattr__` (hack)
 The `EmployeeInfo` class, has five different `property` or `getter` methods, one for each
-employee info filed. If you feel that it's kind of boiler-plate code with many `getter` methods,
+employee info filed. If you feel that it's kind of boilerplate code with many `getter` methods,
 you can use the magic of `__getattr__` method to optimize the code.
 ```python
 class EmployeeInfo:
@@ -249,7 +247,6 @@ AttributeError: 'dict' object has no attribute 'street'
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 AttributeError: 'dict' object has no attribute 'city'
->>> 
 ```
 Here is the problem, when we execute `emp1.info.address.street`, `emp1.info.address` returns a dictionary object.
 On a dictionary object, we are using dot operator to access `street` which is wrong. Because `dict` 
@@ -350,7 +347,6 @@ Here is the magic,
 'Spam Technologies'
 >>> emp1.info.company.industry
 'Automobile'
->>> 
 ```
 ```commandline
 >>> emp2 = Employee(2)
@@ -401,7 +397,6 @@ class Location(Address):
 '30.2672'
 >>> emp1.info.address.geo_location.lng
 '-97.7431'
->>> 
 ```
 In this way by creating multiple layers of abstraction for nested JSON objects, we can make our solution
 more readable, maintainable and scalable.
