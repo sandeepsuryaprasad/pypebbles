@@ -294,7 +294,7 @@ two more nested JSON  like objects `address` and `company`.
 
 In order to have complete object oriented approach to access the attributes of `address` and `company`
 let's introduce two more levels of abstraction for the above scenario. 
-We will create two separate classes for `address` and `company`.
+We will create two separate classes for `Address` and `Company`.
 
 ```python
 class Address:
