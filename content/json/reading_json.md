@@ -423,7 +423,8 @@ class EmployeeInfo:
         if name == "company":
             return Company(self.employee_info.get(name))
         return self.employee_info.get(name)
-
+```
+```python
 class Address:
     def __init__(self, address_info):
         self.address_info = address_info
@@ -434,7 +435,8 @@ class Address:
         if name == "geo_location":
             return Location(self.address_info.get(name))
         return self.address_info.get(name)
-
+```
+```python
 class Company:
     def __init__(self, company_info):
         self.company_info = company_info
@@ -443,7 +445,8 @@ class Company:
         if name not in self.company_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         return self.company_info.get(name)
-
+```
+```python
 class Location:
     def __init__(self, location_info):
         self.location_info = location_info
@@ -452,9 +455,7 @@ class Location:
         if name not in self.location_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         return self.location_info.get(name)
-
 ```
-
 Although the `__getattr__` method can be further re-factored, I will leave the solution at this point.
 
 Back to  [Articles](../articles.md)
