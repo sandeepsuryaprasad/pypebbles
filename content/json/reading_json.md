@@ -1,8 +1,8 @@
 ## Reading JSON File Using Object-Oriented Approach
 **Last Updated:** August 2, 2026
 
-In this article, we will learn how to read a `json` file using object oriented approach. 
-Let's consider the below JSON file,
+In this article, we will see how to implement object-oriented approach to read data
+from a `json` file. Let's consider the below JSON file,
 
 `employees.json`
 ```json
@@ -159,7 +159,7 @@ the name the missing attribute is passed-in as a string to `__getattr__` method 
 is collected by parameter `name`.
 
 In `__getattr__` method we are validating if the attribute for which we are trying to get the value,
-in this case `first_name` is present as key of the dictionary `self._data`. If it is present
+in this case `first_name` is present as key of the dictionary `self.employee_info`. If it is present
 then we are doing a dictionary look-up and returning the value of key `first_name`.
 
 The same process happens for other employee attributes are well.
@@ -454,5 +454,7 @@ class Location:
         return self.location_info.get(name)
 
 ```
+
+Although the `__getattr__` method can be further re-factored, I will leave the solution at this point.
 
 Back to  [Articles](../articles.md)
