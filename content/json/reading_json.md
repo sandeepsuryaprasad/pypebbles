@@ -409,7 +409,48 @@ we create a solution that is easier to read, maintain, and extend.
 Encapsulating the underlying JSON structure within dedicated classes results in cleaner, 
 more modular code and provides a simple, intuitive interface for accessing nested data.
 
-The final solution may look something like this, 
+The final solution may look something like this,
+```python
+from json import load
+from pathlib import Path
+
+
+class Employee:
+    def __init__(self, emp_id):
+        self.emp_id = emp_id
+        self._path = self._json_file_path
+        self._data = self._load_json_data
+        self._info = None
+
+    @property
+    def _json_file_path(self):
+        """Returns a JSON file path object"""
+        path = Path("employees.json")
+        if not path.exists():
+            raise FileNotFoundError(f"{path} does not exist")
+        return path
+
+    @property
+    def _load_json_data(self):
+        """
+        Loads the JSON file and returns the employee data for the employee corresponding 
+        to the employee ID supplied during object instantiation.
+
+        Returns an empty dictionary if the employee id does not exist in the JSON file
+        """
+        with open(self._path, "r") as json_file:
+            json_object = load(json_file)
+            for item in json_object:
+                if item["id"] == self.emp_id:
+                    return item
+            return {}
+
+    @property
+    def info(self):
+        if not self._info:
+            self._info = EmployeeInfo(self._data)
+        return self._info
+```
 ```python
 class EmployeeInfo:
     def __init__(self, employee_info):
