@@ -137,13 +137,13 @@ employee info filed. If you feel that it's kind of boilerplate code with many `g
 you can use the magic of `__getattr__` method to optimize the code.
 ```python
 class EmployeeInfo:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, employee_info):
+        self.employee_info = employee_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.employee_info.keys():
             raise AttributeError(f"{self.__class__.__name__} object has no attribute {name}")
-        return self._data.get(name)
+        return self.employee_info.get(name)
 ```
 In the above code, when we try to access an attribute on `EmployeeInfo` object by saying,
 
@@ -153,7 +153,7 @@ In the above code, when we try to access an attribute on `EmployeeInfo` object b
 ```
 Here the name of the attribute that we are trying to do a look-up is `first_name`, which
 obviously does not exist on `EmployeeInfo` object itself (The only instance attribute that
-`EmployeeInfo` has is `_data`). Since we are trying to access a missing attribute on
+`EmployeeInfo` has is `employee_info`). Since we are trying to access a missing attribute on
 `EmployeeInfo` object, `__getattr__` method gets automatically called for missing attributes and
 the name the missing attribute is passed-in as a string to `__getattr__` method and that string 
 is collected by parameter `name`.
@@ -298,37 +298,37 @@ We will create two separate classes for `Address` and `Company`.
 
 ```python
 class Address:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, address_info):
+        self.address_info = address_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.address_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
-        return self._data.get(name)
+        return self.address_info.get(name)
 
 class Company:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, company_info):
+        self.company_info = company_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.company_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
-        return self._data.get(name)
+        return self.company_info.get(name)
 ```
 Now let's change `EmployeeInfo` class implementation, 
 ```python
 class EmployeeInfo:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, employee_info):
+        self.employee_info = employee_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.employee_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
         if name == "address":
-            return Address(self._data.get(name))
+            return Address(self.employee_info.get(name))
         if name == "company":
-            return Company(self._data.get(name))
-        return self._data.get(name)
+            return Company(self.employee_info.get(name))
+        return self.employee_info.get(name)
 ```
 Here is the magic,
 
@@ -377,20 +377,25 @@ that dictionary either using `get` or through indexing.
 So Here is what we can do to solve that,
 ```python
 class Address:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, address_info):
+        self.address_info = address_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.address_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         if name == "geo_location":
-            return Location(self._data.get(name))
-        return self._data.get(name, "")
+            return Location(self.address_info.get(name))
+        return self.address_info.get(name)
 
 
-class Location(Address):
-    """Subclass of Address"""
-    pass
+class Location:
+    def __init__(self, location_info):
+        self.location_info = location_info
+
+    def __getattr__(self, name):
+        if name not in self.location_info.keys():
+            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
+        return self.location_info.get(name)
 ```
 
 ```commandline
@@ -407,41 +412,47 @@ more modular code and provides a simple, intuitive interface for accessing neste
 The final solution may look something like this, 
 ```python
 class EmployeeInfo:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, employee_info):
+        self.employee_info = employee_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.employee_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         if name == "address":
-            return Address(self._data.get(name))
+            return Address(self.employee_info.get(name))
         if name == "company":
-            return Company(self._data.get(name))
-        return self._data.get(name)
+            return Company(self.employee_info.get(name))
+        return self.employee_info.get(name)
 
 class Address:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, address_info):
+        self.address_info = address_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.address_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         if name == "geo_location":
-            return Location(self._data.get(name))
-        return self._data.get(name, "")
+            return Location(self.address_info.get(name))
+        return self.address_info.get(name)
 
 class Company:
-    def __init__(self, data):
-        self._data = data
+    def __init__(self, company_info):
+        self.company_info = company_info
 
     def __getattr__(self, name):
-        if name not in self._data.keys():
+        if name not in self.company_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
-        return self._data.get(name, "")
+        return self.company_info.get(name)
 
-class Location(Address):
-    """Subclass of Address"""
-    pass
+class Location:
+    def __init__(self, location_info):
+        self.location_info = location_info
+
+    def __getattr__(self, name):
+        if name not in self.location_info.keys():
+            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
+        return self.location_info.get(name)
+
 ```
 
 Back to  [Articles](../articles.md)
