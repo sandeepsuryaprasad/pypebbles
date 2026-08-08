@@ -25,23 +25,43 @@ class Logger:
 
     @property
     def level(self):
+        """Return the logging level configured for the logger."""
         return self._level
 
     @level.setter
     def level(self, value):
+        """
+        Set the logging level after validating the supplied value.
+        Raises:
+            ValueError: If the supplied logging level is not supported.
+        """
         if value not in self._VALID_LOG_LEVELS:
             raise ValueError(f"Invalid logging level {value}")
         self._level = value
 
     @property
     def handler(self):
+        """Return the logging handler configured for the logger."""
         return self._handler
 
     @handler.setter
     def handler(self, value):
+        """
+        Set the logging handler.
+        """
         self._handler = value if value else logging.StreamHandler()
 
     def _set_logger(self, name):
+        """
+        Create and configure a named logger.
+        Sets the logger's level, creates a formatter using the configured
+        log format, and applies the formatter to the configured handler.
+        The handler is added only when the logger has no existing handlers.
+        Args:
+            name: Name used to retrieve the logger.
+        Returns:
+            A configured :class:`logging.Logger` instance.
+        """
         logger = logging.getLogger(name)
         logger.setLevel(self._level)
         formatter = logging.Formatter(self._LOG_FORMAT)
