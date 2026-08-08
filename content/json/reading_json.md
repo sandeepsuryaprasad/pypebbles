@@ -45,7 +45,7 @@ class Employee:
 
     @property
     def _json_file_path(self):
-        """Returns a JSON file path object"""
+        """Return a JSON file path object"""
         path = Path("employees.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
@@ -417,6 +417,16 @@ from pathlib import Path
 
 
 class Employee:
+    """
+    Represent an employee and provide access to employee information.
+
+    The class loads employee data from `employees.json` based on the
+    employee ID supplied during object creation. Employee information
+    can be accessed through the `info` property.
+
+    Args:
+        emp_id: Unique identifier of the employee.
+    """
     def __init__(self, emp_id):
         self.emp_id = emp_id
         self._path = self._json_file_path
@@ -425,7 +435,14 @@ class Employee:
 
     @property
     def _json_file_path(self):
-        """Returns a JSON file path object"""
+        """
+        Return the path to the employee JSON file.
+        Returns:
+            The path to `employees.json`.
+
+        Raises:
+            FileNotFoundError: If `employees.json` does not exist.
+        """
         path = Path("employees.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
@@ -434,10 +451,13 @@ class Employee:
     @property
     def _load_json_data(self):
         """
-        Loads the JSON file and returns the employee data for the employee corresponding 
-        to the employee ID supplied during object instantiation.
+        Load and return data for the specified employee.
+        Searches `employees.json` for an employee whose ID matches
+        the ID supplied during object creation.
 
-        Returns an empty dictionary if the employee id does not exist in the JSON file
+        Returns:
+            A dictionary containing the employee's data, or an empty
+            dictionary if no employee with the specified ID is found.
         """
         with open(self._path, "r") as json_file:
             json_object = load(json_file)
@@ -448,6 +468,14 @@ class Employee:
 
     @property
     def info(self):
+        """
+        Return the employee information.
+        Creates an `EmployeeInfo` instance lazily on first access and reuses 
+        the same instance for subsequent accesses.
+
+        Returns:
+            An `EmployeeInfo` instance containing the employee's data.
+        """
         if not self._info:
             self._info = EmployeeInfo(self._data)
         return self._info

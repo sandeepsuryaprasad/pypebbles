@@ -40,6 +40,20 @@ from typing import Optional
 
 
 class Config:
+    """
+    Provides convenient access to configuration values by section.
+    The class reads configuration data from `config.ini` and exposes
+    configuration keys through attribute access. A configuration section
+    is selected when the instance is created, and individual values can
+    then be accessed using the `value` property.
+
+    Args:
+        section: Name of the configuration section to access.
+
+    Raises:
+        KeyError: If the specified section does not exist in the
+            configuration file.
+    """
     def __init__(self, section):
         self.section: str = section.upper()
         self._parser: ConfigParser = self.parser
@@ -48,12 +62,28 @@ class Config:
 
     @property
     def parser(self):
+        """
+        Return a configured `ConfigParser` instance.
+        The parser reads configuration data from ``config.ini``.
+        """
         parser = ConfigParser()
         parser.read("config.ini")
         return parser
 
     @property
     def parse_to_dict(self):
+        """
+        Return the selected configuration section as a dictionary.
+        Each configuration key in the selected section is stored as a
+        key-value pair in the returned dictionary.
+
+        Returns:
+            A dictionary containing the configuration values for the
+            selected section.
+
+        Raises:
+            KeyError: If the selected section does not exist.
+        """
         if self.section not in self._parser.sections():
             raise KeyError(f"Invalid section {self.section}")
         config_data = {}
@@ -63,13 +93,36 @@ class Config:
 
     @property
     def value(self):
+        """
+        Return the value of the most recently accessed configuration key.
+        Returns:
+            The configuration value associated with the accessed key,
+            or an empty string if the key does not exist.
+        """
         return self._data.get(self._attr, "")
 
     def __getattr__(self, name):
+        """
+        Capture access to an undefined attribute.
+        The attribute name is stored internally and the current
+        `Config` instance is returned, allowing configuration values
+        to be accessed through expressions such as `config.device_name.value`.
+
+        Args:
+            name: Name of the configuration attribute being accessed.
+
+        Returns:
+            The current `Config` instance.
+        """
         self._attr = name
         return self
     
     def __repr__(self):
+        """
+        Return the string representation of the configuration object.
+        Returns:
+            A string containing the selected configuration section.
+        """
         return f'Config("{self.section}")'
 ```
 Suppose if we want to read the contents of the section `APPLE` here is what we 
