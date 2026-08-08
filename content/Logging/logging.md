@@ -1,4 +1,5 @@
 ## Object-Oriented Approach for Logging
+**Last Updated:** August 8, 2026
 
 In this article we will implement objected-oriented approach for `logging`
 ```python
