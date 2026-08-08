@@ -1,4 +1,4 @@
-## Table of Contents
+## Articles
 
 * [Reading configuration file (Object-Oriented Approach)](config/reading_config_file.md)
 
