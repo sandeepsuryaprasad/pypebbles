@@ -298,7 +298,8 @@ class Address:
         if name not in self.address_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
         return self.address_info.get(name)
-
+```
+```python
 class Company:
     def __init__(self, company_info):
         self.company_info = company_info
@@ -379,8 +380,8 @@ class Address:
         if name == "geo_location":
             return Location(self.address_info.get(name))
         return self.address_info.get(name)
-
-
+```
+```python
 class Location:
     def __init__(self, location_info):
         self.location_info = location_info
@@ -607,7 +608,7 @@ class Location:
 
     def __getattr__(self, name):
         """
-        Return a location attribute from the underlying data.
+        `Return a location attribute from the underlying data.
         Attributes are resolved dynamically from ``location_info``.
 
         Args:
