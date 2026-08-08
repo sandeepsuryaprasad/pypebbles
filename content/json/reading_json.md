@@ -131,7 +131,7 @@ I am going to run python interpreter in interactive mode,
 >>> emp2.info.nationality
 'United States'
 ```
-### Alternate Approach: Dynamic Attribute Access Using `__getattr__` (hack)
+### Alternate Approach: Dynamic Attribute Access Using `__getattr__`
 The `EmployeeInfo` class, has five different `property` or `getter` methods, one for each
 employee info filed. If you feel that it's kind of boilerplate code with many `getter` methods,
 you can use the magic of `__getattr__` method to optimize the code.
