@@ -68,6 +68,7 @@ class Employee:
 
     @property
     def info(self):
+        """Returns instance of EmployeeInfo class"""
         if not self._info:
             self._info = EmployeeInfo(self._data)
         return self._info
