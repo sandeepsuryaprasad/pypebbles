@@ -1,7 +1,7 @@
 ## Reading JSON File Using Object-Oriented Approach
 **Last Updated:** August 2, 2026
 
-In this article, we will see how to implement object-oriented approach to read data
+In this article, we will implement object-oriented approach to read data
 from a `json` file. Let's consider the below JSON file,
 
 `employees.json`
