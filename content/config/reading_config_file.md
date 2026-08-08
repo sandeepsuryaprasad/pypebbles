@@ -1,5 +1,10 @@
-## Reading Configuration File Using Object-Oriented Approach 
+## Turning Configuration Files into Python Objects 
 **Last Updated:** August 1, 2026
+
+Configuration files are commonly used to store application settings such as database details, 
+API endpoints, credentials, feature flags, and environment-specific parameters.
+Python provides built-in support for reading configuration files through modules 
+such as `configparser`, making it straightforward to load and access these values.
 
 In this article, we will learn how to read a `config.ini` file using Python's built-in 
 `configparser` module and explore a clean, object-oriented approach to accessing 

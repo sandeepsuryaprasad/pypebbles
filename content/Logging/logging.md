@@ -1,4 +1,4 @@
-## Object-Oriented Approach for Logging
+## Building a Flexible Logging Abstraction
 **Last Updated:** August 8, 2026
 
 In this article we will implement objected-oriented approach for `logging`
@@ -159,4 +159,10 @@ class Logger:
         """
         return getattr(self.logger, name)
 ```
+### Setting log level CLI
+
+
+
+
+
 Back to  [Articles](../articles.md)

@@ -1,4 +1,4 @@
-## Reading JSON File Using Object-Oriented Approach
+## From JSON Data to Python Objects
 **Last Updated:** August 2, 2026
 
 In this article, we will implement object-oriented approach to read data

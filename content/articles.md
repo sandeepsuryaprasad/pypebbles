@@ -1,11 +1,11 @@
 ## Articles
 
-* [Reading configuration file (Object-Oriented Approach)](config/reading_config_file.md)
+* [Turning Configuration Files into Python Objects](config/reading_config_file.md)
 
 
-* [Reading JSON file (Object-Oriented Approach)](json/reading_json.md)
+* [From JSON Data to Python Objects](json/reading_json.md)
 
 
-* [Logging (Object-Oriented Approach)](Logging/logging.md)
+* [Building a Flexible Logging Abstraction](Logging/logging.md)
 
 [Home](../README.md)
