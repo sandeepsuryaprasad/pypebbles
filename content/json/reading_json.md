@@ -45,7 +45,6 @@ class Employee:
 
     @property
     def _json_file_path(self):
-        """Return a JSON file path object"""
         path = Path("employees.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
@@ -53,12 +52,6 @@ class Employee:
 
     @property
     def _load_json_data(self):
-        """
-        Loads the JSON file and returns the employee data for the employee corresponding 
-        to the employee ID supplied during object instantiation.
-
-        Returns an empty dictionary if the employee id does not exist in the JSON file
-        """
         with open(self._path, "r") as json_file:
             json_object = load(json_file)
             for item in json_object:
@@ -68,7 +61,6 @@ class Employee:
 
     @property
     def info(self):
-        """Returns instance of EmployeeInfo class"""
         if not self._info:
             self._info = EmployeeInfo(self._data)
         return self._info
