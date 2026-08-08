@@ -1,7 +1,19 @@
 ## Building a Flexible Logging Abstraction
 **Last Updated:** August 8, 2026
 
-In this article we will implement objected-oriented approach for `logging`
+In this article, we will build a lightweight logging abstraction around Python's 
+built-in logging module. Rather than replacing the standard logging framework, 
+our goal is to encapsulate its configuration behind a simple, reusable interface.
+
+We will gradually build a Logger class that handles common logging concerns such as log 
+levels, handlers, formatters, and logger configuration. 
+We will also allow the logging level to be controlled through command-line arguments, 
+making the logger more practical for real-world applications.
+
+The objective of this article is not to recreate Python's logging framework. 
+Instead, it is to demonstrate how a well-designed abstraction can simplify an existing API while 
+keeping the underlying functionality intact.
+
 ```python
 import logging
 from typing import Optional
@@ -159,7 +171,7 @@ class Logger:
         """
         return getattr(self.logger, name)
 ```
-### Setting log level CLI
+### Setting log level from CLI
 
 
 

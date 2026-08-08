@@ -1,9 +1,20 @@
 ## From JSON Data to Python Objects
 **Last Updated:** August 2, 2026
 
-In this article, we will implement object-oriented approach to read data
-from a `json` file. Let's consider the below JSON file,
+Python makes it easy to work with JSON through its built-in `json` module. 
+We can load a JSON document into Python and access its contents using dictionaries, 
+lists, and standard indexing operations. While this approach works well for simple data 
+structures, navigating deeply nested JSON using repeated dictionary lookups can quickly
+become difficult to read and maintain.
 
+In this article, we will take a different approach. Instead of exposing the raw JSON 
+structure throughout our application, we will transform the data into a hierarchy of
+Python objects, with each object responsible for representing a specific part of the data.
+
+The objective is not merely to read JSON, but to design a Python interface that
+makes complex structured data easier to work with.
+
+### Simple JSON structure
 `employees.json`
 ```json
 [
