@@ -474,10 +474,42 @@ class Employee:
 ```
 ```python
 class EmployeeInfo:
+    """
+    Provide attribute-style access to employee information.
+
+    The class exposes values from the supplied employee data through
+    attribute access. Nested ``address`` and ``company`` data are
+    represented by `Address` and `Company` instances, respectively.
+
+    Args:
+        employee_info: Dictionary containing employee information.
+
+    Raises:
+        AttributeError: If the requested attribute does not exist in
+            the supplied employee data.
+    """
     def __init__(self, employee_info):
         self.employee_info = employee_info
 
     def __getattr__(self, name):
+        """
+        Return an employee attribute from the underlying data.
+
+        Attributes are dynamically resolved from `employee_info`.
+        The `address` and `company` attributes are converted into
+        `Address` and `Company` instances before being returned.
+
+        Args:
+            name: Name of the attribute being accessed.
+
+        Returns:
+            The value associated with the requested attribute, or an
+            :`Address` or :`Company` instance for nested employee data.
+
+        Raises:
+            AttributeError: If the requested attribute is not present
+                in `employee_info`.
+        """
         if name not in self.employee_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         if name == "address":
@@ -488,10 +520,38 @@ class EmployeeInfo:
 ```
 ```python
 class Address:
+    """
+    Provide attribute-style access to address information.
+
+    The class dynamically resolves address attributes from the supplied
+    dictionary. The `geo_location` attribute is represented as a
+    :class:`Location` object.
+
+    Args:
+        address_info: Dictionary containing the address information.
+    """
     def __init__(self, address_info):
         self.address_info = address_info
 
     def __getattr__(self, name):
+        """
+        Return an address attribute from the underlying data.
+        
+        Attributes are resolved dynamically from `address_info`.
+        When `geo_location` is requested, the corresponding data is
+        wrapped in a :class:`Location` object.
+
+        Args:
+            name: Name of the address attribute being accessed.
+
+        Returns:
+            The value associated with the requested attribute, or a
+            :class:`Location` object when `geo_location` is requested.
+
+        Raises:
+            AttributeError: If the requested attribute does not exist
+                in `address_info`.
+        """
         if name not in self.address_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         if name == "geo_location":
@@ -500,20 +560,66 @@ class Address:
 ```
 ```python
 class Company:
+    """
+    Provide attribute-style access to company information.
+
+    The class dynamically resolves company attributes from the supplied
+    dictionary.
+
+    Args:
+        company_info: Dictionary containing the company information.
+    """
     def __init__(self, company_info):
         self.company_info = company_info
 
     def __getattr__(self, name):
+        """
+        Return a company attribute from the underlying data.
+
+        Attributes are resolved dynamically from ``company_info``.
+
+        Args:
+            name: Name of the company attribute being accessed.
+
+        Returns:
+            The value associated with the requested attribute.
+
+        Raises:
+            AttributeError: If the requested attribute does not exist
+                in `company_info`.
+        """
         if name not in self.company_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         return self.company_info.get(name)
 ```
 ```python
 class Location:
+    """
+    Provide attribute-style access to geographical location data.
+    The class dynamically resolves location attributes from the supplied
+    dictionary.
+
+    Args:
+        location_info: Dictionary containing geographical location data.
+    """
     def __init__(self, location_info):
         self.location_info = location_info
 
     def __getattr__(self, name):
+        """
+        Return a location attribute from the underlying data.
+        Attributes are resolved dynamically from ``location_info``.
+
+        Args:
+            name: Name of the location attribute being accessed.
+
+        Returns:
+            The value associated with the requested attribute.
+
+        Raises:
+            AttributeError: If the requested attribute does not exist
+                in ``location_info``.
+        """
         if name not in self.location_info.keys():
             raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
         return self.location_info.get(name)
