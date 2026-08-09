@@ -45,8 +45,7 @@ from typing import Optional
 
 
 class Config:
-    """
-    Provides convenient access to configuration values by section.
+    """Provides a convenient way access to configuration values by section.
     The class reads configuration data from `config.ini` and exposes
     configuration keys through attribute access. A configuration section
     is selected when the instance is created, and individual values can
@@ -67,8 +66,7 @@ class Config:
 
     @property
     def parser(self):
-        """
-        Return a configured `ConfigParser` instance.
+        """Return a configured `ConfigParser` instance.
         The parser reads configuration data from ``config.ini``.
         """
         parser = ConfigParser()
@@ -77,8 +75,7 @@ class Config:
 
     @property
     def parse_to_dict(self):
-        """
-        Return the selected configuration section as a dictionary.
+        """Return the selected configuration section as a dictionary.
         Each configuration key in the selected section is stored as a
         key-value pair in the returned dictionary.
 
@@ -98,8 +95,7 @@ class Config:
 
     @property
     def value(self):
-        """
-        Return the value of the most recently accessed configuration key.
+        """Return the value of the most recently accessed configuration key.
         Returns:
             The configuration value associated with the accessed key,
             or an empty string if the key does not exist.
@@ -107,8 +103,7 @@ class Config:
         return self._data.get(self._attr, "")
 
     def __getattr__(self, name):
-        """
-        Capture access to an undefined attribute.
+        """Capture access to an undefined attribute.
         The attribute name is stored internally and the current
         `Config` instance is returned, allowing configuration values
         to be accessed through expressions such as `config.device_name.value`.
@@ -123,8 +118,7 @@ class Config:
         return self
     
     def __repr__(self):
-        """
-        Return the string representation of the configuration object.
+        """Return the string representation of the configuration object.
         Returns:
             A string containing the selected configuration section.
         """
@@ -161,34 +155,38 @@ when you try to access the `section` data that does not exist, for example
 ```python
 >>> config.phone_number.value  # this returns empty string
 ```
-The magic happens in `__getattr__` method. when we try to access an attribute
-on `config` object by saying `config.device_name.value`, the evaluation takes
-place from left to right, so first python tries to look for an attribute
-`device_name` on `config` object, since the attribute `device_name` does not
-exist on `config` object, python calls `__getattr__` method by passing the name
-of the attribute that we are trying to look up for in string format.
+The key mechanism is implemented through the `__getattr__` method. 
+When an expression such as `config.device_name.value` is evaluated, Python resolves 
+the attribute chain from left to right. It first attempts to resolve `device_name` 
+on the `config` object. Because `device_name` is not explicitly defined as an 
+attribute on the object, Python invokes `__getattr__`, passing the requested 
+attribute name (`"device_name"`) as a string. This allows the implementation to 
+dynamically resolve the attribute and continue the evaluation of the attribute chain.
 
-In the above case the name of the attribute that we are trying to access is
-`device_name`. This attribute is passed as a string to `__getattr__` method.
-`__getattr__` method gets called only for a missing attributes. In `__getattr__`
-method, we are setting instance attribute `_attr` that the user is trying to access
-and finally we `self`.
+Within the `__getattr__` method, we store the requested attribute name in the instance 
+variable `_attr` and return the current `Config` instance (`self`). Returning `self`
+allows the attribute lookup chain to continue, enabling expressions such as 
+`config.device_name.value` to be evaluated dynamically.
 
-So when `config.device_name` gets evaluated, `__getattr__` method sets the
-name of the attribute that we are trying to look up for and returns the config object itself.
+When the `value` property is accessed on `config.device_name`, it performs a 
+dictionary lookup using the attribute name stored in the instance variable `_attr` 
+and returns the corresponding configuration value. The `_attr` variable is already 
+populated during the evaluation of `config.device_name`, because Python invokes 
+`__getattr__` when `device_name` cannot be resolved as a conventional attribute. 
+This allows the `value` property to dynamically determine which key to retrieve 
+from the underlying configuration dictionary.
 
-Now when a property `value` is called on `config.device_name`, the `value` property
-does a dictionary look-up and returns the value of the attribute `device_name`.
-The property `value` now knows the name of the attribute that it should pull out from
-the dictionary, because `__getattr__` method would have already set the name
-of the attribute in instance variable `_attr` when `config.device_name` was evaluated.
+When an attribute corresponding to a non-existent configuration key is accessed, 
+such as `config.phone_number.value`, the `__getattr__` method stores `"phone_number"` 
+in the instance variable `_attr`. The `value` property then attempts to retrieve the 
+corresponding key from the underlying `self._data` dictionary. Since `"phone_number"`
+is not present, the dictionary's `get()` method returns the specified default 
+value—an empty string (`""`)—instead of raising a `KeyError`.
 
-When we try to access the section data that does not exist by saying
-`config.phone_number.value`, the name of the attribute is `phone_number` and
-the `value` property tries to look-up for key `phone_number` in the dictionary
-`self._data` which it cannot find and finally the `get` method returns an empty string.
+Finally, we implement the `__repr__` method to provide a clear and meaningful string 
+representation of the `Config` object, making the object's identity and associated 
+configuration section immediately apparent during debugging and interactive use.
 
-And finally we have a nice string representation of our `config` object.
 ```python
 >>> config = Config("APPLE")
 >>> print(config)
@@ -201,7 +199,9 @@ Config("GOOGLE")
 ```
 
 ### Taking inputs from terminal
-We can further enhance our script take inputs from terminal.
+We can further enhance our script by accepting the configuration section name 
+as a command-line argument, allowing users to dynamically specify the section to 
+load at runtime rather than hard-coding it in the application.
 
 `main.py`
 
@@ -229,9 +229,7 @@ if __name__ == "__main__":
     print(f"Device Name: {config.device_name.value}")
 ```
 
-Now we can pass the section name from terminal and will result in the 
-following output
-
+Now we can pass the section name from terminal and will result in the following output
 ```commandline
 ~$ python3 main.py --section APPLE
 Serial No: APL123456789
@@ -244,6 +242,21 @@ Serial No: GGL987654321
 Model: Pixel-10
 Device Name: Demo Pixel
 ```
+
+In this article, we transformed a traditional configuration file into a clean, 
+object-oriented interface using Python. Instead of exposing the underlying
+ConfigParser implementation and requiring callers to work directly with sections 
+and dictionary keys, we introduced a layer of abstraction that allows configuration 
+values to be accessed through a more expressive object-oriented syntax.
+
+A key part of this design was Python's `__getattr__` method. 
+By intercepting attribute lookups for attributes that are not explicitly defined,
+we were able to dynamically map attribute access to keys in the underlying 
+configuration dictionary.
+
+We also saw how returning `self` from `__getattr__` enables chained attribute 
+access and how the `value` property ultimately resolves the requested configuration 
+key from the underlying data.
 
 
 Back to  [Articles](../articles.md)
