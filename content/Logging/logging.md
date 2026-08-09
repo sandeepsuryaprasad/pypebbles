@@ -320,9 +320,10 @@ should default to the `INFO` level and emit only `INFO` and higher-severity mess
 12
 ```
 
-To achieve the above mechanism, we will not set the log level using `level` setter method.
-Let's write a separate function outside the class that reads CLI input and sets the logging
-level in our `Logger` class.
+To implement this mechanism, we will no longer configure the logging level through the 
+`level` property setter. Instead, we will define a separate function outside the
+`Logger` class to process the command-line arguments and determine the appropriate 
+logging level. The resulting log level will then be used to initialize the `Logger` instance.
 
 Here is solution,
 ```python
