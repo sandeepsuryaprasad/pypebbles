@@ -175,7 +175,7 @@ class Logger:
         return getattr(self.logger, name)
 ```
 Let's look at an example on how we can use the above class. For demonstration purpose consider
-a python module `add.py`, consider a simple function that adds two numbers, 
+a python module `add.py` with simple function that adds two numbers, 
 
 `add.py`
 ```python
@@ -188,7 +188,7 @@ Here is how we can do it,
 ```python
 from mylogger import Logger
 
-logger = Logger(__name__)   # by default log level will be set to `info`
+logger = Logger(__name__)   # by default log level will be set to `INFO`
 
 def add(a: int, b: int):
     logger.info(f"add function called with args 'a': {a} and 'b': {b}")
@@ -247,7 +247,7 @@ print(add("1", "2"))
 ```
 In the above modified code, we have added a debug log which outputs the `type` of 
 arguments `a` and `b`. By default, this debug log will not be emitted to terminal if 
-we ran the code without setting the log level to `DEBGU`. If we run the code now, 
+we ran the code without setting the log level to `DEBUG`. If we run the code now, 
 we still get the below output,
 ```commandline
 ~$ python3 add.py
@@ -277,15 +277,22 @@ Now when we run `add.py` from terminal, we get the below output,
 [DEBUG] [2026-08-08 09:39:37,464]  Type of arg 'a': <class 'str'> and 'b': <class 'str'>
 12
 ```
-From the above `debug` message it is very clear that the type of argument `a` is `str` and 
+From the above `DEBUG` message it is very clear that the type of argument `a` is `str` and 
 type of argument `b` is `str` and that is why `add` function is concatenating `a` and `b` instead
 of adding.
 
 But the problem with the above mechanism is we need to modify the code to change the log level from
 `INFO` to `DEBUG`. Once we rectify the problem, we need to revert log level back to `DEBUG` for which
-again we need to modify the code.
+again we need to modify the code. 
 
+Our intention here is to emit only `INFO` messages to terminal during normal run and `DEBUG` 
+messages when we want to run our code in debug mode. We do not want all messages to show up
+in terminal without explicitly requesting for it. 
 
+But from the above code it is very clear that if we have to switch between `DEBUG` and `INFO`
+level, we have make changes in the code. 
+
+The elegant solution for this problem is to control the log level from terminal.  
 
 ### Setting log level from CLI
 
