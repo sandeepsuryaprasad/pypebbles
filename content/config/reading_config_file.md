@@ -245,7 +245,7 @@ Device Name: Demo Pixel
 
 In this article, we transformed a traditional configuration file into a clean, 
 object-oriented interface using Python. Instead of exposing the underlying
-ConfigParser implementation and requiring callers to work directly with sections 
+`ConfigParser` implementation and requiring callers to work directly with sections 
 and dictionary keys, we introduced a layer of abstraction that allows configuration 
 values to be accessed through a more expressive object-oriented syntax.
 
