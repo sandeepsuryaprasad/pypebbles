@@ -421,8 +421,7 @@ from pathlib import Path
 
 
 class Employee:
-    """
-    Represent an employee and provide access to employee information.
+    """Represent an employee and provide access to employee information.
 
     The class loads employee data from `employees.json` based on the
     employee ID supplied during object creation. Employee information
@@ -439,8 +438,7 @@ class Employee:
 
     @property
     def _json_file_path(self):
-        """
-        Return the path to the employee JSON file.
+        """Return the path to the employee JSON file.
         Returns:
             The path to `employees.json`.
 
@@ -454,8 +452,7 @@ class Employee:
 
     @property
     def _load_json_data(self):
-        """
-        Load and return data for the specified employee.
+        """Load and return data for the specified employee.
         Searches `employees.json` for an employee whose ID matches
         the ID supplied during object creation.
 
@@ -472,8 +469,7 @@ class Employee:
 
     @property
     def info(self):
-        """
-        Return the employee information.
+        """Return the employee information.
         Creates an `EmployeeInfo` instance lazily on first access and reuses 
         the same instance for subsequent accesses.
 
@@ -486,8 +482,7 @@ class Employee:
 ```
 ```python
 class EmployeeInfo:
-    """
-    Provide attribute-style access to employee information.
+    """Provide attribute-style access to employee information.
 
     The class exposes values from the supplied employee data through
     attribute access. Nested ``address`` and ``company`` data are
@@ -504,8 +499,7 @@ class EmployeeInfo:
         self.employee_info = employee_info
 
     def __getattr__(self, name):
-        """
-        Return an employee attribute from the underlying data.
+        """Return an employee attribute from the underlying data.
 
         Attributes are dynamically resolved from `employee_info`.
         The `address` and `company` attributes are converted into
@@ -532,8 +526,7 @@ class EmployeeInfo:
 ```
 ```python
 class Address:
-    """
-    Provide attribute-style access to address information.
+    """Provide attribute-style access to address information.
 
     The class dynamically resolves address attributes from the supplied
     dictionary. The `geo_location` attribute is represented as a
@@ -546,8 +539,7 @@ class Address:
         self.address_info = address_info
 
     def __getattr__(self, name):
-        """
-        Return an address attribute from the underlying data.
+        """Return an address attribute from the underlying data.
         
         Attributes are resolved dynamically from `address_info`.
         When `geo_location` is requested, the corresponding data is
@@ -572,8 +564,7 @@ class Address:
 ```
 ```python
 class Company:
-    """
-    Provide attribute-style access to company information.
+    """Provide attribute-style access to company information.
 
     The class dynamically resolves company attributes from the supplied
     dictionary.
@@ -585,8 +576,7 @@ class Company:
         self.company_info = company_info
 
     def __getattr__(self, name):
-        """
-        Return a company attribute from the underlying data.
+        """Return a company attribute from the underlying data.
 
         Attributes are resolved dynamically from ``company_info``.
 
@@ -606,8 +596,7 @@ class Company:
 ```
 ```python
 class Location:
-    """
-    Provide attribute-style access to geographical location data.
+    """Provide attribute-style access to geographical location data.
     The class dynamically resolves location attributes from the supplied
     dictionary.
 
@@ -618,8 +607,7 @@ class Location:
         self.location_info = location_info
 
     def __getattr__(self, name):
-        """
-        `Return a location attribute from the underlying data.
+        """Return a location attribute from the underlying data.
         Attributes are resolved dynamically from ``location_info``.
 
         Args:
