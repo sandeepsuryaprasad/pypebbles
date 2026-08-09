@@ -292,12 +292,142 @@ in terminal without explicitly requesting for it.
 But from the above code it is very clear that if we have to switch between `DEBUG` and `INFO`
 level, we have make changes in the code. 
 
-The elegant solution for this problem is to control the log level from terminal.  
+The elegant solution for this problem is to control the log level from terminal.
 
 ### Setting log level from CLI
+The logging level should be configurable through a command-line argument when 
+executing the script. For example, specifying the `--debug` option should enable the 
+`DEBUG` logging level, allowing debug messages to be emitted to the terminal. 
+When the `--debug` option is not specified, the application should default to the 
+`INFO` logging level and emit only `INFO` and higher-severity messages.
+
+Below is the mechanism that we are looking for,
+```commandline
+~$ python3 add.py --debug
+[2026-08-09 13:41:56,925] [INFO]  Calling add function with args 'a': 1 and 'b': 2
+[2026-08-09 13:41:56,925] [DEBUG]  The type of arg 'a': <class 'str'> and 'b': <class 'str'>
+12
+```
+When executing `add.py` from the terminal, we can optionally specify the `--debug`
+command-line argument. If `--debug` is provided, the logging level should be configured 
+as `DEBUG` within the `Logger` class defined in `mylogger.py`, allowing debug messages 
+to be emitted. When `add.py` is executed without the `--debug` argument, the logger 
+should default to the `INFO` level and emit only `INFO` and higher-severity messages.
+
+```commandline
+~$ python3 add.py        
+[2026-08-09 13:47:07,640] [INFO]  Calling add function with args 'a': 1 and 'b': 2
+12
+```
+
+To achieve the above mechanism, we will not set the log level using `level` setter method.
+Let's write a separate function outside the class that reads CLI input and sets the logging
+level in our `Logger` class.
+
+Here is solution,
+```python
+import logging
+from typing import Optional
+import argparse
 
 
+def get_log_level_from_terminal():
+    """Determine the logging level from command-line arguments.
 
+    Parses the command-line arguments and returns `DEBUG` when the
+    `--debug` option is specified. Otherwise, `INFO` is returned
+    as the default logging level.
+
+    Returns:
+        The logging level selected from the command-line arguments.
+    """
+    parser = argparse.ArgumentParser(description="Set the logging level via command line")
+    parser.add_argument('--debug', action="store_true",
+                        help='Set the logging level (DEBUG, INFO)')
+    args = parser.parse_args()
+    
+    return logging.DEBUG if args.debug else logging.INFO
+
+
+class Logger:
+    _VALID_LOG_LEVELS = {
+        logging.DEBUG,
+        logging.INFO,
+        logging.WARNING,
+        logging.ERROR,
+        logging.CRITICAL,
+    }
+    _LOG_FORMAT = "[%(levelname)s] [%(asctime)s]  %(message)s"
+
+    def __init__(
+            self, name: str,
+            handler: Optional[logging.Handler] = None
+    ):
+        self._level = get_log_level_from_terminal(), # setting log level from CLI input 
+        self.handler = handler
+        self.logger = self._set_logger(name)
+
+    @property
+    def level(self):
+        """Return the logging level configured for the logger."""
+        return self._level
+
+    @property
+    def handler(self):
+        """Return the logging handler configured for the logger."""
+        return self._handler
+
+    @handler.setter
+    def handler(self, value):
+        """
+        Set the logging handler.
+        """
+        self._handler = value if value else logging.StreamHandler()
+
+    def _set_logger(self, name):
+        """
+        Create and configure a named logger.
+        Sets the logger's level, creates a formatter using the configured
+        log format, and applies the formatter to the configured handler.
+        The handler is added only when the logger has no existing handlers.
+        Args:
+            name: Name used to retrieve the logger.
+        Returns:
+            A configured :class:`logging.Logger` instance.
+        """
+        logger = logging.getLogger(name)
+        logger.setLevel(self._level)
+        formatter = logging.Formatter(self._LOG_FORMAT)
+        self._handler.setFormatter(formatter)
+        if not logger.handlers:
+            logger.addHandler(self._handler)
+        return logger
+
+    def __getattr__(self, name):
+        """
+        Delegate unknown attribute lookups to the underlying logger.
+
+        This allows methods such as ``debug()``, ``info()``, ``warning()``,
+        ``error()``, and ``critical()`` to be called directly on the wrapper
+        without explicitly defining each method.
+
+        Args:
+            name: Name of the attribute being accessed.
+
+        Returns:
+            The corresponding attribute from the underlying logger.
+        """
+        return getattr(self.logger, name)
+```
+
+In the above code we have made few changes, 
+* We are no longer configuring the logging level through a property setter. 
+The `@level.setter` method has been removed from the `Logger` class, leaving 
+only the getter to provide read-only access to the configured logging level.
+
+* In the `__init__` method, the instance variable `self._level` is initialized 
+by calling `get_log_level_from_terminal()`, which determines the logging level 
+based on the command-line arguments supplied when the application is executed.
 
 
 Back to  [Articles](../articles.md)
