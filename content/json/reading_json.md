@@ -68,7 +68,7 @@ class Employee:
             for item in json_object:
                 if item["id"] == self.emp_id:
                     return item
-            return {}
+            raise ValueError(f"Invalid Employee ID {self.emp_id}")
 
     @property
     def info(self):
@@ -78,28 +78,12 @@ class Employee:
 ```
 ```python
 class EmployeeInfo:
-    def __init__(self, data):
-        self._data = data
-
-    @property
-    def first_name(self):
-        return self._data.get("first_name", "")
-
-    @property
-    def last_name(self):
-        return self._data.get("last_name", "")
-
-    @property
-    def gender(self):
-        return self._data.get("gender", "")
-
-    @property
-    def date_of_birth(self):
-        return self._data.get("date_of_birth", "")
-
-    @property
-    def nationality(self):
-        return self._data.get("nationality", "")
+    def __init__(self, employee_info):
+        self.first_name = employee_info.get("first_name")
+        self.last_name = employee_info.get("last_name")
+        self.gender = employee_info.get("gender")
+        self.date_of_birth = employee_info.get("date_of_birth")
+        self.nationality = employee_info.get("nationality")
 ```
 In the above `employee.py` file, we have two levels of abstraction, 
 `Employee` and `EmployeeInfo` (both classes are in the same python module).
@@ -115,7 +99,7 @@ Now let's access the actual employee data from JSON file.
 I am going to run python interpreter in interactive mode, 
 ```commandline
 ~$ python3 -i employee.py
->>> emp1 = Employee("1")    # Creating instance of first employee
+>>> emp1 = Employee(1)    # Creating instance of first employee
 >>> emp1.info.first_name
 'David'
 >>> emp1.info.last_name
@@ -125,7 +109,7 @@ I am going to run python interpreter in interactive mode,
 ```
 
 ```commandline
->>> emp2 = Employee("2")    # Creating instance of second employee
+>>> emp2 = Employee(2)    # Creating instance of second employee
 >>> emp2.info.first_name
 'Laura'
 >>> emp2.info.last_name
@@ -135,39 +119,6 @@ I am going to run python interpreter in interactive mode,
 >>> emp2.info.nationality
 'United States'
 ```
-### Alternate Approach: Dynamic Attribute Access Using `__getattr__`
-The `EmployeeInfo` class, has five different `property` or `getter` methods, one for each
-employee info filed. If you feel that it's kind of boilerplate code with many `getter` methods,
-you can use the magic of `__getattr__` method to optimize the code.
-```python
-class EmployeeInfo:
-    def __init__(self, employee_info):
-        self.employee_info = employee_info
-
-    def __getattr__(self, name):
-        if name not in self.employee_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} object has no attribute {name}")
-        return self.employee_info.get(name)
-```
-In the above code, when we try to access an attribute on `EmployeeInfo` object by saying,
-
-```commandline
->>> emp1 = Employee("1")
->>> emp1.info.first_name    # we are doing an attribute look-up on EmployeeInfo object
-```
-Here the name of the attribute that we are trying to do a look-up is `first_name`, which
-obviously does not exist on `EmployeeInfo` object itself (The only instance attribute that
-`EmployeeInfo` has is `employee_info`). Since we are trying to access a missing attribute on
-`EmployeeInfo` object, `__getattr__` method gets automatically called for missing attributes and
-the name the missing attribute is passed-in as a string to `__getattr__` method and that string 
-is collected by parameter `name`.
-
-In `__getattr__` method we are validating if the attribute for which we are trying to get the value,
-in this case `first_name` is present as key of the dictionary `self.employee_info`. If it is present
-then we are doing a dictionary look-up and returning the value of key `first_name`.
-
-The same process happens for other employee attributes are well.
-
 ### Little more complicated JSON structure
 `employees.json`
 
@@ -220,8 +171,19 @@ The same process happens for other employee attributes are well.
 ]
 ```
 Now let's try the same solution that we used for our first example. I am going to keep `Employee` 
-class and `EmployeeInfo` (we will use the one which has `__getattr__` implemented) class as is for now. 
-Let's run the code and see how it works for the new JSON object.
+class as is and let's modify `EmployeeInfo` class to have the above JSON attributes.
+```python
+class EmployeeInfo:
+    def __init__(self, employee_info):
+        self.name = employee_info.get("name")
+        self.email = employee_info.get("email")
+        self.phone = employee_info.get("phone")
+        self.phone = employee_info.get("phone")
+        self.website = employee_info.get("website")
+        self.address = employee_info.get("address")
+        self.company = employee_info.get("company")
+        self.location = employee_info.get("address").get("geo_location")
+```
 
 ```commandline
 >>> emp1 = Employee(1)
@@ -252,12 +214,20 @@ Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 AttributeError: 'dict' object has no attribute 'city'
 ```
-Here is the problem, when we execute `emp1.info.address.street`, `emp1.info.address` returns a dictionary object.
-On a dictionary object, we are using dot operator to access `street` which is raises `AttributeError`. 
-Because `dict` object does not have an attribute `street`. 
-We cannot be using `dot` operator to access the contents of the dictionary. 
+The problem becomes apparent when we attempt to access a nested attribute using 
+an expression such as `emp1.info.address.street`. If `emp1.info.address` returns 
+a dictionary, Python attempts to resolve `street` as an attribute of the `dict` 
+object. Since the built-in `dict` type does not define an attribute named `street`, 
+the attribute lookup fails with an `AttributeError`.
+A dictionary provides access to its contents through key-based indexing, 
+such as `address["street"]`, rather than attribute-based access using the dot 
+operator. Therefore, we cannot directly use dot notation to traverse nested 
+dictionary data. To support an expression such as `emp1.info.address.street`, 
+the nested dictionary must first be represented by an object that exposes its keys 
+as attributes. 
 
-So the only way to make above code work is by doing something like this,
+So the only way to make above code work is by doing something 
+like this,
 ```commandline
 >>> emp1.info.address.get("street")  # On dict object we are using `get` method
 '245 Oakwood Drive'
@@ -293,47 +263,39 @@ The most elegant solution should look something like this,
 >>> emp1.info.company.industry
 'Automobile' 
 ```
-Let us take a look at the JSON file `employees.json`. In the above JSON , each employee has 
-two more nested JSON  like objects `address` and `company`. 
+Let us take a look at the JSON file `employees.json`. In the above JSON , 
+each employee has two more nested JSON  like objects `address` and `company`. 
 
-In order to have complete object oriented approach to access the attributes of `address` and `company`
-let's introduce two more levels of abstraction for the above scenario. 
-We will create two separate classes for `Address` and `Company`.
+In order to have complete object oriented approach to access the attributes of 
+`address` and `company` let's introduce two more levels of abstraction for the 
+above scenario.  We will create two separate classes for `Address` and `Company`.
 
 ```python
 class Address:
     def __init__(self, address_info):
-        self.address_info = address_info
-
-    def __getattr__(self, name):
-        if name not in self.address_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
-        return self.address_info.get(name)
+        self.street = address_info.get("street")
+        self.suite = address_info.get("suite")
+        self.city = address_info.get("city")
+        self.state = address_info.get("state")
+        self.zipcode = address_info.get("zipcode")
+        self.geo_location = address_info.get("geo_location")
 ```
 ```python
 class Company:
     def __init__(self, company_info):
-        self.company_info = company_info
-
-    def __getattr__(self, name):
-        if name not in self.company_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
-        return self.company_info.get(name)
+        self.name = company_info.get("name")
+        self.industry = company_info.get("industry")
 ```
 Now let's change `EmployeeInfo` class implementation, 
 ```python
 class EmployeeInfo:
     def __init__(self, employee_info):
-        self.employee_info = employee_info
-
-    def __getattr__(self, name):
-        if name not in self.employee_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has no attribute {name}")
-        if name == "address":
-            return Address(self.employee_info.get(name))
-        if name == "company":
-            return Company(self.employee_info.get(name))
-        return self.employee_info.get(name)
+        self.name = employee_info.get("name")
+        self.email = employee_info.get("email")
+        self.phone = employee_info.get("phone")
+        self.website = employee_info.get("website")
+        self.address = Address(employee_info.get("address"))
+        self.company = Company(employee_info.get("company"))
 ```
 Here is the magic,
 
@@ -379,30 +341,26 @@ But we still have problem when we access `emp1.info.address.geo_location`. When 
 attribute is looked-up on `address` object, again a dictionary is returned, and we have to access
 that dictionary either using `get` or through indexing.
 
-So Here is what we can do to solve that,
-```python
-class Address:
-    def __init__(self, address_info):
-        self.address_info = address_info
-
-    def __getattr__(self, name):
-        if name not in self.address_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
-        if name == "geo_location":
-            return Location(self.address_info.get(name))
-        return self.address_info.get(name)
-```
+So we can solve this by creating one more layer of Abstraction, `Location`
 ```python
 class Location:
     def __init__(self, location_info):
-        self.location_info = location_info
-
-    def __getattr__(self, name):
-        if name not in self.location_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
-        return self.location_info.get(name)
+        self.lat = location_info.get("lat")
+        self.lng = location_info.get("lng")
 ```
+Now let's add interface to `Location` class in `Address` class
 
+```python
+class Address:
+    def __init__(self, address_info):
+        self.street = address_info.get("street")
+        self.suite = address_info.get("suite")
+        self.city = address_info.get("city")
+        self.state = address_info.get("state")
+        self.zipcode = address_info.get("zipcode")
+        self.geo_location = Location(address_info.get("geo_location"))
+```
+Now we can access `lat` and `lng` attributes of key `geo_location` through `Location` 
 ```commandline
 >>> emp1.info.address.geo_location.lat
 '30.2672'
@@ -465,7 +423,7 @@ class Employee:
             for item in json_object:
                 if item["id"] == self.emp_id:
                     return item
-            return {}
+            raise ValueError(f"Invalid Employee ID {self.emp_id}")
 
     @property
     def info(self):
@@ -482,148 +440,82 @@ class Employee:
 ```
 ```python
 class EmployeeInfo:
-    """Provide attribute-style access to employee information.
+    """Represent employee information as a structured Python object.
 
-    The class exposes values from the supplied employee data through
-    attribute access. Nested ``address`` and ``company`` data are
-    represented by `Address` and `Company` instances, respectively.
+    Encapsulates the employee's personal, contact, address, and company
+    information by converting the corresponding JSON data into strongly
+    structured Python objects.
 
     Args:
-        employee_info: Dictionary containing employee information.
-
-    Raises:
-        AttributeError: If the requested attribute does not exist in
-            the supplied employee data.
+        employee_info: Dictionary containing the employee information.
     """
+
     def __init__(self, employee_info):
-        self.employee_info = employee_info
-
-    def __getattr__(self, name):
-        """Return an employee attribute from the underlying data.
-
-        Attributes are dynamically resolved from `employee_info`.
-        The `address` and `company` attributes are converted into
-        `Address` and `Company` instances before being returned.
+        """Initialize an EmployeeInfo instance from employee data.
 
         Args:
-            name: Name of the attribute being accessed.
-
-        Returns:
-            The value associated with the requested attribute, or an
-            :`Address` or :`Company` instance for nested employee data.
-
-        Raises:
-            AttributeError: If the requested attribute is not present
-                in `employee_info`.
+            employee_info: Dictionary containing employee details and
+            nested address and company information.
         """
-        if name not in self.employee_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
-        if name == "address":
-            return Address(self.employee_info.get(name))
-        if name == "company":
-            return Company(self.employee_info.get(name))
-        return self.employee_info.get(name)
+        self.name = employee_info.get("name")
+        self.email = employee_info.get("email")
+        self.phone = employee_info.get("phone")
+        self.website = employee_info.get("website")
+        self.address = Address(employee_info.get("address"))
+        self.company = Company(employee_info.get("company"))
 ```
 ```python
 class Address:
-    """Provide attribute-style access to address information.
+    """Represent an employee's address information.
 
-    The class dynamically resolves address attributes from the supplied
-    dictionary. The `geo_location` attribute is represented as a
-    :class:`Location` object.
-
+    Encapsulates address details and the associated geographical location
+    represented by a :class:`Location` object.
     Args:
-        address_info: Dictionary containing the address information.
+        address_info: Dictionary containing address details and
+        geographical location information.
     """
     def __init__(self, address_info):
-        self.address_info = address_info
-
-    def __getattr__(self, name):
-        """Return an address attribute from the underlying data.
-        
-        Attributes are resolved dynamically from `address_info`.
-        When `geo_location` is requested, the corresponding data is
-        wrapped in a :class:`Location` object.
-
-        Args:
-            name: Name of the address attribute being accessed.
-
-        Returns:
-            The value associated with the requested attribute, or a
-            :class:`Location` object when `geo_location` is requested.
-
-        Raises:
-            AttributeError: If the requested attribute does not exist
-                in `address_info`.
-        """
-        if name not in self.address_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
-        if name == "geo_location":
-            return Location(self.address_info.get(name))
-        return self.address_info.get(name)
+        self.street = address_info.get("street", "")
+        self.suite = address_info.get("suite", "")
+        self.city = address_info.get("city", "")
+        self.state = address_info.get("state", "")
+        self.zipcode = address_info.get("zipcode", "")
+        self.geo_location = Location(address_info.get("geo_location"))
 ```
 ```python
 class Company:
-    """Provide attribute-style access to company information.
+    """Represent an employee's company information.
 
-    The class dynamically resolves company attributes from the supplied
-    dictionary.
+    Encapsulates company-related details associated with an employee.
 
     Args:
-        company_info: Dictionary containing the company information.
+        company_info: Dictionary containing company information.
     """
     def __init__(self, company_info):
-        self.company_info = company_info
-
-    def __getattr__(self, name):
-        """Return a company attribute from the underlying data.
-
-        Attributes are resolved dynamically from ``company_info``.
-
+        """Initialize a Company instance from company data.
         Args:
-            name: Name of the company attribute being accessed.
-
-        Returns:
-            The value associated with the requested attribute.
-
-        Raises:
-            AttributeError: If the requested attribute does not exist
-                in `company_info`.
+            company_info: Dictionary containing company details.
         """
-        if name not in self.company_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
-        return self.company_info.get(name)
+        self.name = company_info.get("name")
+        self.industry = company_info.get("industry")
 ```
 ```python
 class Location:
-    """Provide attribute-style access to geographical location data.
-    The class dynamically resolves location attributes from the supplied
-    dictionary.
+    """Represent geographical location information.
+    Encapsulates the latitude and longitude associated with an address.
 
     Args:
-        location_info: Dictionary containing geographical location data.
+        location_info: Dictionary containing geographical coordinates.
     """
     def __init__(self, location_info):
-        self.location_info = location_info
-
-    def __getattr__(self, name):
-        """Return a location attribute from the underlying data.
-        Attributes are resolved dynamically from ``location_info``.
+        """Initialize a Location instance from geographical data.
 
         Args:
-            name: Name of the location attribute being accessed.
-
-        Returns:
-            The value associated with the requested attribute.
-
-        Raises:
-            AttributeError: If the requested attribute does not exist
-                in ``location_info``.
+            location_info: Dictionary containing latitude and longitude
+            values.
         """
-        if name not in self.location_info.keys():
-            raise AttributeError(f"{self.__class__.__name__} has not attribute {name}")
-        return self.location_info.get(name)
+        self.lat = location_info.get("lat", "")
+        self.lng = location_info.get("lng", "")
 ```
-Although the `__getattr__` method can be further re-factored, I will leave the solution at this point.
 
 Back to  [Articles](../articles.md)
