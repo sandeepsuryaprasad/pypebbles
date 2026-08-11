@@ -474,11 +474,11 @@ class Address:
         geographical location information.
     """
     def __init__(self, address_info):
-        self.street = address_info.get("street", "")
-        self.suite = address_info.get("suite", "")
-        self.city = address_info.get("city", "")
-        self.state = address_info.get("state", "")
-        self.zipcode = address_info.get("zipcode", "")
+        self.street = address_info.get("street")
+        self.suite = address_info.get("suite")
+        self.city = address_info.get("city")
+        self.state = address_info.get("state")
+        self.zipcode = address_info.get("zipcode")
         self.geo_location = Location(address_info.get("geo_location"))
 ```
 ```python
@@ -513,8 +513,8 @@ class Location:
             location_info: Dictionary containing latitude and longitude
             values.
         """
-        self.lat = location_info.get("lat", "")
-        self.lng = location_info.get("lng", "")
+        self.lat = location_info.get("lat")
+        self.lng = location_info.get("lng")
 ```
 
 Back to  [Articles](../articles.md)
