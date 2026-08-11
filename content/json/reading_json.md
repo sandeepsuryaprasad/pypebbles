@@ -178,7 +178,6 @@ class EmployeeInfo:
         self.name = employee_info.get("name")
         self.email = employee_info.get("email")
         self.phone = employee_info.get("phone")
-        self.phone = employee_info.get("phone")
         self.website = employee_info.get("website")
         self.address = employee_info.get("address")
         self.company = employee_info.get("company")
@@ -360,7 +359,7 @@ class Address:
         self.zipcode = address_info.get("zipcode")
         self.geo_location = Location(address_info.get("geo_location"))
 ```
-Now we can access `lat` and `lng` attributes of key `geo_location` through `Location` 
+Now we can access `lat` and `lng` attributes of `Location` though `geo_location` in `Address` 
 ```commandline
 >>> emp1.info.address.geo_location.lat
 '30.2672'
