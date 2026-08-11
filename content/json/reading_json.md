@@ -330,11 +330,11 @@ Here is the magic,
 >>> emp2.info.company.industry
 'Software'
 ```
-Here `emp1.info.address` returns `Address` object, when we say `emp1.info.address.street`, we 
-are trying to look-up for an attribute `street` on `Address` object. Since `__getattr__` method
-is implemented in `Address` class, the name of the attribute, in this case `street` is passed-in to
-`__getattr__` method in string format. In `__getattr__` method, we are going to pull out the key `street`
-from internal dictionary `self._dict` of `Address` class.
+Here, `emp1.info.address` resolves to an instance of the `Address` class. 
+When we evaluate `emp1.info.address.street`, Python performs attribute lookup 
+for `street` on that `Address` instance and returns the corresponding instance 
+attribute. This allows the nested address data to be accessed through standard 
+object attribute notation rather than dictionary key-based access.
 
 But we still have problem when we access `emp1.info.address.geo_location`. When `geo_location` 
 attribute is looked-up on `address` object, again a dictionary is returned, and we have to access
@@ -347,7 +347,7 @@ class Location:
         self.lat = location_info.get("lat")
         self.lng = location_info.get("lng")
 ```
-Now let's add interface to `Location` class in `Address` class
+Now let's add interface to `Location` class in `Address`
 
 ```python
 class Address:
