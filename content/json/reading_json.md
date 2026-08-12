@@ -91,11 +91,8 @@ In the above `employee.py` file, we have two levels of abstraction,
 The `Employee` class encapsulates the logic for loading the JSON file and retrieving 
 the details of the employee corresponding to the employee ID supplied during object 
 instantiation.
-
-The `EmployeeInfo` class has a bunch of `property` or `getters`, corresponding to employee 
-attributes in JSON record (e.g. `first_name`, `last_name`, `gender` etc).
-
 Now let's access the actual employee data from JSON file. 
+
 I am going to run python interpreter in interactive mode, 
 ```commandline
 ~$ python3 -i employee.py
