@@ -178,7 +178,7 @@ class EmployeeInfo:
         self.website = employee_info.get("website")
         self.address = employee_info.get("address")
         self.company = employee_info.get("company")
-        self.location = employee_info.get("address").get("geo_location")
+        self.geo_location = employee_info.get("address").get("geo_location")
 ```
 
 ```commandline
