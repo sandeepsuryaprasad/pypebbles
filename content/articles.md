@@ -9,7 +9,7 @@
 * [Building a Flexible Logging Abstraction](Logging/logging.md)
 
 
-* [Python Descriptors — Building a Reusable JSON Field Mapping Framework](descriptors/descriptors.md)
+* [Python Descriptors - Building a Reusable JSON Field Mapping Framework](descriptors/descriptors.md)
 
 
 [Home](../README.md)
