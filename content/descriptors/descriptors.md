@@ -20,7 +20,7 @@ Let's consider below JSON response, For this demonstration, we will work with a
 representative JSON response containing the reservation and associated information 
 for a single passenger. 
 <details>
-<summary><strong>▸ Complete JSON Response</strong></summary>
+<summary><strong>▸ Click here to expand/collapse complete JSON response</strong></summary>
 
 <div markdown="1">
 
