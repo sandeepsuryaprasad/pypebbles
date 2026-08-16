@@ -448,6 +448,8 @@ class FlightReservation:
             self._passenger = ReservationInfo(self._data)
         return self._passenger
 ```
+The `info` property serves as the public interface to the underlying `ReservationInfo`
+object, providing controlled and lazy access to the reservation data.
 
 Now, let us introduce a layer of abstraction for nine top-level 
 nodes, encapsulating each section of the JSON response behind a
@@ -506,22 +508,22 @@ def __get__(self, obj, cls):
 `__get__()` is invoked automatically whenever the corresponding attribute 
 is accessed. For example,
 ```python
-reservation = FlightReservation()
-reservation.info.flight     # Causes python to invoke __get__ method if Field descriptor
+>>> reservation = FlightReservation()
+>>> reservation.info.flight     # Causes python to invoke __get__ method in Field descriptor
 ```
-Here is what happens when `__get__, is invoked, 
-1. Retrieves the corresponding value from obj._data
+Here is what happens when `__get__`, is invoked, 
+1. Retrieves the corresponding value from `obj._data`
 2. If `field_type` is specified, wraps that dictionary in the specified class.
 3. Otherwise, returns the value directly. (meaning there is no nested JSON object)
 
 `__set__()` makes the descriptor read-only. So you cannot be doing something like,
-
-`reservation.info.flight = 1234`
-
+```python
+>>> reservation.info.flight = 1234
+```
 The `Field` descriptor provides three important capabilities:
-* Attribute mapping — maps Python attributes to JSON keys.
-* Nested object conversion — converts nested dictionaries into appropriate Python objects.
-* Read-only access — prevents modification of the underlying JSON data.
+* Attribute mapping - maps Python attributes to JSON keys.
+* Nested object conversion - converts nested dictionaries into appropriate Python objects.
+* Read-only access - prevents modification of the underlying JSON data.
 
 This allows code to navigate a deeply nested JSON response using normal 
 Python attribute access, while the descriptor handles the underlying dictionary
@@ -549,5 +551,6 @@ nested JSON objects.
 | `services`          | `services`          | `Services`         |
 | `emergency_contact` | `emergency_contact` | `EmergencyContact` |
 | `notifications`     | `notifications`     | `Notifications`    |
+
 
 Back to  [Articles](../articles.md)
