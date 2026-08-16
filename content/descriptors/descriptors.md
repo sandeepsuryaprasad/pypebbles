@@ -506,7 +506,7 @@ when "flight" key is accessed, the resulting value is one more nested JSON objec
 
 `__get__()` is invoked automatically whenever the corresponding attribute 
 is accessed. For example,
-```python
+```commandline
 >>> reservation = FlightReservation()
 >>> reservation.info.flight     # Causes python to invoke __get__ method in Field descriptor
 ```
@@ -516,7 +516,7 @@ Here is what happens when `__get__`, is invoked,
 3. Otherwise, returns the value directly. (meaning there is no nested JSON object)
 
 `__set__()` makes the descriptor read-only. So you cannot be doing something like,
-```python
+```commandline
 >>> reservation.info.flight = 1234
 ```
 The `Field` descriptor provides three important capabilities:
@@ -528,7 +528,7 @@ This allows code to navigate a deeply nested JSON response using normal
 Python attribute access, while the descriptor handles the underlying dictionary
 access and object creation transparently.
 
-```python
+```commandline
 >>> reservation.info.flight.departure.airport.city
 'Austin'
 >>> reservation.info.passenger.contact.email
@@ -575,14 +575,14 @@ Each class attribute is a `Field` descriptor that maps a Python attribute to a
 corresponding key in the underlying JSON data.
 
 Let me create an instance of `FlightReservation`
-```python
+```commandline
 >>> reservation = FlightReservation()
 >>> reservation.info
 <__main__.ReservationInfo object at 0x104526c10>
 ```
 when you say `reservation.info`, the `info` property returns an instance to
 `ReservationInfo` class. Now you can access all the attributes of `ReservationInfo` class.
-```python
+```commandline
 >>> reservation.info.reservation
 <__main__.Reservation object at 0x104542790>
 >>> reservation.info.reservation.confirmation_number
@@ -618,13 +618,13 @@ class Passenger:
 ```
 
 So now when you say `reservation.info.passenger` it returns instance of `Passenger` class.
-```python
+```commandline
 >>> reservation.info.passenger
 <__main__.Passenger object at 0x104542790>
 ```
 
 Now you can access all attributes of `Passenger` class
-```python
+```commandline
 >>> reservation.info.passenger.passenger_id
 'PAX-104582'
 >>> reservation.info.passenger.title
@@ -650,7 +650,7 @@ If the JSON node has a nested attribute, we are going pass the class reference t
 `Field` descriptor through argument `field_type`, which then the descriptor returns
 instance of the class that is passed.
 
-```python
+```commandline
 >>> reservation.info.passenger.contact
 <__main__.Contact object at 0x104542850>
 >>> reservation.info.passenger.address
