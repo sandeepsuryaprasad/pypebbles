@@ -118,6 +118,7 @@ I am going to run python interpreter in interactive mode,
 ```
 ### Little more complicated JSON structure
 `employees.json`
+
 <details>
 <summary>Complete JSON Response</summary>
 
