@@ -118,6 +118,8 @@ I am going to run python interpreter in interactive mode,
 ```
 ### Little more complicated JSON structure
 `employees.json`
+<details>
+<summary>Complete JSON Response</summary>
 
 ```json
 [
@@ -167,6 +169,8 @@ I am going to run python interpreter in interactive mode,
   }
 ]
 ```
+</details>
+
 Now let's try the same solution that we used for our first example. I am going to keep `Employee` 
 class as is and let's modify `EmployeeInfo` class to have the above JSON attributes.
 ```python

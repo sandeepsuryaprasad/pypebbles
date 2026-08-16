@@ -16,20 +16,23 @@ dictionary lookups became increasingly difficult to read and maintain.
 This article presents a real-world scenario inspired by that project and demonstrates how I approached the problem using Python's object-oriented capabilities.
 The solution uses Python descriptors to map fields from the JSON response to Python attributes and to transparently construct objects for nested structures.
 
-**Disclaimer:** The JSON data used in this article is for demonstration purposes. It does not represent actual production data, 
-and any resemblance to real-world data is purely coincidental.
+Let's consider below JSON response, For this demonstration, we will work with a 
+representative JSON response containing the reservation and associated information 
+for a single passenger. 
+<details>
+<summary>Complete JSON Response</summary>
 
 ```json
 {
   "reservation": {
-    "confirmation_number": "DEMO8X",
+    "confirmation_number": "X7K9PQ",
     "booking_status": "CONFIRMED",
     "booking_date": "2026-08-10T14:32:18-05:00",
     "ticket_status": "TICKETED",
     "currency": "USD"
   },
   "passenger": {
-    "passenger_id": "PAX-DEMO001",
+    "passenger_id": "PAX-104582",
     "title": "Mr",
     "first_name": "John",
     "middle_name": "James",
@@ -43,15 +46,15 @@ and any resemblance to real-world data is purely coincidental.
     },
     "address": {
       "street": "123 Example Avenue",
-      "suite": "Demo Suite 100",
-      "city": "Demoville",
+      "suite": "Suite 100",
+      "city": "Sampleville",
       "state": "California",
       "state_code": "CA",
       "zip_code": "90000",
       "country": "United States"
     },
     "frequent_flyer": {
-      "program": "Spam Airlines advantage",
+      "program": "Spam Airlines dvantage",
       "membership_number": "SA987654321",
       "status": "Executive Platinum",
       "miles_balance": 184250
@@ -59,7 +62,7 @@ and any resemblance to real-world data is purely coincidental.
   },
   "flight": {
     "airline": {
-      "code": "SPM",
+      "code": "SA",
       "name": "Spam Airlines",
       "headquarters": {
         "city": "Austin",
@@ -67,7 +70,7 @@ and any resemblance to real-world data is purely coincidental.
         "state_code": "TX"
       }
     },
-    "flight_number": "SPM1234",
+    "flight_number": "SA1234",
     "flight_status": "SCHEDULED",
     "aircraft": {
       "registration": "N003AN",
@@ -154,10 +157,10 @@ and any resemblance to real-world data is purely coincidental.
       "provider": "Visa"
     },
     "fare": {
-      "base_fare": 485.00,
+      "base_fare": 485,
       "taxes": 72.75,
-      "airport_fees": 18.40,
-      "service_fee": 25.00,
+      "airport_fees": 18.4,
+      "service_fee": 25,
       "total": 601.15
     }
   },
@@ -187,7 +190,7 @@ and any resemblance to real-world data is purely coincidental.
     "phone": "+1-000-999-0199",
     "address": {
       "street": "890 Another Example Avenue",
-      "suite": "Example Suite 777",
+      "suite": "Suite 205",
       "city": "Springfield",
       "state": "Illinois",
       "state_code": "IL",
@@ -210,5 +213,42 @@ and any resemblance to real-world data is purely coincidental.
   }
 }
 ```
+</details>
+
+**Disclaimer:** The JSON data used in this article is for demonstration purposes. It does not represent actual production data, 
+and any resemblance to real-world data is purely coincidental.
+
+Let us re-use the code that we wrote in our previous article _From JSON Data to Python Objects_
+with some minor modifications.
+```python
+from json import load
+from pathlib import Path
+
+class FlightReservation:
+    def __init__(self):
+        self._path = self._json_file_path
+        self._data = self._load_json_data
+        self._passenger = None
+
+    @property
+    def _json_file_path(self):
+        path = Path("reservation.json")
+        if not path.exists():
+            raise FileNotFoundError(f"{path} does not exist")
+        return path
+
+    @property
+    def _load_json_data(self):
+        with open(self._path, "r") as json_file:
+            json_object = load(json_file)
+            return json_object
+
+    @property
+    def info(self):
+        if not self._passenger:
+            self._passenger = ReservationInfo(self._data)
+        return self._passenger
+```
+
 
 Back to  [Articles](../articles.md)
