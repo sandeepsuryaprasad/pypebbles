@@ -119,7 +119,7 @@ I am going to run python interpreter in interactive mode,
 ### Little more complicated JSON structure
 `employees.json`
 
-<details>
+<details open>
 <summary><strong>▸ Complete JSON Response</strong></summary>
 
 <div markdown="1">
