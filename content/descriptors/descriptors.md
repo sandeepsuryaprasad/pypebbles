@@ -448,4 +448,106 @@ class FlightReservation:
             self._passenger = ReservationInfo(self._data)
         return self._passenger
 ```
+
+Now, let us introduce a layer of abstraction for nine top-level 
+nodes, encapsulating each section of the JSON response behind a
+dedicated Python object.  
+
+```python
+class ReservationInfo:
+    reservation = Field("reservation", field_type=Reservation)
+    passenger = Field("passenger", field_type=Passenger)
+    flight = Field("flight", Flight)
+    seat = Field("seat", Seat)
+    baggage = Field("baggage", Baggage)
+    payment = Field("payment", Payment)
+    services = Field("services", field_type=Services)
+    emergency_contact = Field("emergency_contact", EmergencyContact)
+    notifications = Field("notifications", Notifications)
+
+    def __init__(self, reservation_info):
+        self._data = reservation_info
+```
+In the `ReservationInfo` class, attributes such as `reservation`, `passenger`,
+`flight`, `seat`, and `payment` are class attributes whose values are instances 
+of the `Field` descriptor.
+
+`Field` descriptor
+The Field class is a descriptor that provides controlled attribute access to
+the underlying JSON data.
+It acts as an abstraction layer between the Python object and the dictionary 
+containing the JSON response.
+```python
+class Field:
+    def __init__(self, name, field_type=None):
+        self.name = name
+        self._field_type = field_type
+```
+* `name` stores the corresponding key in the JSON object.
+* `field_type` optionally specifies the Python class used to represent a 
+nested JSON object.
+
+when we say `flight = Field("flight", Flight)` the flight attribute maps to
+the "flight" key in the JSON data and should be represented by a Flight object because
+when "flight" key is accessed, the resulting value is one more nested JSON object.
+
+```python
+def __get__(self, obj, cls):
+    if obj is None:
+        return self
+
+    json_data = obj._data[self.name]
+
+    if self._field_type:
+        return self._field_type(json_data)
+
+    return json_data
+```
+`__get__()` is invoked automatically whenever the corresponding attribute 
+is accessed. For example,
+```python
+reservation = FlightReservation()
+reservation.info.flight     # Causes python to invoke __get__ method if Field descriptor
+```
+Here is what happens when `__get__, is invoked, 
+1. Retrieves the corresponding value from obj._data
+2. If `field_type` is specified, wraps that dictionary in the specified class.
+3. Otherwise, returns the value directly. (meaning there is no nested JSON object)
+
+`__set__()` makes the descriptor read-only. So you cannot be doing something like,
+
+`reservation.info.flight = 1234`
+
+The `Field` descriptor provides three important capabilities:
+* Attribute mapping — maps Python attributes to JSON keys.
+* Nested object conversion — converts nested dictionaries into appropriate Python objects.
+* Read-only access — prevents modification of the underlying JSON data.
+
+This allows code to navigate a deeply nested JSON response using normal 
+Python attribute access, while the descriptor handles the underlying dictionary
+access and object creation transparently.
+
+```python
+>>> reservation.info.flight.departure.airport.city
+'Austin'
+>>> reservation.info.passenger.contact.email
+'john.doe@example.com'
+>>>
+```
+The following table summarizes the mapping between each JSON node, 
+its corresponding Python attribute, and the mapped Python type used to represent
+nested JSON objects.
+
+| JSON node           | Python attribute    | Mapped type        |
+| ------------------- | ------------------- | ------------------ |
+| `reservation`       | `reservation`       | `Reservation`      |
+| `passenger`         | `passenger`         | `Passenger`        |
+| `flight`            | `flight`            | `Flight`           |
+| `seat`              | `seat`              | `Seat`             |
+| `baggage`           | `baggage`           | `Baggage`          |
+| `payment`           | `payment`           | `Payment`          |
+| `services`          | `services`          | `Services`         |
+| `emergency_contact` | `emergency_contact` | `EmergencyContact` |
+| `notifications`     | `notifications`     | `Notifications`    |
+
 Back to  [Articles](../articles.md)
