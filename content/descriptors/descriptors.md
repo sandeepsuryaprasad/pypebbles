@@ -1,4 +1,4 @@
-## Python Descriptors — Building a Reusable JSON Field Mapping Framework
+## Python Descriptors - Building a Reusable JSON Field Mapping Framework
 **Last Updated:** August 15, 2026
 
 When working with real-world APIs, JSON responses are often far more complex than 
@@ -533,7 +533,6 @@ access and object creation transparently.
 'Austin'
 >>> reservation.info.passenger.contact.email
 'john.doe@example.com'
->>>
 ```
 The following table summarizes the mapping between each JSON node, 
 its corresponding Python attribute, and the Python types used to model 
@@ -580,7 +579,6 @@ Let me create an instance of `FlightReservation`
 >>> reservation = FlightReservation()
 >>> reservation.info
 <__main__.ReservationInfo object at 0x104526c10>
->>> 
 ```
 when you say `reservation.info`, the `info` property returns an instance to
 `ReservationInfo` class. Now you can access all the attributes of `ReservationInfo` class.
@@ -589,19 +587,14 @@ when you say `reservation.info`, the `info` property returns an instance to
 <__main__.Reservation object at 0x104542790>
 >>> reservation.info.reservation.confirmation_number
 'X7K9PQ'
->>> 
 >>> reservation.info.reservation.booking_status
 'CONFIRMED'
->>> 
 >>> reservation.info.reservation.booking_date
 '2026-08-10T14:32:18-05:00'
->>> 
 >>> reservation.info.reservation.ticket_status
 'TICKETED'
->>> 
 >>> reservation.info.reservation.currency
 'USD'
->>> 
 ```
 In the above code snippet, we are accessing attributes `confirmation_number`, `booking_status`
 `booking_date`, `ticket_status` and `currency` of `Reservation` class.
