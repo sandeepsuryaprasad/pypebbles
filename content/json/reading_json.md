@@ -122,6 +122,8 @@ I am going to run python interpreter in interactive mode,
 <details>
 <summary>Complete JSON Response</summary>
 
+<div markdown="1">
+
 ```json
 [
   {
@@ -170,6 +172,9 @@ I am going to run python interpreter in interactive mode,
   }
 ]
 ```
+
+
+</div>
 </details>
 
 Now let's try the same solution that we used for our first example. I am going to keep `Employee` 
