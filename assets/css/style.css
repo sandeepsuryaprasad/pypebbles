@@ -6,3 +6,15 @@
 .main-content p {
     text-align: justify;
 }
+
+details summary {
+    cursor: pointer;
+}
+
+details summary::marker {
+    content: "▶ ";
+}
+
+details[open] summary::marker {
+    content: "▼ ";
+}
