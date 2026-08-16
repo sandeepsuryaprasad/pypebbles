@@ -7,14 +7,16 @@
     text-align: justify;
 }
 
-details summary {
+details > summary {
     cursor: pointer;
+    list-style: none;
 }
 
-details summary::marker {
-    content: "▶ ";
+details > summary::before {
+    content: "▶";
+    margin-right: 8px;
 }
 
-details[open] summary::marker {
-    content: "▼ ";
+details[open] > summary::before {
+    content: "▼";
 }
