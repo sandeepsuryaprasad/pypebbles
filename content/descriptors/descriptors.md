@@ -536,7 +536,7 @@ access and object creation transparently.
 >>>
 ```
 The following table summarizes the mapping between each JSON node, 
-its corresponding Python attribute, and the mapped Python type used to represent
+its corresponding Python attribute, and the Python types used to model 
 nested JSON objects.
 
 | JSON node           | Python attribute    | Mapped type        |
@@ -551,5 +551,152 @@ nested JSON objects.
 | `emergency_contact` | `emergency_contact` | `EmergencyContact` |
 | `notifications`     | `notifications`     | `Notifications`    |
 
+### Implementing the Mapped Types
 
+We will begin with the simpler JSON objects and gradually build the more 
+complex types by composing them together. For nested JSON objects, 
+the Field descriptor will be configured with the corresponding mapped type so
+that the nested dictionary is automatically converted into an
+instance of that type.
+
+```python
+class Reservation:
+    confirmation_number = Field("confirmation_number")
+    booking_status = Field("booking_status")
+    booking_date = Field("booking_date")
+    ticket_status = Field("ticket_status")
+    currency = Field("currency")
+
+    def __init__(self, reservation_info):
+        self._data = reservation_info
+```
+
+The Reservation class represents the `reservation` JSON node. 
+Each class attribute is a `Field` descriptor that maps a Python attribute to a
+corresponding key in the underlying JSON data.
+
+Let me create an instance of `FlightReservation`
+```python
+>>> reservation = FlightReservation()
+>>> reservation.info
+<__main__.ReservationInfo object at 0x104526c10>
+>>> 
+```
+when you say `reservation.info`, the `info` property returns an instance to
+`ReservationInfo` class. Now you can access all the attributes of `ReservationInfo` class.
+```python
+>>> reservation.info.reservation
+<__main__.Reservation object at 0x104542790>
+>>> reservation.info.reservation.confirmation_number
+'X7K9PQ'
+>>> 
+>>> reservation.info.reservation.booking_status
+'CONFIRMED'
+>>> 
+>>> reservation.info.reservation.booking_date
+'2026-08-10T14:32:18-05:00'
+>>> 
+>>> reservation.info.reservation.ticket_status
+'TICKETED'
+>>> 
+>>> reservation.info.reservation.currency
+'USD'
+>>> 
+```
+In the above code snippet, we are accessing attributes `confirmation_number`, `booking_status`
+`booking_date`, `ticket_status` and `currency` of `Reservation` class.
+
+Let us implement `Passenger` class,
+```python
+class Passenger:
+    passenger_id = Field("passenger_id")
+    title = Field("title")
+    first_name = Field("first_name")
+    middle_name = Field("middle_name")
+    last_name = Field("last_name")
+    date_of_birth = Field("date_of_birth")
+    gender = Field("gender")
+    contact = Field("contact", field_type=Contact)
+    address = Field("address", field_type=Address)
+    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)
+
+    def __init__(self, passenger_info):
+        self._data = passenger_info
+```
+
+So now when you say `reservation.info.passenger` it returns instance of `Passenger` class.
+```python
+>>> reservation.info.passenger
+<__main__.Passenger object at 0x104542790>
+```
+
+Now you can access all attributes of `Passenger` class
+```python
+>>> reservation.info.passenger.passenger_id
+'PAX-104582'
+>>> reservation.info.passenger.title
+'Mr'
+>>> reservation.info.passenger.first_name
+'John'
+>>> reservation.info.passenger.last_name
+'Doe'
+>>> reservation.info.passenger.date_of_birth
+'1983-05-17'
+>>> reservation.info.passenger.gender
+'MALE'
+```
+
+But accessing `contact` or `address` or `frequent_flyer`, will not return the actual
+value of corresponding node in JSON, but rather returns object instance of 
+`Contact`, `Address` and `FrequentFlyer` class respectively. Because `contact` node
+is a nested JSON object with `email`, `phone` and `alternate_phone`, which we have
+abstracted in a different class `Contact`, similarly `address` and `frequent_flyer` nodes
+of JSON response.
+
+If the JSON node has a nested attribute, we are going pass the class reference to
+`Field` descriptor through argument `field_type`, which then the descriptor returns
+instance of the class that is passed.
+
+```python
+>>> reservation.info.passenger.contact
+<__main__.Contact object at 0x104542850>
+>>> reservation.info.passenger.address
+<__main__.Address object at 0x104542820>
+>>> reservation.info.passenger.frequent_flyer
+<__main__.FrequentFlyer object at 0x1045427c0>
+```
+
+Let us implement `Contact`, `Address` and `FrequentFlyer` classes.
+```python
+class Contact:
+    email = Field("email")
+    phone = Field("phone")
+    alternate_phone = Field("alternate_phone")
+
+    def __init__(self, contact_info):
+        self._data = contact_info
+```
+```python
+class Address:
+    street = Field("street")
+    suite = Field("suite")
+    city = Field("city")
+    state = Field("state")
+    state_code = Field("state_code")
+    zip_code = Field("zip_code")
+    country = Field("country")
+
+    def __init__(self, address_info):
+        self._data = address_info
+```
+```python
+class FrequentFlyer:
+    program = Field("program")
+    membership_number = Field("membership_number")
+    status = Field("status")
+    miles_balance = Field("miles_balance")
+
+    def __init__(self, frequent_flyer_info):
+        self._data = frequent_flyer_info
+```
 Back to  [Articles](../articles.md)
