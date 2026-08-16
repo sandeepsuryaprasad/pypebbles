@@ -20,12 +20,12 @@ Let's consider below JSON response, For this demonstration, we will work with a
 representative JSON response containing the reservation and associated information 
 for a single passenger. 
 
-
 <details>
 <summary><strong>▸ Click here to expand/collapse complete JSON response</strong></summary>
 
 <div markdown="1">
 
+`reservations.json`
 ```json
 {
   "reservation": {
@@ -224,6 +224,199 @@ for a single passenger.
 **Disclaimer:** The JSON data used in this article is for demonstration purposes. It does not represent actual production data, 
 and any resemblance to real-world data is purely coincidental.
 
+Below is the hierarchical structure of the `reservations.json` response. 
+Let us break down the response structure to understand its composition.
+The root response object contains nine top-level nodes: `reservation`, `passenger`, 
+`flight`, `seat`, `baggage`, `payment`, `services`, `emergency_contact`, and `notifications`.
+Several of these top-level nodes contain nested objects, forming a hierarchical 
+JSON structure. For example, the `passenger` node contains child objects such as 
+`contact`, `address`, and `frequent_flyer`. These nested objects, in turn, contain 
+their own attributes and, in some cases, additional nested objects.
+
+<details>
+<summary><strong>▸ Click here to expand/collapse complete JSON tree</strong></summary>
+
+<div markdown="1">
+
+```commandline
+Response
+│
+├── reservation
+│   ├── confirmation_number
+│   ├── booking_status
+│   ├── booking_date
+│   ├── ticket_status
+│   └── currency
+│
+├── passenger
+│   ├── passenger_id
+│   ├── title
+│   ├── first_name
+│   ├── middle_name
+│   ├── last_name
+│   ├── date_of_birth
+│   ├── gender
+│   │
+│   ├── contact
+│   │   ├── email
+│   │   ├── phone
+│   │   └── alternate_phone
+│   │
+│   ├── address
+│   │   ├── street
+│   │   ├── suite
+│   │   ├── city
+│   │   ├── state
+│   │   ├── state_code
+│   │   ├── zip_code
+│   │   └── country
+│   │
+│   └── frequent_flyer
+│       ├── program
+│       ├── membership_number
+│       ├── status
+│       └── miles_balance
+│
+├── flight
+│   │
+│   ├── airline
+│   │   ├── code
+│   │   ├── name
+│   │   └── headquarters
+│   │       ├── city
+│   │       ├── state
+│   │       └── state_code
+│   │
+│   ├── flight_number
+│   ├── flight_status
+│   │
+│   ├── aircraft
+│   │   ├── registration
+│   │   ├── manufacturer
+│   │   ├── model
+│   │   └── configuration
+│   │
+│   ├── departure
+│   │   ├── airport
+│   │   │   ├── code
+│   │   │   ├── name
+│   │   │   ├── city
+│   │   │   ├── state
+│   │   │   ├── state_code
+│   │   │   ├── country
+│   │   │   └── terminal
+│   │   │
+│   │   ├── scheduled
+│   │   │   ├── date
+│   │   │   ├── time
+│   │   │   └── timezone
+│   │   │
+│   │   ├── gate
+│   │   └── boarding_time
+│   │
+│   ├── arrival
+│   │   ├── airport
+│   │   │   ├── code
+│   │   │   ├── name
+│   │   │   ├── city
+│   │   │   ├── state
+│   │   │   ├── state_code
+│   │   │   ├── country
+│   │   │   └── terminal
+│   │   │
+│   │   ├── scheduled
+│   │   │   ├── date
+│   │   │   ├── time
+│   │   │   └── timezone
+│   │   │
+│   │   └── gate
+│   │
+│   ├── duration
+│   │   ├── hours
+│   │   └── minutes
+│   │
+│   └── distance
+│       ├── value
+│       └── unit
+│
+├── seat
+│   ├── number
+│   ├── class
+│   ├── cabin
+│   ├── position
+│   ├── is_exit_row
+│   └── is_extra_legroom
+│
+├── baggage
+│   ├── checked
+│   │   ├── allowed_pieces
+│   │   └── weight_limit
+│   │       ├── value
+│   │       └── unit
+│   │
+│   ├── carry_on
+│   │   ├── allowed_pieces
+│   │   └── weight_limit
+│   │       ├── value
+│   │       └── unit
+│   │
+│   └── personal_item
+│       ├── allowed
+│       └── description
+│
+├── payment
+│   ├── status
+│   ├── method
+│   │   ├── type
+│   │   └── provider
+│   │
+│   └── fare
+│       ├── base_fare
+│       ├── taxes
+│       ├── airport_fees
+│       ├── service_fee
+│       └── total
+│
+├── services [array]
+│   │
+│   ├── service
+│   │   ├── code
+│   │   ├── name
+│   │   ├── description
+│   │   └── status
+│   │
+│   └── ...
+│
+├── emergency_contact
+│   ├── name
+│   ├── relationship
+│   ├── phone
+│   └── address
+│       ├── street
+│       ├── suite
+│       ├── city
+│       ├── state
+│       ├── state_code
+│       ├── zip_code
+│       └── country
+│
+└── notifications
+    │
+    ├── email
+    │   ├── enabled
+    │   └── address
+    │
+    ├── sms
+    │   ├── enabled
+    │   └── phone
+    │
+    └── push
+        └── enabled
+```
+
+</details>
+
+
 Let us re-use the code that we wrote in our previous article _From JSON Data to Python Objects_
 with some minor modifications.
 ```python
@@ -255,6 +448,4 @@ class FlightReservation:
             self._passenger = ReservationInfo(self._data)
         return self._passenger
 ```
-
-
 Back to  [Articles](../articles.md)
