@@ -120,7 +120,7 @@ I am going to run python interpreter in interactive mode,
 `employees.json`
 
 <details>
-<summary><strong>Complete JSON Response</strong></summary>
+<summary><strong>▸ Complete JSON Response</strong></summary>
 
 <div markdown="1">
 

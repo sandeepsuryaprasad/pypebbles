@@ -6,17 +6,3 @@
 .main-content p {
     text-align: justify;
 }
-
-details > summary {
-    cursor: pointer;
-    list-style: none;
-}
-
-details > summary::before {
-    content: "▶";
-    margin-right: 8px;
-}
-
-details[open] > summary::before {
-    content: "▼";
-}
