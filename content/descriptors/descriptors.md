@@ -417,7 +417,7 @@ Response
 </details>
 
 
-Let us re-use the code that we wrote in our previous article _From JSON Data to Python Objects_
+Let us re-use the code that I wrote in previous article _From JSON Data to Python Objects_
 with some minor modifications.
 ```python
 from json import load
@@ -484,6 +484,17 @@ class Field:
     def __init__(self, name, field_type=None):
         self.name = name
         self._field_type = field_type
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        json_data = obj._data[self.name]
+        if self._field_type:
+            return self._field_type(json_data)
+        return json_data
+
+    def __set__(self, obj, value):
+        raise AttributeError(f"Cant set the value {value} to field {self.name}")
 ```
 * `name` stores the corresponding key in the JSON object.
 * `field_type` optionally specifies the Python class used to represent a 
@@ -493,18 +504,6 @@ when we say `flight = Field("flight", Flight)` the flight attribute maps to
 the "flight" key in the JSON data and should be represented by a Flight object because
 when "flight" key is accessed, the resulting value is one more nested JSON object.
 
-```python
-def __get__(self, obj, cls):
-    if obj is None:
-        return self
-
-    json_data = obj._data[self.name]
-
-    if self._field_type:
-        return self._field_type(json_data)
-
-    return json_data
-```
 `__get__()` is invoked automatically whenever the corresponding attribute 
 is accessed. For example,
 ```python
