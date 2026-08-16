@@ -20,7 +20,7 @@ Let's consider below JSON response, For this demonstration, we will work with a
 representative JSON response containing the reservation and associated information 
 for a single passenger. 
 <details>
-<summary>Complete JSON Response</summary>
+<summary><strong>Complete JSON Response</strong></summary>
 
 ```json
 {
@@ -213,6 +213,7 @@ for a single passenger.
   }
 }
 ```
+
 </details>
 
 **Disclaimer:** The JSON data used in this article is for demonstration purposes. It does not represent actual production data, 
