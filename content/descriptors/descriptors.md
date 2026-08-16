@@ -19,6 +19,8 @@ The solution uses Python descriptors to map fields from the JSON response to Pyt
 Let's consider below JSON response, For this demonstration, we will work with a 
 representative JSON response containing the reservation and associated information 
 for a single passenger. 
+
+
 <details>
 <summary><strong>▸ Click here to expand/collapse complete JSON response</strong></summary>
 
@@ -216,6 +218,7 @@ for a single passenger.
 }
 ```
 
+</div>
 </details>
 
 **Disclaimer:** The JSON data used in this article is for demonstration purposes. It does not represent actual production data, 

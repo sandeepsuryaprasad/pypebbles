@@ -173,7 +173,6 @@ I am going to run python interpreter in interactive mode,
 ]
 ```
 
-
 </div>
 </details>
 
