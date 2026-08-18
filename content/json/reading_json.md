@@ -234,10 +234,10 @@ as attributes.
 So the only way to make above code work is by doing something 
 like this,
 ```commandline
->>> emp1.info.address.get("street")  # On dict object we are using `get` method
+>>> emp1.info.address["street"]  # Indexing Syntax to access the key of the dict
 '245 Oakwood Drive'
 
->>> emp1.info.address["street"]     # Indexing syntax to access the key of a dict
+>>> emp1.info.address.get("street")     # On dict object we are using `get` method
 '245 Oakwood Drive'
 ```
 Similarly, when access `company`,
