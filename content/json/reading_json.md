@@ -79,11 +79,11 @@ class Employee:
 ```python
 class EmployeeInfo:
     def __init__(self, employee_info):
-        self.first_name = employee_info.get("first_name")
-        self.last_name = employee_info.get("last_name")
-        self.gender = employee_info.get("gender")
-        self.date_of_birth = employee_info.get("date_of_birth")
-        self.nationality = employee_info.get("nationality")
+        self.first_name = employee_info["first_name"]
+        self.last_name = employee_info["last_name"]
+        self.gender = employee_info["gender"]
+        self.date_of_birth = employee_info["date_of_birth"]
+        self.nationality = employee_info["nationality"]
 ```
 In the above `employee.py` file, we have two levels of abstraction, 
 `Employee` and `EmployeeInfo` (both classes are in the same python module).
@@ -181,13 +181,13 @@ class as is and let's modify `EmployeeInfo` class to have the above JSON attribu
 ```python
 class EmployeeInfo:
     def __init__(self, employee_info):
-        self.name = employee_info.get("name")
-        self.email = employee_info.get("email")
-        self.phone = employee_info.get("phone")
-        self.website = employee_info.get("website")
-        self.address = employee_info.get("address")
-        self.company = employee_info.get("company")
-        self.geo_location = employee_info.get("address").get("geo_location")
+        self.name = employee_info["name"]
+        self.email = employee_info["email"]
+        self.phone = employee_info["phone"]
+        self.website = employee_info["website"]
+        self.address = employee_info["address"]
+        self.company = employee_info["company"]
+        self.geo_location = employee_info["address"]["geo_location"]
 ```
 
 ```commandline
@@ -247,9 +247,9 @@ Similarly, when access `company`,
 ```
 Now if we wanted to get `name` or `industry`, we would have to do something like this,
 ```commandline
->>> emp1.info.company.get("name")
+>>> emp1.info.company["name"]
 'Spam Technologies'
->>> emp1.info.company.get("industry")
+>>> emp1.info.company["industry"]
 'Automobile'
 ```
 This is really akward! and doesn't compose well. 
@@ -278,29 +278,29 @@ above scenario.  We will create two separate classes for `Address` and `Company`
 ```python
 class Address:
     def __init__(self, address_info):
-        self.street = address_info.get("street")
-        self.suite = address_info.get("suite")
-        self.city = address_info.get("city")
-        self.state = address_info.get("state")
-        self.zipcode = address_info.get("zipcode")
-        self.geo_location = address_info.get("geo_location")
+        self.street = address_info["street"]
+        self.suite = address_info["suite"]
+        self.city = address_info["city"]
+        self.state = address_info["state"]
+        self.zipcode = address_info["zipcode"]
+        self.geo_location = address_info["geo_location"]
 ```
 ```python
 class Company:
     def __init__(self, company_info):
-        self.name = company_info.get("name")
-        self.industry = company_info.get("industry")
+        self.name = company_info["name"]
+        self.industry = company_info["industry"]
 ```
 Now let's change `EmployeeInfo` class implementation, 
 ```python
 class EmployeeInfo:
     def __init__(self, employee_info):
-        self.name = employee_info.get("name")
-        self.email = employee_info.get("email")
-        self.phone = employee_info.get("phone")
-        self.website = employee_info.get("website")
-        self.address = Address(employee_info.get("address"))
-        self.company = Company(employee_info.get("company"))
+        self.name = employee_info["name"]
+        self.email = employee_info["email"]
+        self.phone = employee_info["phone"]
+        self.website = employee_info["website"]
+        self.address = Address(employee_info["address"])
+        self.company = Company(employee_info["company"])
 ```
 Here is the magic,
 
@@ -350,20 +350,20 @@ So we can solve this by creating one more layer of Abstraction, `Location`
 ```python
 class Location:
     def __init__(self, location_info):
-        self.lat = location_info.get("lat")
-        self.lng = location_info.get("lng")
+        self.lat = location_info["lat"]
+        self.lng = location_info["lng"]
 ```
 Now let's add interface to `Location` class in `Address`
 
 ```python
 class Address:
     def __init__(self, address_info):
-        self.street = address_info.get("street")
-        self.suite = address_info.get("suite")
-        self.city = address_info.get("city")
-        self.state = address_info.get("state")
-        self.zipcode = address_info.get("zipcode")
-        self.geo_location = Location(address_info.get("geo_location"))
+        self.street = address_info["street"]
+        self.suite = address_info["suite"]
+        self.city = address_info["city"]
+        self.state = address_info["state"]
+        self.zipcode = address_info["zipcode"]
+        self.geo_location = Location(address_info["geo_location"])
 ```
 Now we can access `lat` and `lng` attributes of `Location` though `geo_location` in `Address` 
 ```commandline
@@ -462,12 +462,12 @@ class EmployeeInfo:
             employee_info: Dictionary containing employee details and
             nested address and company information.
         """
-        self.name = employee_info.get("name")
-        self.email = employee_info.get("email")
-        self.phone = employee_info.get("phone")
-        self.website = employee_info.get("website")
-        self.address = Address(employee_info.get("address"))
-        self.company = Company(employee_info.get("company"))
+        self.name = employee_info["name"]
+        self.email = employee_info["email"]
+        self.phone = employee_info["phone"]
+        self.website = employee_info["website"]
+        self.address = Address(employee_info["address"])
+        self.company = Company(employee_info["company"])
 ```
 ```python
 class Address:
@@ -480,12 +480,12 @@ class Address:
         geographical location information.
     """
     def __init__(self, address_info):
-        self.street = address_info.get("street")
-        self.suite = address_info.get("suite")
-        self.city = address_info.get("city")
-        self.state = address_info.get("state")
-        self.zipcode = address_info.get("zipcode")
-        self.geo_location = Location(address_info.get("geo_location"))
+        self.street = address_info["street"]
+        self.suite = address_info["suite"]
+        self.city = address_info["city"]
+        self.state = address_info["state"]
+        self.zipcode = address_info["zipcode"]
+        self.geo_location = Location(address_info["geo_location"])
 ```
 ```python
 class Company:
@@ -501,8 +501,8 @@ class Company:
         Args:
             company_info: Dictionary containing company details.
         """
-        self.name = company_info.get("name")
-        self.industry = company_info.get("industry")
+        self.name = company_info["name"]
+        self.industry = company_info["industry"]
 ```
 ```python
 class Location:
@@ -519,8 +519,8 @@ class Location:
             location_info: Dictionary containing latitude and longitude
             values.
         """
-        self.lat = location_info.get("lat")
-        self.lng = location_info.get("lng")
+        self.lat = location_info["lat"]
+        self.lng = location_info["lng"]
 ```
 
 In this article, we explored how a nested JSON structure can be transformed into a 
