@@ -9,7 +9,7 @@
 * [Python Descriptors - Building a Reusable JSON Field Mapping Framework](descriptors/descriptors.md)
 
 
-* [Recursive JSON-to-Object Mapping](recursive_json_mapping/recursive_json_mapping.py)
+* [Recursive JSON-to-Object Mapping](recursive_json_mapping/recursive_json_mapping.md)
 
 
 * [Building a Flexible Logging Abstraction](Logging/logging.md)
