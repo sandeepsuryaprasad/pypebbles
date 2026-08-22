@@ -474,7 +474,7 @@ In the `ReservationInfo` class, attributes such as `reservation`, `passenger`,
 `flight`, `seat`, and `payment` are class attributes whose values are instances 
 of the `Field` descriptor.
 
-### `Field` descriptor
+### Field descriptor
 The `Field` class is a descriptor that provides controlled attribute access to
 the underlying JSON data.
 It acts as an abstraction layer between the Python object and the dictionary 
@@ -954,168 +954,6 @@ class Field:
         )
 ```
 ```python
-class Reservation:
-    """Represent reservation and booking information.
-
-    Encapsulates the reservation-related details from the JSON response,
-    including the confirmation number, booking status, booking date,
-    ticket status, and currency.
-
-    Attributes:
-        confirmation_number: Unique confirmation number assigned to the
-            reservation.
-        booking_status: Current status of the reservation.
-        booking_date: Date and time when the reservation was created.
-        ticket_status: Current ticketing status of the reservation.
-        currency: Currency used for the reservation.
-    """
-
-    confirmation_number = Field("confirmation_number")
-    booking_status = Field("booking_status")
-    booking_date = Field("booking_date")
-    ticket_status = Field("ticket_status")
-    currency = Field("currency")
-
-    def __init__(self, reservation_info):
-        """Initialize a Reservation object from reservation data.
-
-        Args:
-            reservation_info: Dictionary containing reservation details.
-        """
-        self._data = reservation_info
-```
-```python
-class Passenger:
-    """Represent passenger information from a reservation response.
-
-    Encapsulates the passenger's personal information and provides access
-    to related contact, address, and frequent-flyer information through
-    mapped Python objects.
-
-    Attributes:
-        passenger_id: Unique identifier assigned to the passenger.
-        title: Passenger's title, such as Mr, Mrs, or Ms.
-        first_name: Passenger's first name.
-        middle_name: Passenger's middle name.
-        last_name: Passenger's last name.
-        date_of_birth: Passenger's date of birth.
-        gender: Passenger's gender.
-        contact: Passenger's contact information represented by a
-            :class:`Contact` object.
-        address: Passenger's address represented by an :class:`Address`
-            object.
-        frequent_flyer: Passenger's frequent-flyer information represented
-            by a :class:`FrequentFlyer` object.
-    """
-
-    passenger_id = Field("passenger_id")
-    title = Field("title")
-    first_name = Field("first_name")
-    middle_name = Field("middle_name")
-    last_name = Field("last_name")
-    date_of_birth = Field("date_of_birth")
-    gender = Field("gender")
-    contact = Field("contact", field_type=Contact)
-    address = Field("address", field_type=Address)
-    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)
-
-    def __init__(self, passenger_info):
-        """Initialize a Passenger object from passenger data.
-
-        Args:
-            passenger_info: Dictionary containing passenger details,
-                including contact, address, and frequent-flyer information.
-        """
-        self._data = passenger_info
-```
-```python
-class Contact:
-    """Represent a passenger's contact information.
-
-    Encapsulates the contact details associated with a passenger, including
-    primary and alternate contact information.
-
-    Attributes:
-        email: Passenger's email address.
-        phone: Passenger's primary phone number.
-        alternate_phone: Passenger's alternate phone number.
-    """
-
-    email = Field("email")
-    phone = Field("phone")
-    alternate_phone = Field("alternate_phone")
-
-    def __init__(self, contact_info):
-        """Initialize a Contact object from contact data.
-
-        Args:
-            contact_info: Dictionary containing the passenger's contact
-                information.
-        """
-        self._data = contact_info
-```
-```python
-class Address:
-    """Represent a passenger's address information.
-
-    Encapsulates the address details associated with a passenger, including
-    street, city, state, postal code, and country information.
-
-    Attributes:
-        street: Street address.
-        suite: Apartment, suite, or unit information.
-        city: City associated with the address.
-        state: State or administrative region.
-        state_code: Abbreviated state or region code.
-        zip_code: Postal or ZIP code.
-        country: Country associated with the address.
-    """
-
-    street = Field("street")
-    suite = Field("suite")
-    city = Field("city")
-    state = Field("state")
-    state_code = Field("state_code")
-    zip_code = Field("zip_code")
-    country = Field("country")
-
-    def __init__(self, address_info):
-        """Initialize an Address object from address data.
-
-        Args:
-            address_info: Dictionary containing the address information.
-        """
-        self._data = address_info
-```
-```python
-class FrequentFlyer:
-    """Represent a passenger's frequent-flyer program information.
-
-    Encapsulates the frequent-flyer details associated with a passenger,
-    including program membership, membership status, and accumulated miles.
-
-    Attributes:
-        program: Name of the frequent-flyer program.
-        membership_number: Unique membership number assigned by the program.
-        status: Current membership status within the program.
-        miles_balance: Current number of miles accumulated by the passenger.
-    """
-
-    program = Field("program")
-    membership_number = Field("membership_number")
-    status = Field("status")
-    miles_balance = Field("miles_balance")
-
-    def __init__(self, frequent_flyer_info):
-        """Initialize a FrequentFlyer object from membership data.
-
-        Args:
-            frequent_flyer_info: Dictionary containing frequent-flyer
-                membership information.
-        """
-        self._data = frequent_flyer_info
-```
-```python
 class Services:
     """Represent the collection of services associated with a reservation.
 
@@ -1183,6 +1021,168 @@ class Services:
             )
 
         return self._data[index]
+```
+```python
+class FrequentFlyer:
+    """Represent a passenger's frequent-flyer program information.
+
+    Encapsulates the frequent-flyer details associated with a passenger,
+    including program membership, membership status, and accumulated miles.
+
+    Attributes:
+        program: Name of the frequent-flyer program.
+        membership_number: Unique membership number assigned by the program.
+        status: Current membership status within the program.
+        miles_balance: Current number of miles accumulated by the passenger.
+    """
+
+    program = Field("program")
+    membership_number = Field("membership_number")
+    status = Field("status")
+    miles_balance = Field("miles_balance")
+
+    def __init__(self, frequent_flyer_info):
+        """Initialize a FrequentFlyer object from membership data.
+
+        Args:
+            frequent_flyer_info: Dictionary containing frequent-flyer
+                membership information.
+        """
+        self._data = frequent_flyer_info
+```
+```python
+class Address:
+    """Represent a passenger's address information.
+
+    Encapsulates the address details associated with a passenger, including
+    street, city, state, postal code, and country information.
+
+    Attributes:
+        street: Street address.
+        suite: Apartment, suite, or unit information.
+        city: City associated with the address.
+        state: State or administrative region.
+        state_code: Abbreviated state or region code.
+        zip_code: Postal or ZIP code.
+        country: Country associated with the address.
+    """
+
+    street = Field("street")
+    suite = Field("suite")
+    city = Field("city")
+    state = Field("state")
+    state_code = Field("state_code")
+    zip_code = Field("zip_code")
+    country = Field("country")
+
+    def __init__(self, address_info):
+        """Initialize an Address object from address data.
+
+        Args:
+            address_info: Dictionary containing the address information.
+        """
+        self._data = address_info
+```
+```python
+class Contact:
+    """Represent a passenger's contact information.
+
+    Encapsulates the contact details associated with a passenger, including
+    primary and alternate contact information.
+
+    Attributes:
+        email: Passenger's email address.
+        phone: Passenger's primary phone number.
+        alternate_phone: Passenger's alternate phone number.
+    """
+
+    email = Field("email")
+    phone = Field("phone")
+    alternate_phone = Field("alternate_phone")
+
+    def __init__(self, contact_info):
+        """Initialize a Contact object from contact data.
+
+        Args:
+            contact_info: Dictionary containing the passenger's contact
+                information.
+        """
+        self._data = contact_info
+```
+```python
+class Passenger:
+    """Represent passenger information from a reservation response.
+
+    Encapsulates the passenger's personal information and provides access
+    to related contact, address, and frequent-flyer information through
+    mapped Python objects.
+
+    Attributes:
+        passenger_id: Unique identifier assigned to the passenger.
+        title: Passenger's title, such as Mr, Mrs, or Ms.
+        first_name: Passenger's first name.
+        middle_name: Passenger's middle name.
+        last_name: Passenger's last name.
+        date_of_birth: Passenger's date of birth.
+        gender: Passenger's gender.
+        contact: Passenger's contact information represented by a
+            :class:`Contact` object.
+        address: Passenger's address represented by an :class:`Address`
+            object.
+        frequent_flyer: Passenger's frequent-flyer information represented
+            by a :class:`FrequentFlyer` object.
+    """
+
+    passenger_id = Field("passenger_id")
+    title = Field("title")
+    first_name = Field("first_name")
+    middle_name = Field("middle_name")
+    last_name = Field("last_name")
+    date_of_birth = Field("date_of_birth")
+    gender = Field("gender")
+    contact = Field("contact", field_type=Contact)
+    address = Field("address", field_type=Address)
+    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)
+
+    def __init__(self, passenger_info):
+        """Initialize a Passenger object from passenger data.
+
+        Args:
+            passenger_info: Dictionary containing passenger details,
+                including contact, address, and frequent-flyer information.
+        """
+        self._data = passenger_info
+```
+```python
+class Reservation:
+    """Represent reservation and booking information.
+
+    Encapsulates the reservation-related details from the JSON response,
+    including the confirmation number, booking status, booking date,
+    ticket status, and currency.
+
+    Attributes:
+        confirmation_number: Unique confirmation number assigned to the
+            reservation.
+        booking_status: Current status of the reservation.
+        booking_date: Date and time when the reservation was created.
+        ticket_status: Current ticketing status of the reservation.
+        currency: Currency used for the reservation.
+    """
+
+    confirmation_number = Field("confirmation_number")
+    booking_status = Field("booking_status")
+    booking_date = Field("booking_date")
+    ticket_status = Field("ticket_status")
+    currency = Field("currency")
+
+    def __init__(self, reservation_info):
+        """Initialize a Reservation object from reservation data.
+
+        Args:
+            reservation_info: Dictionary containing reservation details.
+        """
+        self._data = reservation_info
 ```
 ```python
 class ReservationInfo:
