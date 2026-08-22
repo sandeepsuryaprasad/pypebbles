@@ -724,20 +724,17 @@ through their corresponding Python attributes as shown below.
 >>> reservation.info.passenger.frequent_flyer.miles_balance
 184250
 ```
-
-When you access `services` on `ReservationInfo` class, it returns a `list` of `dict`,
+When you access services on the `ReservationInfo` object, it returns a list 
+containing the services selected by the passenger. Each element in the list is
+represented as a dictionary object containing the details of an individual service.
 ```commandline
 >>> reservation.info.services
 [{'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}, {'code': 'WIFI', 'name': 'Inflight Wi-Fi', 'description': 'High-speed internet access', 'status': 'CONFIRMED'}, {'code': 'LOUNGE', 'name': 'Elite Club', 'description': 'Airport lounge access', 'status': 'CONFIRMED'}]
 >>> 
 ```
-
 Now If you want to access the list of services that the passenger has opted for,
 you should index the list.
 ```commandline
->>> reservation.info.services
-[{'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}, {'code': 'WIFI', 'name': 'Inflight Wi-Fi', 'description': 'High-speed internet access', 'status': 'CONFIRMED'}, {'code': 'LOUNGE', 'name': 'Elite Club', 'description': 'Airport lounge access', 'status': 'CONFIRMED'}]
->>> 
 >>> reservation.info.services[0]
 {'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}
 >>> 
