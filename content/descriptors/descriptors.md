@@ -460,7 +460,7 @@ class Field:
 * `field_type` optionally specifies the Python class used to represent a 
 nested JSON object.
 
-When we define `passenger = Field("passenger", Passenger)`, the flight attribute is 
+When we define `passenger = Field("passenger", Passenger)`, the `passenger` attribute is 
 mapped to the `"passenger"` key in the underlying JSON data. Since the value 
 associated with this key is a nested JSON object, the Field descriptor converts
 that dictionary into a `Passenger` object, providing structured attribute-based access
