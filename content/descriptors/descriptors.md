@@ -417,8 +417,8 @@ Response
 </details>
 
 
-Let us re-use the code that I wrote in previous article _From JSON Data to Python Objects_
-with some minor modifications.
+Let us re-use the code that I wrote in previous article _From JSON Data to Python Objects_ with 
+some minor modifications.
 ```python
 from json import load
 from pathlib import Path
@@ -474,8 +474,8 @@ In the `ReservationInfo` class, attributes such as `reservation`, `passenger`,
 `flight`, `seat`, and `payment` are class attributes whose values are instances 
 of the `Field` descriptor.
 
-`Field` descriptor
-The Field class is a descriptor that provides controlled attribute access to
+### `Field` descriptor
+The `Field` class is a descriptor that provides controlled attribute access to
 the underlying JSON data.
 It acts as an abstraction layer between the Python object and the dictionary 
 containing the JSON response.
@@ -494,15 +494,15 @@ class Field:
         return json_data
 
     def __set__(self, obj, value):
-        raise AttributeError(f"Cant set the value {value} to field {self.name}")
+        raise AttributeError(f"Field {self.name} is read-only")
 ```
 * `name` stores the corresponding key in the JSON object.
 * `field_type` optionally specifies the Python class used to represent a 
 nested JSON object.
 
-when we say `flight = Field("flight", Flight)` the flight attribute maps to
-the "flight" key in the JSON data and should be represented by a Flight object because
-when "flight" key is accessed, the resulting value is one more nested JSON object.
+when we say `flight = Field("flight", Flight)` the `flight` attribute maps to
+the `"flight"` key in the JSON data and should be represented by a Flight object because
+when `"flight"` key is accessed, the resulting value is one more nested JSON object.
 
 `__get__()` is invoked automatically whenever the corresponding attribute 
 is accessed. For example,
@@ -520,9 +520,9 @@ Here is what happens when `__get__`, is invoked,
 >>> reservation.info.flight = 1234
 ```
 The `Field` descriptor provides three important capabilities:
-* Attribute mapping - maps Python attributes to JSON keys.
-* Nested object conversion - converts nested dictionaries into appropriate Python objects.
-* Read-only access - prevents modification of the underlying JSON data.
+* **Attribute mapping** - maps Python attributes to JSON keys.
+* **Nested object conversion** - converts nested dictionaries into appropriate Python objects.
+* **Read-only access** - prevents modification of the underlying JSON data.
 
 This allows code to navigate a deeply nested JSON response using normal 
 Python attribute access, while the descriptor handles the underlying dictionary
@@ -570,7 +570,7 @@ class Reservation:
         self._data = reservation_info
 ```
 
-The Reservation class represents the `reservation` JSON node. 
+The `Reservation` class represents the `reservation` JSON node. 
 Each class attribute is a `Field` descriptor that maps a Python attribute to a
 corresponding key in the underlying JSON data.
 
@@ -599,7 +599,7 @@ when you say `reservation.info`, the `info` property returns an instance to
 In the above code snippet, we are accessing attributes `confirmation_number`, `booking_status`
 `booking_date`, `ticket_status` and `currency` of `Reservation` class.
 
-Let us implement `Passenger` class,
+Let us implement one more mapped type `Passenger` class,
 ```python
 class Passenger:
     passenger_id = Field("passenger_id")
@@ -659,7 +659,7 @@ instance of the class that is passed.
 <__main__.FrequentFlyer object at 0x1045427c0>
 ```
 
-Let us implement `Contact`, `Address` and `FrequentFlyer` classes.
+Let us implement `Contact`, `Address` and `FrequentFlyer` mapped classes.
 ```python
 class Contact:
     email = Field("email")
@@ -780,12 +780,15 @@ class Services:
         self._data = [self.Service(service) for service in services_info]
 
     def __getitem__(self, index):
+        if index > len(self._data) - 1:
+            raise IndexError(f"Service index must be less than {len(self._data)}")
         return self._data[index]
 ```
 The `Services` class is responsible for transforming the services JSON array into a
 collection of Python objects. Since each element in the JSON array represents an 
 individual service, the implementation uses a nested Service class to model the 
-structure of each `service` item.
+structure of each `service` item. (It is not necessary to have `Service` class
+nested inside `Services`. You can choose to have `Service` class outside `Services` class)
 
 The nested `Service` class represents one service entry from the JSON array. 
 Its attributes are defined using the `Field` descriptor
@@ -794,7 +797,7 @@ The descriptor maps each Python attribute to its corresponding key in the servic
 
 For example: `"code": "MEAL"` is exposed as `service.code`.
 
-### Converting dictionaries into Service objects
+### Converting dictionaries into `Service` objects
 ```python
 def __init__(self, services_info):
     self._data = [self.Service(service) for service in services_info]
@@ -829,4 +832,398 @@ attribute notation.
 >>> reservation.info.services[1].status
 'CONFIRMED'
 ```
+
+The final implementation can be structured as shown below.
+```python
+from json import load
+from pathlib import Path
+
+
+class FlightReservation:
+    def __init__(self):
+        """Initialize the flight reservation and load reservation data."""
+        self._path = self._json_file_path
+        self._data = self._load_json_data
+        self._info = None
+
+    @property
+    def _json_file_path(self):
+        """Return the path to the reservation JSON file.
+
+        Raises:
+            FileNotFoundError: If the reservation JSON file does not exist.
+
+        Returns:
+            Path: Path object representing the reservation JSON file.
+        """
+        path = Path("reservation.json")
+        if not path.exists():
+            raise FileNotFoundError(f"{path} does not exist")
+        return path
+
+    @property
+    def _load_json_data(self):
+        """Load and return the reservation data from the JSON file.
+
+        Returns:
+            dict: Parsed reservation data from the JSON file.
+        """
+        with open(self._path, "r") as json_file:
+            json_object = load(json_file)
+            return json_object
+
+    @property
+    def info(self):
+        """Return the reservation information as a ReservationInfo object.
+
+        The ReservationInfo object is created lazily and cached for
+        subsequent accesses.
+
+        Returns:
+            ReservationInfo: Object representing the reservation data.
+        """
+        if not self._info:
+            self._info = ReservationInfo(self._data)
+        return self._info
+```
+```python
+class Field:
+    """Descriptor for mapping JSON fields to Python object attributes.
+
+    A Field descriptor provides controlled access to a value stored in the
+    underlying JSON data. For simple fields, the corresponding JSON value is
+    returned directly. For nested JSON objects, ``field_type`` can be
+    specified to convert the JSON dictionary into an instance of the
+    corresponding Python class.
+
+    Attributes:
+        name: Name of the corresponding field in the JSON data.
+        _field_type: Optional Python type used to represent a nested JSON
+            object.
+    """
+
+    def __init__(self, name, field_type=None):
+        """Initialize a Field descriptor.
+
+        Args:
+            name: Name of the field in the underlying JSON data.
+            field_type: Optional Python class used to map nested JSON data
+                to a Python object.
+        """
+        self.name = name
+        self._field_type = field_type
+
+    def __get__(self, obj, cls):
+        """Retrieve the value associated with the JSON field.
+
+        If accessed through the class, the descriptor itself is returned.
+        When accessed through an instance, the corresponding value is
+        retrieved from the instance's underlying JSON data. If a
+        ``field_type`` is specified, the JSON data is converted into an
+        instance of that type.
+
+        Args:
+            obj: Instance whose underlying JSON data should be accessed.
+            cls: Class through which the descriptor is accessed.
+
+        Returns:
+            The corresponding JSON value or an instance of ``field_type``.
+        """
+        if obj is None:
+            return self
+
+        json_data = obj._data[self.name]
+
+        if self._field_type:
+            return self._field_type(json_data)
+
+        return json_data
+
+    def __set__(self, obj, value):
+        """Prevent modification of the mapped JSON field.
+
+        Args:
+            obj: Instance on which the assignment was attempted.
+            value: Value that was assigned to the field.
+
+        Raises:
+            AttributeError: Always raised because mapped fields are read-only.
+        """
+        raise AttributeError(
+            f"Field {self.name} is read-only"
+        )
+```
+```python
+class Reservation:
+    """Represent reservation and booking information.
+
+    Encapsulates the reservation-related details from the JSON response,
+    including the confirmation number, booking status, booking date,
+    ticket status, and currency.
+
+    Attributes:
+        confirmation_number: Unique confirmation number assigned to the
+            reservation.
+        booking_status: Current status of the reservation.
+        booking_date: Date and time when the reservation was created.
+        ticket_status: Current ticketing status of the reservation.
+        currency: Currency used for the reservation.
+    """
+
+    confirmation_number = Field("confirmation_number")
+    booking_status = Field("booking_status")
+    booking_date = Field("booking_date")
+    ticket_status = Field("ticket_status")
+    currency = Field("currency")
+
+    def __init__(self, reservation_info):
+        """Initialize a Reservation object from reservation data.
+
+        Args:
+            reservation_info: Dictionary containing reservation details.
+        """
+        self._data = reservation_info
+```
+```python
+class Passenger:
+    """Represent passenger information from a reservation response.
+
+    Encapsulates the passenger's personal information and provides access
+    to related contact, address, and frequent-flyer information through
+    mapped Python objects.
+
+    Attributes:
+        passenger_id: Unique identifier assigned to the passenger.
+        title: Passenger's title, such as Mr, Mrs, or Ms.
+        first_name: Passenger's first name.
+        middle_name: Passenger's middle name.
+        last_name: Passenger's last name.
+        date_of_birth: Passenger's date of birth.
+        gender: Passenger's gender.
+        contact: Passenger's contact information represented by a
+            :class:`Contact` object.
+        address: Passenger's address represented by an :class:`Address`
+            object.
+        frequent_flyer: Passenger's frequent-flyer information represented
+            by a :class:`FrequentFlyer` object.
+    """
+
+    passenger_id = Field("passenger_id")
+    title = Field("title")
+    first_name = Field("first_name")
+    middle_name = Field("middle_name")
+    last_name = Field("last_name")
+    date_of_birth = Field("date_of_birth")
+    gender = Field("gender")
+    contact = Field("contact", field_type=Contact)
+    address = Field("address", field_type=Address)
+    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)
+
+    def __init__(self, passenger_info):
+        """Initialize a Passenger object from passenger data.
+
+        Args:
+            passenger_info: Dictionary containing passenger details,
+                including contact, address, and frequent-flyer information.
+        """
+        self._data = passenger_info
+```
+```python
+class Contact:
+    """Represent a passenger's contact information.
+
+    Encapsulates the contact details associated with a passenger, including
+    primary and alternate contact information.
+
+    Attributes:
+        email: Passenger's email address.
+        phone: Passenger's primary phone number.
+        alternate_phone: Passenger's alternate phone number.
+    """
+
+    email = Field("email")
+    phone = Field("phone")
+    alternate_phone = Field("alternate_phone")
+
+    def __init__(self, contact_info):
+        """Initialize a Contact object from contact data.
+
+        Args:
+            contact_info: Dictionary containing the passenger's contact
+                information.
+        """
+        self._data = contact_info
+```
+```python
+class Address:
+    """Represent a passenger's address information.
+
+    Encapsulates the address details associated with a passenger, including
+    street, city, state, postal code, and country information.
+
+    Attributes:
+        street: Street address.
+        suite: Apartment, suite, or unit information.
+        city: City associated with the address.
+        state: State or administrative region.
+        state_code: Abbreviated state or region code.
+        zip_code: Postal or ZIP code.
+        country: Country associated with the address.
+    """
+
+    street = Field("street")
+    suite = Field("suite")
+    city = Field("city")
+    state = Field("state")
+    state_code = Field("state_code")
+    zip_code = Field("zip_code")
+    country = Field("country")
+
+    def __init__(self, address_info):
+        """Initialize an Address object from address data.
+
+        Args:
+            address_info: Dictionary containing the address information.
+        """
+        self._data = address_info
+```
+```python
+class FrequentFlyer:
+    """Represent a passenger's frequent-flyer program information.
+
+    Encapsulates the frequent-flyer details associated with a passenger,
+    including program membership, membership status, and accumulated miles.
+
+    Attributes:
+        program: Name of the frequent-flyer program.
+        membership_number: Unique membership number assigned by the program.
+        status: Current membership status within the program.
+        miles_balance: Current number of miles accumulated by the passenger.
+    """
+
+    program = Field("program")
+    membership_number = Field("membership_number")
+    status = Field("status")
+    miles_balance = Field("miles_balance")
+
+    def __init__(self, frequent_flyer_info):
+        """Initialize a FrequentFlyer object from membership data.
+
+        Args:
+            frequent_flyer_info: Dictionary containing frequent-flyer
+                membership information.
+        """
+        self._data = frequent_flyer_info
+```
+```python
+class Services:
+    """Represent the collection of services associated with a reservation.
+
+    Encapsulates a collection of :class:`Service` objects created from the
+    corresponding list of service dictionaries in the JSON response.
+
+    The nested ``Service`` class represents an individual service entry.
+    ``Services`` also implements indexed access through ``__getitem__()``,
+    allowing individual services to be accessed using standard sequence
+    notation.
+
+    Attributes:
+        _data: List containing the mapped :class:`Service` objects.
+    """
+
+    class Service:
+        """Represent an individual service selected by the passenger.
+
+        Attributes:
+            code: Unique code identifying the service.
+            name: Name of the service.
+            description: Description of the service.
+            status: Current status of the service.
+        """
+
+        code = Field("code")
+        name = Field("name")
+        description = Field("description")
+        status = Field("status")
+
+        def __init__(self, service_info):
+            """Initialize a Service object from service data.
+
+            Args:
+                service_info: Dictionary containing the service details.
+            """
+            self._data = service_info
+
+    def __init__(self, services_info):
+        """Initialize a Services collection from service data.
+
+        Each dictionary in ``services_info`` is converted into a
+        :class:`Service` object and stored internally.
+
+        Args:
+            services_info: List of dictionaries containing service details.
+        """
+        self._data = [self.Service(service) for service in services_info]
+
+    def __getitem__(self, index):
+        """Return the service at the specified index.
+
+        Args:
+            index: Zero-based index of the service to retrieve.
+
+        Returns:
+            Service: The service object at the specified index.
+
+        Raises:
+            IndexError: If the specified index is outside the valid range.
+        """
+        if index > len(self._data) - 1:
+            raise IndexError(
+                f"Service index must be less than {len(self._data)}"
+            )
+
+        return self._data[index]
+```
+```python
+class ReservationInfo:
+    """Represent the complete flight reservation information.
+
+    Provides a structured Python interface to the top-level nodes of the
+    reservation JSON response. Each field maps a JSON node to its
+    corresponding Python object, allowing nested reservation data to be
+    accessed through attribute notation.
+
+    Attributes:
+        reservation: Reservation and booking information.
+        passenger: Passenger details and contact information.
+        flight: Flight, airline, aircraft, departure, and arrival details.
+        seat: Seat assignment and seating information.
+        baggage: Baggage allowance and related information.
+        payment: Payment status, payment method, and fare details.
+        services: Collection of services selected by the passenger.
+        emergency_contact: Emergency contact information.
+        notifications: Email, SMS, and push notification preferences.
+    """
+
+    reservation = Field("reservation", field_type=Reservation)
+    passenger = Field("passenger", field_type=Passenger)
+    flight = Field("flight", Flight)
+    seat = Field("seat", Seat)
+    baggage = Field("baggage", Baggage)
+    payment = Field("payment", Payment)
+    services = Field("services", field_type=Services)
+    emergency_contact = Field("emergency_contact", EmergencyContact)
+    notifications = Field("notifications", Notifications)
+
+    def __init__(self, reservation_info):
+        """Initialize a ReservationInfo object from reservation data.
+
+        Args:
+            reservation_info: Dictionary containing the complete flight
+                reservation information.
+        """
+        self._data = reservation_info
+```
+
+
 Back to  [Articles](../articles.md)
