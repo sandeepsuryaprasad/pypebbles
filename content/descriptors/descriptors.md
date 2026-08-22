@@ -459,13 +459,13 @@ dedicated Python object.
 class ReservationInfo:
     reservation = Field("reservation", field_type=Reservation)
     passenger = Field("passenger", field_type=Passenger)
-    flight = Field("flight", Flight)
-    seat = Field("seat", Seat)
-    baggage = Field("baggage", Baggage)
-    payment = Field("payment", Payment)
+    flight = Field("flight", field_type=Flight)
+    seat = Field("seat", field_type=Seat)
+    baggage = Field("baggage", field_type=Baggage)
+    payment = Field("payment", field_type=Payment)
     services = Field("services", field_type=Services)
-    emergency_contact = Field("emergency_contact", EmergencyContact)
-    notifications = Field("notifications", Notifications)
+    emergency_contact = Field("emergency_contact", field_type=EmergencyContact)
+    notifications = Field("notifications", field_type=Notifications)
 
     def __init__(self, reservation_info):
         self._data = reservation_info
@@ -640,7 +640,7 @@ Now you can access all attributes of `Passenger` class
 ```
 
 But accessing `contact` or `address` or `frequent_flyer`, will not return the actual
-value of corresponding node in JSON, but rather returns object instance of 
+value of corresponding node in JSON, but rather returns an instance of 
 `Contact`, `Address` and `FrequentFlyer` class respectively. Because `contact` node
 is a nested JSON object with `email`, `phone` and `alternate_phone`, which we have
 abstracted in a different class `Contact`, similarly `address` and `frequent_flyer` nodes
@@ -691,5 +691,37 @@ class FrequentFlyer:
 
     def __init__(self, frequent_flyer_info):
         self._data = frequent_flyer_info
+```
+
+You can access the nested `contact`, `address`, and `frequent_flyer` JSON nodes
+through their corresponding Python attributes as shown below.
+
+```commandline
+>>> reservation.info.passenger.contact.email
+'john.doe@example.com'
+>>> reservation.info.passenger.contact.phone
+'+1-123-555-0987'
+>>> reservation.info.passenger.contact.alternate_phone
+'+1-111-222-3333'
+```
+```commandline
+>>> reservation.info.passenger.address.street
+'123 Example Avenue'
+>>> reservation.info.passenger.address.suite
+'Suite 100'
+>>> reservation.info.passenger.address.city
+'Sampleville'
+>>> reservation.info.passenger.address.state
+'California'
+```
+```commandline
+>>> reservation.info.passenger.frequent_flyer.program
+'Spam Airlines dvantage'
+>>> reservation.info.passenger.frequent_flyer.membership_number
+'SA987654321'
+>>> reservation.info.passenger.frequent_flyer.status
+'Executive Platinum'
+>>> reservation.info.passenger.frequent_flyer.miles_balance
+184250
 ```
 Back to  [Articles](../articles.md)
