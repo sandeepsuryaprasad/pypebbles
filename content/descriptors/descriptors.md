@@ -424,7 +424,7 @@ class ReservationInfo:
     seat = Field("seat", field_type=Seat)
     baggage = Field("baggage", field_type=Baggage)
     payment = Field("payment", field_type=Payment)
-    services = Field("services", field_type=Services)
+    services = Field("services")
     emergency_contact = Field("emergency_contact", field_type=EmergencyContact)
     notifications = Field("notifications", field_type=Notifications)
 
@@ -560,7 +560,7 @@ Below is the modified `Passenger` class
 class Passenger: 
     first_name = Field("first_name")
     last_name = Field("last_name")
-    address = Field("address", field_type=Address) # passing filed_tpe to descriptor
+    address = Field("address", field_type=Address) # passing Address class as field_type to descriptor
 
     def __init__(self, passenger_info):
         self._data = passenger_info
@@ -830,13 +830,13 @@ class ReservationInfo:
 
     reservation = Field("reservation", field_type=Reservation)
     passenger = Field("passenger", field_type=Passenger)
-    flight = Field("flight", Flight)
-    seat = Field("seat", Seat)
-    baggage = Field("baggage", Baggage)
-    payment = Field("payment", Payment)
+    flight = Field("flight", Flight) # Flight class should be implemented
+    seat = Field("seat", Seat)  # Seat class should be implemented
+    baggage = Field("baggage", Baggage) # Baggage class should be implemented
+    payment = Field("payment", Payment) # Payment class should be implemented
     services = Field("services", field_type=Services)
-    emergency_contact = Field("emergency_contact", EmergencyContact)
-    notifications = Field("notifications", Notifications)
+    emergency_contact = Field("emergency_contact", EmergencyContact)    # EmergencyContact should be implemented
+    notifications = Field("notifications", Notifications)   # Notifications class should be implemented
 
     def __init__(self, reservation_info):
         """Initialize a ReservationInfo object from reservation data.
@@ -874,9 +874,9 @@ class Passenger:
     passenger_id = Field("passenger_id")
     first_name = Field("first_name")
     last_name = Field("last_name")
-    contact = Field("contact", field_type=Contact)
+    contact = Field("contact", field_type=Contact)  # Contact class should be implemented
     address = Field("address", field_type=Address)
-    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)
+    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)  # FrequentFlyer class should be implemented
 
     def __init__(self, passenger_info):
         """Initialize a Passenger object from passenger data.
