@@ -463,7 +463,7 @@ class ReservationInfo:
     seat = Field("seat", field_type=Seat)
     baggage = Field("baggage", field_type=Baggage)
     payment = Field("payment", field_type=Payment)
-    services = Field("services", field_type=Services)
+    services = Field("services")
     emergency_contact = Field("emergency_contact", field_type=EmergencyContact)
     notifications = Field("notifications", field_type=Notifications)
 
@@ -724,4 +724,48 @@ through their corresponding Python attributes as shown below.
 >>> reservation.info.passenger.frequent_flyer.miles_balance
 184250
 ```
+
+When you access `services` on `ReservationInfo` class, it returns a `list` of `dict`,
+```commandline
+>>> reservation.info.services
+[{'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}, {'code': 'WIFI', 'name': 'Inflight Wi-Fi', 'description': 'High-speed internet access', 'status': 'CONFIRMED'}, {'code': 'LOUNGE', 'name': 'Elite Club', 'description': 'Airport lounge access', 'status': 'CONFIRMED'}]
+>>> 
+```
+
+Now If you want to access the list of services that the passenger has opted for,
+you should index the list.
+```commandline
+>>> reservation.info.services
+[{'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}, {'code': 'WIFI', 'name': 'Inflight Wi-Fi', 'description': 'High-speed internet access', 'status': 'CONFIRMED'}, {'code': 'LOUNGE', 'name': 'Elite Club', 'description': 'Airport lounge access', 'status': 'CONFIRMED'}]
+>>> 
+>>> reservation.info.services[0]
+{'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}
+>>> 
+>>> reservation.info.services[1]
+{'code': 'WIFI', 'name': 'Inflight Wi-Fi', 'description': 'High-speed internet access', 'status': 'CONFIRMED'}
+>>> 
+>>> reservation.info.services[2]
+{'code': 'LOUNGE', 'name': 'Elite Club', 'description': 'Airport lounge access', 'status': 'CONFIRMED'}
+>>> 
+```
+Suppose if we wanted to access the service at 0th index, we would do something like this,
+```commandline
+>>> reservation.info.services[0]["code"]
+'MEAL'
+>>> reservation.info.services[0]["name"]
+'Premium Meal'
+```
+Again, we encounter the same limitation. When we access `reservation.info.services[0]`, 
+the expression returns the element at index 0, which is still a dictionary object.
+Therefore, we must use either dictionary indexing or the `get()` method to access 
+the individual values within that object. A more intuitive and object-oriented approach 
+would be to expose these values as attributes,
+```commandline
+>>> reservation.info.services[0].code
+'MEAL'
+>>> reservation.info.services[0].name
+'Premium Meal'
+```
+
+
 Back to  [Articles](../articles.md)
