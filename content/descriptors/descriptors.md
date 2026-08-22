@@ -460,9 +460,11 @@ class Field:
 * `field_type` optionally specifies the Python class used to represent a 
 nested JSON object.
 
-when we say `flight = Field("flight", Flight)` the `flight` attribute maps to
-the `"flight"` key in the JSON data and should be represented by a Flight object because
-when `"flight"` key is accessed, the resulting value is one more nested JSON object.
+When we define `passenger = Field("passenger", Passenger)`, the flight attribute is 
+mapped to the `"passenger"` key in the underlying JSON data. Since the value 
+associated with this key is a nested JSON object, the Field descriptor converts
+that dictionary into a `Passenger` object, providing structured attribute-based access
+to its contents.
 
 `__get__` is invoked automatically whenever the corresponding attribute 
 is accessed. For example,
@@ -510,15 +512,17 @@ So now when you say `reservation.info.passenger` it returns instance of `Passeng
 >>> reservation.info.passenger
 <__main__.Passenger object at 0x104542790>
 ```
-Now you can access all attributes of `Passenger` class
+You can now access all attributes of the Passenger object through standard 
+Python attribute notation,
 ```commandline
 >>> reservation.info.passenger.first_name
 'John'
 >>> reservation.info.passenger.last_name
 'Doe'
 ```
-But when you access `address` will return value of corresponding node in JSON, 
-which is one more nested JSON object.
+However, accessing the address attribute returns the data associated with
+the corresponding JSON node, which is itself a nested JSON object containing
+additional address-related fields.
 ```commandline
 >>> reservation.info.passenger.address
 {'city': 'Sampleville', 'state': 'California', 'country': 'United States'}
