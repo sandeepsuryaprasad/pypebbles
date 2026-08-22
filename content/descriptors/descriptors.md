@@ -37,24 +37,16 @@ for a single passenger.
   },
   "passenger": {
     "passenger_id": "PAX-104582",
-    "title": "Mr",
     "first_name": "John",
-    "middle_name": "James",
     "last_name": "Doe",
-    "date_of_birth": "1983-05-17",
-    "gender": "MALE",
     "contact": {
       "email": "john.doe@example.com",
       "phone": "+1-123-555-0987",
       "alternate_phone": "+1-111-222-3333"
     },
     "address": {
-      "street": "123 Example Avenue",
-      "suite": "Suite 100",
       "city": "Sampleville",
       "state": "California",
-      "state_code": "CA",
-      "zip_code": "90000",
       "country": "United States"
     },
     "frequent_flyer": {
@@ -239,7 +231,7 @@ their own attributes and, in some cases, additional nested objects.
 <div markdown="1">
 
 ```commandline
-Response
+ReservationInfo
 │
 ├── reservation
 │   ├── confirmation_number
@@ -250,27 +242,16 @@ Response
 │
 ├── passenger
 │   ├── passenger_id
-│   ├── title
 │   ├── first_name
-│   ├── middle_name
 │   ├── last_name
-│   ├── date_of_birth
-│   ├── gender
-│   │
 │   ├── contact
 │   │   ├── email
 │   │   ├── phone
 │   │   └── alternate_phone
-│   │
 │   ├── address
-│   │   ├── street
-│   │   ├── suite
 │   │   ├── city
 │   │   ├── state
-│   │   ├── state_code
-│   │   ├── zip_code
 │   │   └── country
-│   │
 │   └── frequent_flyer
 │       ├── program
 │       ├── membership_number
@@ -278,7 +259,6 @@ Response
 │       └── miles_balance
 │
 ├── flight
-│   │
 │   ├── airline
 │   │   ├── code
 │   │   ├── name
@@ -286,16 +266,13 @@ Response
 │   │       ├── city
 │   │       ├── state
 │   │       └── state_code
-│   │
 │   ├── flight_number
 │   ├── flight_status
-│   │
 │   ├── aircraft
 │   │   ├── registration
 │   │   ├── manufacturer
 │   │   ├── model
 │   │   └── configuration
-│   │
 │   ├── departure
 │   │   ├── airport
 │   │   │   ├── code
@@ -305,15 +282,12 @@ Response
 │   │   │   ├── state_code
 │   │   │   ├── country
 │   │   │   └── terminal
-│   │   │
 │   │   ├── scheduled
 │   │   │   ├── date
 │   │   │   ├── time
 │   │   │   └── timezone
-│   │   │
 │   │   ├── gate
 │   │   └── boarding_time
-│   │
 │   ├── arrival
 │   │   ├── airport
 │   │   │   ├── code
@@ -323,18 +297,14 @@ Response
 │   │   │   ├── state_code
 │   │   │   ├── country
 │   │   │   └── terminal
-│   │   │
 │   │   ├── scheduled
 │   │   │   ├── date
 │   │   │   ├── time
 │   │   │   └── timezone
-│   │   │
 │   │   └── gate
-│   │
 │   ├── duration
 │   │   ├── hours
 │   │   └── minutes
-│   │
 │   └── distance
 │       ├── value
 │       └── unit
@@ -353,13 +323,11 @@ Response
 │   │   └── weight_limit
 │   │       ├── value
 │   │       └── unit
-│   │
 │   ├── carry_on
 │   │   ├── allowed_pieces
 │   │   └── weight_limit
 │   │       ├── value
 │   │       └── unit
-│   │
 │   └── personal_item
 │       ├── allowed
 │       └── description
@@ -369,7 +337,6 @@ Response
 │   ├── method
 │   │   ├── type
 │   │   └── provider
-│   │
 │   └── fare
 │       ├── base_fare
 │       ├── taxes
@@ -378,14 +345,11 @@ Response
 │       └── total
 │
 ├── services [array]
-│   │
-│   ├── service
-│   │   ├── code
-│   │   ├── name
-│   │   ├── description
-│   │   └── status
-│   │
-│   └── ...
+│   └── Service
+│       ├── code
+│       ├── name
+│       ├── description
+│       └── status
 │
 ├── emergency_contact
 │   ├── name
@@ -401,15 +365,12 @@ Response
 │       └── country
 │
 └── notifications
-    │
     ├── email
     │   ├── enabled
     │   └── address
-    │
     ├── sms
     │   ├── enabled
     │   └── phone
-    │
     └── push
         └── enabled
 ```
@@ -473,7 +434,6 @@ class ReservationInfo:
 In the `ReservationInfo` class, attributes such as `reservation`, `passenger`,
 `flight`, `seat`, and `payment` are class attributes whose values are instances 
 of the `Field` descriptor.
-
 ### Field descriptor
 The `Field` class is a descriptor that provides controlled attribute access to
 the underlying JSON data.
@@ -560,14 +520,11 @@ instance of that type.
 Let us implement a mapped type `Passenger` class,
 ```python
 class Passenger:
-    passenger_id = Field("passenger_id")
-    title = Field("title")
+    """Only mapping first_name, last_name and address nodes"""
+    # Not Mapping all the passenger nodes in JSON 
     first_name = Field("first_name")
-    middle_name = Field("middle_name")
     last_name = Field("last_name")
-    date_of_birth = Field("date_of_birth")
-    gender = Field("gender")
-    address = Field("address", field_type=Address)
+    address = Field("address", field_type=Address) 
 
     def __init__(self, passenger_info):
         self._data = passenger_info
@@ -579,18 +536,10 @@ So now when you say `reservation.info.passenger` it returns instance of `Passeng
 ```
 Now you can access all attributes of `Passenger` class
 ```commandline
->>> reservation.info.passenger.passenger_id
-'PAX-104582'
->>> reservation.info.passenger.title
-'Mr'
 >>> reservation.info.passenger.first_name
 'John'
 >>> reservation.info.passenger.last_name
 'Doe'
->>> reservation.info.passenger.date_of_birth
-'1983-05-17'
->>> reservation.info.passenger.gender
-'MALE'
 ```
 But accessing `address` will not return the actual value of corresponding node 
 in JSON, but rather returns an instance of `Address` class. 
@@ -607,12 +556,9 @@ instance of the class that is passed.
 Let us implement `Address` mapped class.
 ```python
 class Address:
-    street = Field("street")
-    suite = Field("suite")
+    """Only mapping city, state and country"""
     city = Field("city")
     state = Field("state")
-    state_code = Field("state_code")
-    zip_code = Field("zip_code")
     country = Field("country")
 
     def __init__(self, address_info):
@@ -621,10 +567,6 @@ class Address:
 You can access the nested `address` JSON nodes through their 
 corresponding Python attributes as shown below.
 ```commandline
->>> reservation.info.passenger.address.street
-'123 Example Avenue'
->>> reservation.info.passenger.address.suite
-'Suite 100'
 >>> reservation.info.passenger.address.city
 'Sampleville'
 >>> reservation.info.passenger.address.state
@@ -985,12 +927,8 @@ class Passenger:
     """
 
     passenger_id = Field("passenger_id")
-    title = Field("title")
     first_name = Field("first_name")
-    middle_name = Field("middle_name")
     last_name = Field("last_name")
-    date_of_birth = Field("date_of_birth")
-    gender = Field("gender")
     contact = Field("contact", field_type=Contact)
     address = Field("address", field_type=Address)
     frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)
