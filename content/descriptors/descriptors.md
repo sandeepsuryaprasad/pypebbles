@@ -763,6 +763,70 @@ would be to expose these values as attributes,
 >>> reservation.info.services[0].name
 'Premium Meal'
 ```
+To achieve this, let us introduce one more layer of abstraction, `Services`
+```python
+class Services:
+    class Service:
+        code = Field("code")
+        name = Field("name")
+        description = Field("description")
+        status = Field("status")
 
+        def __init__(self, service_info):
+            self._data = service_info
 
+    def __init__(self, services_info):
+        """Convert list of dicts to Service object"""
+        self._data = [self.Service(service) for service in services_info]
+
+    def __getitem__(self, index):
+        return self._data[index]
+```
+The `Services` class is responsible for transforming the services JSON array into a
+collection of Python objects. Since each element in the JSON array represents an 
+individual service, the implementation uses a nested Service class to model the 
+structure of each `service` item.
+
+The nested `Service` class represents one service entry from the JSON array. 
+Its attributes are defined using the `Field` descriptor
+
+The descriptor maps each Python attribute to its corresponding key in the service dictionary.
+
+For example: `"code": "MEAL"` is exposed as `service.code`.
+
+### Converting dictionaries into Service objects
+```python
+def __init__(self, services_info):
+    self._data = [self.Service(service) for service in services_info]
+```
+The list comprehension iterates over each dictionary in `services_info` and 
+creates a `Service` object for it.
+
+The `__getitem__` method makes Services behave like a sequence. As a result, 
+callers can access an individual service using familiar indexing syntax
+
+Let us map `services` attribute in `ReservationInfo` class to `Service`
+```python
+class ReservationInfo:
+    ...
+    # Other attributes omitted
+    services = Field("services", field_type=Services)
+    ...
+```
+Now the individual service attributes can then be accessed using normal 
+attribute notation.
+```python
+>>> reservation.info.services[0].code
+'MEAL'
+>>> reservation.info.services[0].name
+'Premium Meal'
+>>> reservation.info.services[0].status
+'CONFIRMED'
+>>> reservation.info.services[1].name
+'Inflight Wi-Fi'
+>>> reservation.info.services[1].code
+'WIFI'
+>>> reservation.info.services[1].status
+'CONFIRMED'
+```
 Back to  [Articles](../articles.md)
