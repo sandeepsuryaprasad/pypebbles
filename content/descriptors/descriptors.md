@@ -551,55 +551,13 @@ nested JSON objects.
 | `notifications`     | `notifications`     | `Notifications`    |
 
 ### Implementing the Mapped Types
-
-We will begin with the simpler JSON objects and gradually build the more 
-complex types by composing them together. For nested JSON objects, 
+For the purpose of demonstration, I will be implementing two Mapped types,
+`Address` and `Services`. For nested JSON objects, 
 the Field descriptor will be configured with the corresponding mapped type so
 that the nested dictionary is automatically converted into an
 instance of that type.
 
-```python
-class Reservation:
-    confirmation_number = Field("confirmation_number")
-    booking_status = Field("booking_status")
-    booking_date = Field("booking_date")
-    ticket_status = Field("ticket_status")
-    currency = Field("currency")
-
-    def __init__(self, reservation_info):
-        self._data = reservation_info
-```
-
-The `Reservation` class represents the `reservation` JSON node. 
-Each class attribute is a `Field` descriptor that maps a Python attribute to a
-corresponding key in the underlying JSON data.
-
-Let me create an instance of `FlightReservation`
-```commandline
->>> reservation = FlightReservation()
->>> reservation.info
-<__main__.ReservationInfo object at 0x104526c10>
-```
-when you say `reservation.info`, the `info` property returns an instance to
-`ReservationInfo` class. Now you can access all the attributes of `ReservationInfo` class.
-```commandline
->>> reservation.info.reservation
-<__main__.Reservation object at 0x104542790>
->>> reservation.info.reservation.confirmation_number
-'X7K9PQ'
->>> reservation.info.reservation.booking_status
-'CONFIRMED'
->>> reservation.info.reservation.booking_date
-'2026-08-10T14:32:18-05:00'
->>> reservation.info.reservation.ticket_status
-'TICKETED'
->>> reservation.info.reservation.currency
-'USD'
-```
-In the above code snippet, we are accessing attributes `confirmation_number`, `booking_status`
-`booking_date`, `ticket_status` and `currency` of `Reservation` class.
-
-Let us implement one more mapped type `Passenger` class,
+Let us implement a mapped type `Passenger` class,
 ```python
 class Passenger:
     passenger_id = Field("passenger_id")
@@ -609,20 +567,16 @@ class Passenger:
     last_name = Field("last_name")
     date_of_birth = Field("date_of_birth")
     gender = Field("gender")
-    contact = Field("contact", field_type=Contact)
     address = Field("address", field_type=Address)
-    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)
 
     def __init__(self, passenger_info):
         self._data = passenger_info
 ```
-
 So now when you say `reservation.info.passenger` it returns instance of `Passenger` class.
 ```commandline
 >>> reservation.info.passenger
 <__main__.Passenger object at 0x104542790>
 ```
-
 Now you can access all attributes of `Passenger` class
 ```commandline
 >>> reservation.info.passenger.passenger_id
@@ -638,37 +592,19 @@ Now you can access all attributes of `Passenger` class
 >>> reservation.info.passenger.gender
 'MALE'
 ```
-
-But accessing `contact` or `address` or `frequent_flyer`, will not return the actual
-value of corresponding node in JSON, but rather returns an instance of 
-`Contact`, `Address` and `FrequentFlyer` class respectively. Because `contact` node
-is a nested JSON object with `email`, `phone` and `alternate_phone`, which we have
-abstracted in a different class `Contact`, similarly `address` and `frequent_flyer` nodes
-of JSON response.
+But accessing `address` will not return the actual value of corresponding node 
+in JSON, but rather returns an instance of `Address` class. 
+Because `address` node is a nested JSON object which we have abstracted in a 
+different class `Address`.
 
 If the JSON node has a nested attribute, we are going pass the class reference to
 `Field` descriptor through argument `field_type`, which then the descriptor returns
 instance of the class that is passed.
-
 ```commandline
->>> reservation.info.passenger.contact
-<__main__.Contact object at 0x104542850>
 >>> reservation.info.passenger.address
 <__main__.Address object at 0x104542820>
->>> reservation.info.passenger.frequent_flyer
-<__main__.FrequentFlyer object at 0x1045427c0>
 ```
-
-Let us implement `Contact`, `Address` and `FrequentFlyer` mapped classes.
-```python
-class Contact:
-    email = Field("email")
-    phone = Field("phone")
-    alternate_phone = Field("alternate_phone")
-
-    def __init__(self, contact_info):
-        self._data = contact_info
-```
+Let us implement `Address` mapped class.
 ```python
 class Address:
     street = Field("street")
@@ -682,28 +618,8 @@ class Address:
     def __init__(self, address_info):
         self._data = address_info
 ```
-```python
-class FrequentFlyer:
-    program = Field("program")
-    membership_number = Field("membership_number")
-    status = Field("status")
-    miles_balance = Field("miles_balance")
-
-    def __init__(self, frequent_flyer_info):
-        self._data = frequent_flyer_info
-```
-
-You can access the nested `contact`, `address`, and `frequent_flyer` JSON nodes
-through their corresponding Python attributes as shown below.
-
-```commandline
->>> reservation.info.passenger.contact.email
-'john.doe@example.com'
->>> reservation.info.passenger.contact.phone
-'+1-123-555-0987'
->>> reservation.info.passenger.contact.alternate_phone
-'+1-111-222-3333'
-```
+You can access the nested `address` JSON nodes through their 
+corresponding Python attributes as shown below.
 ```commandline
 >>> reservation.info.passenger.address.street
 '123 Example Avenue'
@@ -714,17 +630,7 @@ through their corresponding Python attributes as shown below.
 >>> reservation.info.passenger.address.state
 'California'
 ```
-```commandline
->>> reservation.info.passenger.frequent_flyer.program
-'Spam Airlines dvantage'
->>> reservation.info.passenger.frequent_flyer.membership_number
-'SA987654321'
->>> reservation.info.passenger.frequent_flyer.status
-'Executive Platinum'
->>> reservation.info.passenger.frequent_flyer.miles_balance
-184250
-```
-When you access services on the `ReservationInfo` object, it returns a list 
+When you access `services` on the `ReservationInfo` object, it returns a list 
 containing the services selected by the passenger. Each element in the list is
 represented as a dictionary object containing the details of an individual service.
 ```commandline
@@ -832,7 +738,6 @@ attribute notation.
 >>> reservation.info.services[1].status
 'CONFIRMED'
 ```
-
 The final implementation can be structured as shown below.
 ```python
 from json import load
@@ -1023,34 +928,6 @@ class Services:
         return self._data[index]
 ```
 ```python
-class FrequentFlyer:
-    """Represent a passenger's frequent-flyer program information.
-
-    Encapsulates the frequent-flyer details associated with a passenger,
-    including program membership, membership status, and accumulated miles.
-
-    Attributes:
-        program: Name of the frequent-flyer program.
-        membership_number: Unique membership number assigned by the program.
-        status: Current membership status within the program.
-        miles_balance: Current number of miles accumulated by the passenger.
-    """
-
-    program = Field("program")
-    membership_number = Field("membership_number")
-    status = Field("status")
-    miles_balance = Field("miles_balance")
-
-    def __init__(self, frequent_flyer_info):
-        """Initialize a FrequentFlyer object from membership data.
-
-        Args:
-            frequent_flyer_info: Dictionary containing frequent-flyer
-                membership information.
-        """
-        self._data = frequent_flyer_info
-```
-```python
 class Address:
     """Represent a passenger's address information.
 
@@ -1082,32 +959,6 @@ class Address:
             address_info: Dictionary containing the address information.
         """
         self._data = address_info
-```
-```python
-class Contact:
-    """Represent a passenger's contact information.
-
-    Encapsulates the contact details associated with a passenger, including
-    primary and alternate contact information.
-
-    Attributes:
-        email: Passenger's email address.
-        phone: Passenger's primary phone number.
-        alternate_phone: Passenger's alternate phone number.
-    """
-
-    email = Field("email")
-    phone = Field("phone")
-    alternate_phone = Field("alternate_phone")
-
-    def __init__(self, contact_info):
-        """Initialize a Contact object from contact data.
-
-        Args:
-            contact_info: Dictionary containing the passenger's contact
-                information.
-        """
-        self._data = contact_info
 ```
 ```python
 class Passenger:
@@ -1152,37 +1003,6 @@ class Passenger:
                 including contact, address, and frequent-flyer information.
         """
         self._data = passenger_info
-```
-```python
-class Reservation:
-    """Represent reservation and booking information.
-
-    Encapsulates the reservation-related details from the JSON response,
-    including the confirmation number, booking status, booking date,
-    ticket status, and currency.
-
-    Attributes:
-        confirmation_number: Unique confirmation number assigned to the
-            reservation.
-        booking_status: Current status of the reservation.
-        booking_date: Date and time when the reservation was created.
-        ticket_status: Current ticketing status of the reservation.
-        currency: Currency used for the reservation.
-    """
-
-    confirmation_number = Field("confirmation_number")
-    booking_status = Field("booking_status")
-    booking_date = Field("booking_date")
-    ticket_status = Field("ticket_status")
-    currency = Field("currency")
-
-    def __init__(self, reservation_info):
-        """Initialize a Reservation object from reservation data.
-
-        Args:
-            reservation_info: Dictionary containing reservation details.
-        """
-        self._data = reservation_info
 ```
 ```python
 class ReservationInfo:
