@@ -488,28 +488,6 @@ This allows code to navigate a deeply nested JSON response using normal
 Python attribute access, while the descriptor handles the underlying dictionary
 access and object creation transparently.
 
-```commandline
->>> reservation.info.flight.departure.airport.city
-'Austin'
->>> reservation.info.passenger.contact.email
-'john.doe@example.com'
-```
-The following table summarizes the mapping between each JSON node, 
-its corresponding Python attribute, and the Python types used to model 
-nested JSON objects.
-
-| JSON node           | Python attribute    | Mapped type        |
-| ------------------- | ------------------- | ------------------ |
-| `reservation`       | `reservation`       | `Reservation`      |
-| `passenger`         | `passenger`         | `Passenger`        |
-| `flight`            | `flight`            | `Flight`           |
-| `seat`              | `seat`              | `Seat`             |
-| `baggage`           | `baggage`           | `Baggage`          |
-| `payment`           | `payment`           | `Payment`          |
-| `services`          | `services`          | `Services`         |
-| `emergency_contact` | `emergency_contact` | `EmergencyContact` |
-| `notifications`     | `notifications`     | `Notifications`    |
-
 ### Implementing the Mapped Types
 For the purpose of demonstration, I will be implementing two Mapped types,
 `Address` and `Services`. For nested JSON objects, 
