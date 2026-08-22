@@ -489,17 +489,15 @@ Python attribute access, while the descriptor handles the underlying dictionary
 access and object creation transparently.
 
 ### Implementing the Mapped Types
-For the purpose of demonstration, I will be implementing two Mapped types,
-`Address` and `Services`. For nested JSON objects, 
+For the purpose of demonstration, I will be implementing three Mapped types,
+`Passenger`, `Address` and `Services`. For nested JSON objects, 
 the Field descriptor will be configured with the corresponding mapped type so
 that the nested dictionary is automatically converted into an
 instance of that type.
 
 Let us implement a mapped type `Passenger` class,
 ```python
-class Passenger:
-    """Only mapping first_name, last_name and address nodes"""
-    # Not Mapping all the passenger nodes in JSON 
+class Passenger: 
     first_name = Field("first_name")
     last_name = Field("last_name")
     address = Field("address", field_type=Address) 
@@ -534,7 +532,6 @@ instance of the class that is passed.
 Let us implement `Address` mapped class.
 ```python
 class Address:
-    """Only mapping city, state and country"""
     city = Field("city")
     state = Field("state")
     country = Field("country")
