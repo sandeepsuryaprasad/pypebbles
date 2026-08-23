@@ -113,7 +113,7 @@ class Employees:
         self._employees = [Employee(employee) for employee in self._data]
         return self._employees
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> Employee:
         """Return the employee at the specified index.
 
         Provides sequence-style indexed access to the employee collection.
@@ -126,7 +126,7 @@ class Employees:
         """
         return self._employees[index]
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Return the number of employees in the collection.
 
         Returns:
