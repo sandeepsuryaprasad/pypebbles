@@ -721,6 +721,13 @@ for representing a specific part of the underlying data. This keeps the implemen
 modular while allowing the client code to interact with the data through familiar 
 dot notation
 
+We also used several Python magic methods to make these classes behave more naturally 
+and provide a more Pythonic interface. For example, implementing `__getitem__` allows 
+objects such as Employees and Skills to support index-based access, while `__len__`
+allows the Employees collection to work with Python's built-in `len` function. 
+These methods allow custom classes to integrate naturally with Python's data model 
+rather than requiring callers to use custom methods for common operations.
+
 As applications grow and data structures become more complex, thoughtful
 abstraction can make the difference between code that merely works and code that 
 remains readable, maintainable, reusable, and extensible over time.
