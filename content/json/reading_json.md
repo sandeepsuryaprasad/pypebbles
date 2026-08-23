@@ -59,6 +59,7 @@ class Employees:
         """Initialize the Employees object and load employee data."""
         self._path = self._json_file_path
         self._data = self._load_json_data
+        self._employees = None
 
     @property
     def _json_file_path(self) -> Path:
@@ -89,16 +90,35 @@ class Employees:
 
     @property
     def employees(self) -> list[Employee]:
-        """Return all employee records as Employee objects.
+        """Return all employees as Employee objects.
 
-        Converts each employee dictionary from the JSON data into an
-        :class:`Employee` object, providing a structured, attribute-based
-        interface to the employee information.
+        Converts each employee dictionary loaded from the JSON file into an
+        :class:`Employee` object, providing a structured Python representation
+        of the employee data.
 
         Returns:
-            list[Employee]: A list of Employee objects.
+            list[Employee]: A list of Employee objects created from the
+                employee records in the JSON data.
         """
-        return [ Employee(employee) for employee in self._data ]
+        if self._employees is None:
+            self._employees =  [Employee(employee) for employee in self._data]
+        return self._employees
+
+    def __getitem__(self, index):
+        """Return the employee at the specified index.
+        Provides sequence-style indexed access to the employee collection.
+        Args:
+            index: Zero-based index of the employee to retrieve.
+
+        Returns:
+            Employee: The employee object at the specified index.
+
+        Raises:
+            IndexError: If the specified index is outside the valid range.
+        """
+        if self._employees is None:
+            self._employees = [Employee(employee) for employee in self._data]
+        return self._employees[index]
 ```
 Technically, the class performs three main operations:
 
