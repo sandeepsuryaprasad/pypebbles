@@ -83,7 +83,7 @@ class Employees:
         Raises:
             FileNotFoundError: If ``data.json`` does not exist.
         """
-        path = Path("data.json")
+        path = Path("employee.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
         return path
@@ -110,8 +110,7 @@ class Employees:
         Returns:
             list[Employee]: A list of Employee objects.
         """
-        self._employees = [Employee(employee) for employee in self._data]
-        return self._employees
+        return [Employee(employee) for employee in self._data]
 
     def __getitem__(self, index) -> Employee:
         """Return the employee at the specified index.
@@ -189,23 +188,7 @@ mode and inspect the resulting objects and their attributes.
 ```python
 >>> employees = Employees() # creating instance of `Employees` class
 >>> employees
-<__main__.Employees object at 0x100d16a30>
->>> employees.employees     # accessing `employees` property on `Employees` object
-[<__main__.Employee object at 0x100d33760>, <__main__.Employee object at 0x100d336d0>]
-```
-```python
->>> employees.employees[0]  # indexing the employees list
-<__main__.Employee object at 0x100d33580>
->>> employees.employees[0].first_name
-'David'
->>> employees.employees[0].last_name
-'Brown'
-```
-```python
->>> employees.employees[1].first_name
-'Laura'
->>> employees.employees[1].last_name
-'White'
+<__main__.Employees object at 0x1051fbfa0>
 ```
 Since the `Employees` class implements the `__getitem__` special method, 
 its instances support sequence-style indexing and can be iterated over using 
@@ -216,6 +199,21 @@ Python's iteration protocol.
 >>> employees[1]
 <__main__.Employee object at 0x10040aee0>   # instance of `Employee` class
 ```
+```python
+>>> employees[0]  # indexing the employees list
+<__main__.Employee object at 0x100d33580>
+>>> employees[0].first_name
+'David'
+>>> employees[0].last_name
+'Brown'
+```
+```python
+>>> employees[1].first_name
+'Laura'
+>>> employees[1].last_name
+'White'
+```
+
 ```python
 >>> employees[0].first_name
 'David'
@@ -375,28 +373,26 @@ class Employee:
 ```
 ```python
 >>> employees = Employees()
->>> employees.employees
-[<__main__.Employee object at 0x108eeb7f0>, <__main__.Employee object at 0x108ecec10>]
 ```
 ```python
->>> employees.employees[0]
+>>> employees[0]
 <__main__.Employee object at 0x108eeb850>
 ```
 ```python
->>> employees.employees[0].emp_id
+>>> employees[0].emp_id
 1
->>> employees.employees[0].name
+>>> employees[0].name
 'Michael Anderson'
 ```
 ```python
->>> employees.employees[1].emp_id
+>>> employees[1].emp_id
 2
->>> employees.employees[1].email
+>>> employees[1].email
 'emily.johnson@example.com'
 ```
 However, when we access `address` it returns one more `dict` object.
 ```python
->>> employees.employees[0].address
+>>> employees[0].address
 {'city': 'Austin', 'state': 'TX', 'country': 'United States', 'geo_location': {'lat': '30.2672', 'lng': '-97.7431'}}
 ```
 The expression correctly returns the nested JSON object associated with the address key,
@@ -406,7 +402,7 @@ result in an AttributeError, because the returned value is still a standard Pyth
 dictionary rather than an Address object.
 
 ```python
->>> employees.employees[0].address.city
+>>> employees[0].address.city
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 AttributeError: 'dict' object has no attribute 'city'
@@ -425,24 +421,24 @@ as attributes.
 
 So the only way to make above code work is by doing something like this,
 ```python
->>> employees.employees[0].address["city"]  # Indexing Syntax to access the key of the dict
+>>> employees[0].address["city"]  # Indexing Syntax to access the key of the dict
 'Austin'
->>> employees.employees[0].address.get("city")     # On dict object we are using `get` method
+>>> employees[0].address.get("city")     # On dict object we are using `get` method
 'Austin'
 ```
 To access the `geo_location` details, you must first navigate through the nested 
 `address` object and then access the required fields within the `geo_location` structure.
 
 ```python
->>> employees.employees[0].address["geo_location"]
+>>> employees[0].address["geo_location"]
 {'lat': '30.2672', 'lng': '-97.7431'}
 ```
 To access `lat` and `lng` values,
 ```python
->>> employees.employees[0].address["geo_location"]["lat"]
+>>> employees[0].address["geo_location"]["lat"]
 '30.2672'
 >>> 
->>> employees.employees[0].address["geo_location"]["lng"]
+>>> employees[0].address["geo_location"]["lng"]
 '-97.7431'
 ```
 A similar challenge arises with the `skills` attribute. Accessing skills on an `Employee` 
@@ -450,45 +446,45 @@ object returns a `list` containing the skills associated with that employee.
 Since an employee can have multiple skills, each element in the list is represented
 as a separate dictionary containing the corresponding skill details.
 ```python
->>> employees.employees[0].skills
+>>> employees[0].skills
 [{'name': 'Python', 'level': 'Advanced'}, {'name': 'C', 'level': 'Advanced'}, {'name': 'C++', 'level': 'Intermediate'}]
 >>> 
->>> employees.employees[1].skills
+>>> employees[1].skills
 [{'name': 'Ruby', 'level': 'Intermediate'}, {'name': 'Rust', 'level': 'Advanced'}]
 ```
 Suppose if we wanted to access the actual values, we would do something like below,
 ```python
->>> employees.employees[0].skills[0]        # first employee skills
+>>> employees[0].skills[0]        # first employee skills
 {'name': 'Python', 'level': 'Advanced'}
->>> employees.employees[0].skills[0]["name"]
+>>> employees[0].skills[0]["name"]
 'Python'
->>> employees.employees[0].skills[0]["level"]
+>>> employees[0].skills[0]["level"]
 'Advanced'
 >>> 
->>> employees.employees[0].skills[1]
+>>> employees[0].skills[1]
 {'name': 'C', 'level': 'Advanced'}
 >>> 
->>> employees.employees[0].skills[1]["name"]
+>>> employees[0].skills[1]["name"]
 'C'
 >>> 
->>> employees.employees[0].skills[1]["level"]
+>>> employees[0].skills[1]["level"]
 'Advanced'
 >>> 
 ```
 ```python
->>> employees.employees[1].skills   # second employee skills
+>>> employees[1].skills   # second employee skills
 [{'name': 'Ruby', 'level': 'Intermediate'}, {'name': 'Rust', 'level': 'Advanced'}]
 >>> 
->>> employees.employees[1].skills[0]    
+>>> employees[1].skills[0]    
 {'name': 'Ruby', 'level': 'Intermediate'}
 >>> 
->>> employees.employees[1].skills[1]
+>>> employees[1].skills[1]
 {'name': 'Rust', 'level': 'Advanced'}
 >>> 
->>> employees.employees[1].skills[0]["name"]
+>>> employees[1].skills[0]["name"]
 'Ruby'
 >>> 
->>> employees.employees[1].skills[0]["level"]
+>>> employees[1].skills[0]["level"]
 'Intermediate'
 ```
 The current implementation feels awkward because it exposes the underlying dictionary 
@@ -631,18 +627,18 @@ class Employee:
 This is where the abstraction pays off. The underlying JSON structure is encapsulated
 behind a clean, object-oriented interface.
 ```python
->>> employees.employees[0].address.city
+>>> employees[0].address.city
 'Austin'
->>> employees.employees[0].address.state
+>>> employees[0].address.state
 'TX'
->>> employees.employees[0].address.country
+>>> employees[0].address.country
 'United States'
 >>> 
->>> employees.employees[1].address.city
+>>> employees[1].address.city
 'Seattle'
->>> employees.employees[1].address.state
+>>> employees[1].address.state
 'WA'
->>> employees.employees[1].address.country
+>>> employees[1].address.country
 'United States'
 ```
 Here, `employees.employees[0].address` resolves to an instance of the `Address` class. 
@@ -651,47 +647,47 @@ for `city` on that `Address` instance and returns the corresponding instance
 attribute. This allows the nested address data to be accessed through standard 
 object attribute notation rather than dictionary key-based access.
 ```python
->>> employees.employees[0].address.geo_location.lat
+>>> employees[0].address.geo_location.lat
 '30.2672'
->>> employees.employees[0].address.geo_location.lng
+>>> employees[0].address.geo_location.lng
 '-97.7431'
 ```
 ```python
->>> employees.employees[1].address.geo_location.lat
+>>> employees[1].address.geo_location.lat
 '47.6062'
->>> employees.employees[1].address.geo_location.lng
+>>> employees[1].address.geo_location.lng
 '-122.3321'
 ```
 ```python
->>> employees.employees[0].skills[0].name
+>>> employees[0].skills[0].name
 'Python'
->>> employees.employees[0].skills[0].level
+>>> employees[0].skills[0].level
 'Advanced'
 >>> 
->>> employees.employees[0].skills[1].name
+>>> employees[0].skills[1].name
 'C'
 >>> 
->>> employees.employees[0].skills[2].name
+>>> employees[0].skills[2].name
 'C++'
 ```
 ```python
->>> employees.employees[1].skills[0].name
+>>> employees[1].skills[0].name
 'Ruby'
 >>> 
->>> employees.employees[1].skills[1].name
+>>> employees[1].skills[1].name
 'Rust'
 >>> 
->>> employees.employees[1].skills[0].level
+>>> employees[1].skills[0].level
 'Intermediate'
 >>> 
->>> employees.employees[1].skills[1].level
+>>> employees[1].skills[1].level
 'Advanced'
 ```
 Since the `Skills` class implements the `__getitem__` special method, 
 its instances support sequence-style indexing and can be iterated over using 
 Python's iteration protocol.
 ```python
->>> for skill in employees.employees[0].skills:
+>>> for skill in employees[0].skills:
 ...     print(f"{skill.name}, {skill.level}")
 ... 
 Python, Advanced
@@ -699,7 +695,7 @@ C, Advanced
 C++, Intermediate
 ```
 ```python
->>> for skill in employees.employees[1].skills:
+>>> for skill in employees[1].skills:
 ...     print(f"{skill.name}, {skill.level}")
 ... 
 Ruby, Intermediate
