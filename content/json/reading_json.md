@@ -605,6 +605,7 @@ object attribute notation rather than dictionary key-based access.
 >>> employees.employees[1].skills[1].level
 'Advanced'
 ```
+### Final Thoughts
 By introducing multiple layers of abstraction for nested JSON objects, 
 we create a solution that is easier to read, maintain, and extend. 
 Encapsulating the underlying JSON structure within dedicated classes results in cleaner, 
@@ -615,7 +616,7 @@ clean, object-oriented representation using Python. Instead of exposing dictiona
 and requiring callers to navigate the JSON structure using keys and indexing, 
 we introduced a hierarchy of Python objects that provides a more expressive and 
 intuitive interface. By separating the data into focused classes such as 
-`Employee`, `Address`, and `Location`, each class takes responsibility
+`Employee`, `Address`, `Location` and `Skills`, each class takes responsibility
 for representing a specific part of the underlying data. This keeps the implementation
 modular while allowing the client code to interact with the data through familiar 
 dot notation
