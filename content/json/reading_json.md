@@ -36,8 +36,9 @@ makes complex structured data easier to work with.
   }
 ]
 ```
-For the purpose demonstration, let's consider the above `json` file has a list of only two employee records. 
-Each employee has fields, `id`, `first_name`, `last_name`, `gender`, `date_of_birth` and `nationality`. 
+For the purpose demonstration, let's consider the above `json` file that has a list of 
+only two employee records. Each employee record has fields, 
+`id`, `first_name`, `last_name`, `gender`, `date_of_birth` and `nationality`. 
 
 Let's design an object-oriented solution for reading and accessing data from the above JSON file.
 
@@ -97,18 +98,18 @@ class Employees:
         Returns:
             list[Employee]: A list of Employee objects.
         """
-        return [Employee(employee) for employee in self._data]
+        return [ Employee(employee) for employee in self._data ]
 ```
 Technically, the class performs three main operations:
 
 * Resolves and validates the JSON file path through the `_json_file_path` property. 
-It raises a FileNotFoundError if the expected file is unavailable.
+It raises a `FileNotFoundError` if the expected file is unavailable.
 
 * Loads and deserializes the JSON data through `_load_json_data`. 
 The JSON document is converted into native Python objects, 
 resulting in a `list[dict]` where each dictionary represents an `Employee` record.
 
-* The employees property wraps each raw employee dictionary in an `Employee` object, 
+* The `employees` property wraps each raw employee dictionary in an `Employee` object, 
 abstracting the underlying JSON representation behind a structured Python interface.
 
 ```python
@@ -154,19 +155,22 @@ mode and inspect the resulting objects and their attributes.
 <__main__.Employees object at 0x100d16a30>
 >>> employees.employees     # accessing `employees` property on `Employees` object
 [<__main__.Employee object at 0x100d33760>, <__main__.Employee object at 0x100d336d0>]
->>> 
+```
+```python
 >>> employees.employees[0]  # indexing the employees list
 <__main__.Employee object at 0x100d33580>
->>> 
 >>> employees.employees[0].first_name
 'David'
 >>> employees.employees[0].last_name
 'Brown'
+```
+```python
 >>> employees.employees[1].first_name
 'Laura'
 >>> employees.employees[1].last_name
 'White'
 ```
+
 ### Nested JSON structure
 `employees.json`
 ```json
@@ -301,30 +305,33 @@ class Employee:
 >>> employees = Employees()
 >>> employees.employees
 [<__main__.Employee object at 0x108eeb7f0>, <__main__.Employee object at 0x108ecec10>]
->>> 
+```
+```python
 >>> employees.employees[0]
 <__main__.Employee object at 0x108eeb850>
->>> 
+```
+```python
 >>> employees.employees[0].emp_id
 1
 >>> employees.employees[0].name
 'Michael Anderson'
->>> 
->>> employees.employees[0].email
-'michael.anderson@example.com'
->>> 
->>> employees.employees[0].website
-'www.example.dev'
+```
+```python
+>>> employees.employees[1].emp_id
+2
+>>> employees.employees[1].email
+'emily.johnson@example.com'
 ```
 However, when we access `address` it returns one more `dict` object.
 ```python
 >>> employees.employees[0].address
 {'city': 'Austin', 'state': 'TX', 'country': 'United States', 'geo_location': {'lat': '30.2672', 'lng': '-97.7431'}}
 ```
-We got the correct output, which is the nested JSON object for the key `address`.
-The nested JSON object has complete address information of an employee.
-If we want to access, let's say `city` or `state` and if we did something like below, 
-we would get `AttributeError`
+The expression correctly returns the nested JSON object associated with the address key,
+which contains the employee's complete address information. However, attempting to 
+access a nested field such as city or state using attribute notation at this stage will 
+result in an AttributeError, because the returned value is still a standard Python 
+dictionary rather than an Address object.
 
 ```python
 >>> employees.employees[0].address.city
@@ -351,7 +358,9 @@ So the only way to make above code work is by doing something like this,
 >>> employees.employees[0].address.get("city")     # On dict object we are using `get` method
 'Austin'
 ```
-If you want to access `geo_location` details,
+To access the `geo_location` details, you must first navigate through the nested 
+`address` object and then access the required fields within the `geo_location` structure.
+
 ```python
 >>> employees.employees[0].address["geo_location"]
 {'lat': '30.2672', 'lng': '-97.7431'}
@@ -364,7 +373,7 @@ To access `lat` and `lng` values,
 >>> employees.employees[0].address["geo_location"]["lng"]
 '-97.7431'
 ```
-A similar challenge arises with the `skills` attribute. Accessing skills on an Employee 
+A similar challenge arises with the `skills` attribute. Accessing skills on an `Employee` 
 object returns a `list` containing the skills associated with that employee. 
 Since an employee can have multiple skills, each element in the list is represented
 as a separate dictionary containing the corresponding skill details.
@@ -379,10 +388,8 @@ Suppose if we wanted to access the actual values, we would do something like bel
 ```python
 >>> employees.employees[0].skills[0]        # first employee skills
 {'name': 'Python', 'level': 'Advanced'}
->>> 
 >>> employees.employees[0].skills[0]["name"]
 'Python'
->>> 
 >>> employees.employees[0].skills[0]["level"]
 'Advanced'
 >>> 
@@ -520,7 +527,9 @@ class Skills:
             raise IndexError(f"Skill index must be less than {len(self.skills)}")
         return self.skills[index]
 ```
-Now let's change `Employee` class implementation, 
+Now, let's modify the Employee class so that the address and skills attributes are 
+represented by corresponding Address and Skills objects, rather than exposing the 
+underlying JSON structures directly. 
 ```python
 class Employee:
     """Represent employee information as a structured Python object.
@@ -547,7 +556,8 @@ class Employee:
         self.address = Address(employee_info["address"])
         self.skills = Skills(employee_info["skills"])
 ```
-Here is the magic,
+This is where the abstraction pays off. The underlying JSON structure is encapsulated
+behind a clean, object-oriented interface.
 ```python
 >>> employees.employees[0].address.city
 'Austin'
@@ -604,6 +614,24 @@ object attribute notation rather than dictionary key-based access.
 >>> 
 >>> employees.employees[1].skills[1].level
 'Advanced'
+```
+Since the Skills class implements the `__getitem__` special method, 
+its instances support sequence-style indexing and can be iterated over using 
+Python's iteration protocol.
+```python
+>>> for skill in employees.employees[0].skills:
+...     print(f"{skill.name}, {skill.level}")
+... 
+Python, Advanced
+C, Advanced
+C++, Intermediate
+```
+```python
+>>> for skill in employees.employees[1].skills:
+...     print(f"{skill.name}, {skill.level}")
+... 
+Ruby, Intermediate
+Rust, Advanced
 ```
 ### Final Thoughts
 By introducing multiple layers of abstraction for nested JSON objects, 
