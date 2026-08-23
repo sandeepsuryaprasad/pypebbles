@@ -110,6 +110,7 @@ resulting in a `list[dict]` where each dictionary represents an `Employee` recor
 
 * The employees property wraps each raw employee dictionary in an `Employee` object, 
 abstracting the underlying JSON representation behind a structured Python interface.
+
 ```python
 class Employee:
     """Represent an employee using structured employee information.
@@ -138,9 +139,11 @@ class Employee:
         self.date_of_birth = employee_info["date_of_birth"]
         self.nationality = employee_info["nationality"]
 ```
+
 Next, let's access the employee data loaded from the JSON file. 
 To demonstrate this interactively, we will launch the Python interpreter in interactive 
 mode and inspect the resulting objects and their attributes.
+
 ```commandline
 ~$ python3 -i employee.py
 ```
