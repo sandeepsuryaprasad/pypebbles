@@ -202,7 +202,6 @@ mode and inspect the resulting objects and their attributes.
   }
 ]
 ```
-
 Below is the JSON structure for the above response
 ```commandline
 Employees [array]
