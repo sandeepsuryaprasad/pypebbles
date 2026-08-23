@@ -281,8 +281,8 @@ Traceback (most recent call last):
 AttributeError: 'dict' object has no attribute 'city'
 ```
 The problem becomes apparent when we attempt to access a nested attribute using 
-an expression such as `emp1.info.address.city`. If `emp1.info.address` returns 
-a dictionary, Python attempts to resolve `city` as an attribute of the `dict` 
+an expression such as `employees.employees[0].address.city`. If `employees.employees[0].address` 
+returns a dictionary, Python attempts to resolve `city` as an attribute of the `dict` 
 object. Since the built-in `dict` type does not define an attribute named `city`, 
 the attribute lookup fails with an `AttributeError`.
 A dictionary provides access to its contents through key-based indexing, 
@@ -360,67 +360,139 @@ Suppose if we wanted to access the actual values, we would do something like bel
 >>> employees.employees[1].skills[0]["level"]
 'Intermed
 ```
-
 This is really akward! and doesn't compose well.
-The most elegant solution should look something like this,
-```commandline
->>> employees.employees[0].address.city
-'Austin'
->>> 
->>> employees.employees[0].address.state
-'TX'
->>>
->>> employees.employees[0].company.name
-'Spam Technologies'
->>> 
->>> employees.employees[0].company.industry
-'Automobile'
->>> 
->>> employees.employees[0].skills[0].name
-'Python'
->>> employees.employees[0].skills[0].level
-'Advanced'
->>> 
->>> employees.employees[0].skills[1].name
-'C'
->>> 
->>> employees.employees[0].skills[2].name
-'C++'
->>> 
->>> employees.employees[1].skills[0].name
-'Ruby'
->>> 
->>> employees.employees[1].skills[1].name
-'Rust'
->>> 
->>> employees.employees[1].skills[0].level
-'Intermediate'
->>> 
->>> employees.employees[1].skills[1].level
-'Advanced'
-```
 Let us take a look at the JSON file `employees.json`. In the above JSON , 
-each employee has two more nested JSON like objects `address` and `company`. 
+each employee has two more nested JSON like objects `address`, `company` and `skills`. 
+Each `address` has one more nested `dict` which is `geo_location`.
 
 In order to have complete object oriented approach to access the attributes of 
-`address` and `company` let's introduce two more levels of abstraction for the 
-above scenario. We will create two separate classes for `Address` and `Company`.
+`address` `geo_location`, `company` and `skills`, let's introduce few more levels
+of abstraction for the above scenario. We will create three separate classes for 
+`Address`, `Location`, `Company` and `Skills`.
 
 ```python
 class Address:
+    """Represent an employee's address information.
+
+    Encapsulates the address and geographical information associated with
+    an employee and exposes the corresponding JSON fields as Python
+    attributes.
+
+    Attributes:
+        street: Street address.
+        suite: Apartment, suite, or unit information.
+        city: City associated with the address.
+        state: State or administrative region.
+        zipcode: Postal or ZIP code.
+        geo_location: Geographical coordinates associated with the address.
+    """
+
     def __init__(self, address_info):
+        """Initialize an Address object from address data.
+
+        Args:
+            address_info: Dictionary containing the employee's address
+                and geographical information.
+        """
         self.street = address_info["street"]
         self.suite = address_info["suite"]
         self.city = address_info["city"]
         self.state = address_info["state"]
         self.zipcode = address_info["zipcode"]
-        self.geo_location = address_info["geo_location"]
+        self.geo_location = Location(address_info["geo_location"])
+```
+```python
+class Location:
+    """Represent geographical location information.
+    Encapsulates the latitude and longitude associated with an address.
+
+    Args:
+        location_info: Dictionary containing geographical coordinates.
+    """
+    def __init__(self, location_info):
+        """Initialize a Location instance from geographical data.
+
+        Args:
+            location_info: Dictionary containing latitude and longitude
+            values.
+        """
+        self.lat = location_info["lat"]
+        self.lng = location_info["lng"]
 ```
 ```python
 class Company:
+    """Represent an employee's company information.
+
+    Encapsulates company-related details from the employee JSON data and
+    exposes them as Python attributes.
+
+    Attributes:
+        name: Name of the company.
+        industry: Industry in which the company operates.
+    """
+
     def __init__(self, company_info):
+        """Initialize a Company object from company data.
+
+        Args:
+            company_info: Dictionary containing the company's name and
+                industry information.
+        """
         self.name = company_info["name"]
         self.industry = company_info["industry"]
+```
+```python
+class Skills:
+    """Represent a collection of skills associated with an employee.
+
+    Encapsulates the list of skill records and converts each raw skill
+    dictionary into a structured :class:`Skill` object. The collection
+    supports indexed access to individual skills.
+
+    Attributes:
+        skills: List of :class:`Skill` objects representing the employee's
+            skills.
+    """
+
+    class Skill:
+        """Represent an individual employee skill.
+
+        Attributes:
+            name: Name of the skill.
+            level: Proficiency level associated with the skill.
+        """
+
+        def __init__(self, skill_info):
+            """Initialize a Skill object from skill data.
+
+            Args:
+                skill_info: Dictionary containing the skill name and
+                    proficiency level.
+            """
+            self.name = skill_info["name"]
+            self.level = skill_info["level"]
+
+    def __init__(self, skills):
+        """Initialize a Skills collection from skill data.
+
+        Args:
+            skills: List of dictionaries containing employee skill
+                information.
+        """
+        self.skills = [self.Skill(skill) for skill in skills]
+
+    def __getitem__(self, index):
+        """Return the skill at the specified index.
+
+        Args:
+            index: Zero-based index of the skill to retrieve.
+
+        Returns:
+            Skill: The skill object at the specified index.
+        """
+        if index > len(self.skills) - 1:
+            raise IndexError(f"Skill index must be less than {len(self.skills)}")
+        return self.skills[index]
 ```
 Now let's change `Employee` class implementation, 
 ```python
@@ -469,6 +541,25 @@ Here is the magic,
 >>> employees.employees[1].address.country
 'United States'
 >>> 
+```
+Here, `employees.employees[0].address` resolves to an instance of the `Address` class. 
+When we evaluate `employees.employees[0].address.city`, Python performs attribute lookup 
+for `city` on that `Address` instance and returns the corresponding instance 
+attribute. This allows the nested address data to be accessed through standard 
+object attribute notation rather than dictionary key-based access.
+```commandline
+>>> employees.employees[0].address.geo_location.lat
+'30.2672'
+>>> employees.employees[0].address.geo_location.lng
+'-97.7431'
+>>> 
+>>> employees.employees[1].address.geo_location.lat
+'47.6062'
+>>> 
+>>> employees.employees[1].address.geo_location.lng
+'-122.3321'
+```
+```commandline
 >>> employees.employees[0].company.name
 'Spam Technologies'
 >>> 
@@ -480,7 +571,9 @@ Here is the magic,
 >>> 
 >>> employees.employees[1].company.industry
 'Software'
->>> 
+>>>
+```
+```commandline
 >>> employees.employees[0].skills[0].name
 'Python'
 >>> employees.employees[0].skills[0].level
@@ -503,76 +596,7 @@ Here is the magic,
 >>> 
 >>> employees.employees[1].skills[1].level
 'Advanced'
->>> 
-```
-Here, `employees.employees[0].address` resolves to an instance of the `Address` class. 
-When we evaluate `employees.employees[0].address.city`, Python performs attribute lookup 
-for `city` on that `Address` instance and returns the corresponding instance 
-attribute. This allows the nested address data to be accessed through standard 
-object attribute notation rather than dictionary key-based access.
-
-But we still have problem when we access ` employees.employees[0].address.geo_location`. 
-When `geo_location` attribute is looked-up on `address` object, 
-again a dictionary is returned, and we have to access that dictionary either 
-using `get` or through indexing.
-```commandline
->>> employees.employees[0].address.geo_location
-{'lat': '30.2672', 'lng': '-97.7431'}
-```
-So we can solve this by creating one more layer of Abstraction, `Location`
-```python
-class Location:
-    """Represent geographical location information.
-    Encapsulates the latitude and longitude associated with an address.
-
-    Args:
-        location_info: Dictionary containing geographical coordinates.
-    """
-    def __init__(self, location_info):
-        """Initialize a Location instance from geographical data.
-
-        Args:
-            location_info: Dictionary containing latitude and longitude
-            values.
-        """
-        self.lat = location_info["lat"]
-        self.lng = location_info["lng"]
-```
-Now let's add interface to `Location` class in `Address`
-
-```python
-class Address:
-    """Represent an employee's address information.
-
-    Encapsulates address details and the associated geographical location
-    represented by a :class:`Location` object.
-    Args:
-        address_info: Dictionary containing address details and
-        geographical location information.
-    """
-
-    def __init__(self, address_info):
-        self.city = address_info["city"]
-        self.state = address_info["state"]
-        self.country = address_info["country"]
-        self.geo_location = Location(address_info["geo_location"])
-```
-Now we can access `lat` and `lng` attributes of `Location` though `geo_location` in `Address` 
-```commandline
->>> employees.employees[0].address.geo_location.lat
-'30.2672'
->>> employees.employees[0].address.geo_location.lng
-'-97.7431'
->>> 
->>> employees.employees[1].address.geo_location.lat
-'47.6062'
->>> 
->>> employees.employees[1].address.geo_location.lng
-'-122.3321'
-```
-Again, we encounter similar problem when we try to access employee `skills` from JSON response
-```commandline
-
+>>>
 ```
 By introducing multiple layers of abstraction for nested JSON objects, 
 we create a solution that is easier to read, maintain, and extend. 
