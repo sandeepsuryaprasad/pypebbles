@@ -183,7 +183,6 @@ mode and inspect the resulting objects and their attributes.
       "country": "United States",
       "geo_location": {"lat": "30.2672", "lng": "-97.7431"}
     },
-    "company": {"name": "Spam Technologies", "industry": "Automobile"},
     "skills": [
       {"name": "Python", "level": "Advanced"},
       {"name": "C", "level": "Advanced"},
@@ -201,10 +200,8 @@ mode and inspect the resulting objects and their attributes.
       "country": "United States",
       "geo_location": {"lat": "47.6062", "lng": "-122.3321"}
     },
-    "company": {"name": "Demo Software", "industry": "Software"},
     "skills": [
       {"name": "Ruby", "level": "Intermediate"},
-      {"name": "Perl", "level": "Intermediate"},
       {"name": "Rust", "level": "Advanced"}
     ]
   }
@@ -241,10 +238,8 @@ class Employee:
         self.email = employee_info["email"]
         self.website = employee_info["website"]
         self.address = employee_info["address"]
-        self.company = employee_info["company"]
         self.skills = employee_info["skills"]
 ```
-
 ```commandline
 >>> employees = Employees()
 >>> employees.employees
@@ -299,21 +294,6 @@ So the only way to make above code work is by doing something like this,
 >>> employees.employees[0].address.get("city")     # On dict object we are using `get` method
 'Austin'
 ```
-Similarly, when access `company`,
-```commandline
->>> employees.employees[0].company
-{'name': 'Spam Technologies', 'industry': 'Automobile'}
->>> 
-```
-Now if we wanted to get `name` or `industry`, we would have to do something like this,
-```commandline
->>> employees.employees[0].company["name"]
-'Spam Technologies'
->>> 
->>> employees.employees[0].company["industry"]
-'Automobile'
->>>
-```
 Same problem with `skills`. when you access `skills` attribute on `Employee` object, 
 you get `list` of skills associated with the employee. Each item of the list is one 
 more `dict` object as shown below.
@@ -358,18 +338,31 @@ Suppose if we wanted to access the actual values, we would do something like bel
 'Ruby'
 >>> 
 >>> employees.employees[1].skills[0]["level"]
-'Intermed
+'Intermediate'
 ```
 This is really akward! and doesn't compose well.
-Let us take a look at the JSON file `employees.json`. In the above JSON , 
-each employee has two more nested JSON like objects `address`, `company` and `skills`. 
-Each `address` has one more nested `dict` which is `geo_location`.
 
 In order to have complete object oriented approach to access the attributes of 
-`address` `geo_location`, `company` and `skills`, let's introduce few more levels
-of abstraction for the above scenario. We will create three separate classes for 
-`Address`, `Location`, `Company` and `Skills`.
+`address` `geo_location` and `skills`, let's introduce few more levels
+of abstraction for the above scenario `Address`, `Location`, and `Skills`.
+```python
+class Location:
+    """Represent geographical location information.
+    Encapsulates the latitude and longitude associated with an address.
 
+    Args:
+        location_info: Dictionary containing geographical coordinates.
+    """
+    def __init__(self, location_info):
+        """Initialize a Location instance from geographical data.
+
+        Args:
+            location_info: Dictionary containing latitude and longitude
+            values.
+        """
+        self.lat = location_info["lat"]
+        self.lng = location_info["lng"]
+```
 ```python
 class Address:
     """Represent an employee's address information.
@@ -400,46 +393,6 @@ class Address:
         self.state = address_info["state"]
         self.zipcode = address_info["zipcode"]
         self.geo_location = Location(address_info["geo_location"])
-```
-```python
-class Location:
-    """Represent geographical location information.
-    Encapsulates the latitude and longitude associated with an address.
-
-    Args:
-        location_info: Dictionary containing geographical coordinates.
-    """
-    def __init__(self, location_info):
-        """Initialize a Location instance from geographical data.
-
-        Args:
-            location_info: Dictionary containing latitude and longitude
-            values.
-        """
-        self.lat = location_info["lat"]
-        self.lng = location_info["lng"]
-```
-```python
-class Company:
-    """Represent an employee's company information.
-
-    Encapsulates company-related details from the employee JSON data and
-    exposes them as Python attributes.
-
-    Attributes:
-        name: Name of the company.
-        industry: Industry in which the company operates.
-    """
-
-    def __init__(self, company_info):
-        """Initialize a Company object from company data.
-
-        Args:
-            company_info: Dictionary containing the company's name and
-                industry information.
-        """
-        self.name = company_info["name"]
-        self.industry = company_info["industry"]
 ```
 ```python
 class Skills:
@@ -519,7 +472,6 @@ class Employee:
         self.email = employee_info["email"]
         self.website = employee_info["website"]
         self.address = Address(employee_info["address"])
-        self.company = Company(employee_info["company"])
         self.skills = Skills(employee_info["skills"])
 ```
 Here is the magic,
@@ -560,20 +512,6 @@ object attribute notation rather than dictionary key-based access.
 '-122.3321'
 ```
 ```commandline
->>> employees.employees[0].company.name
-'Spam Technologies'
->>> 
->>> employees.employees[0].company.industry
-'Automobile'
->>> 
->>> employees.employees[1].company.name
-'Demo Software'
->>> 
->>> employees.employees[1].company.industry
-'Software'
->>>
-```
-```commandline
 >>> employees.employees[0].skills[0].name
 'Python'
 >>> employees.employees[0].skills[0].level
@@ -608,7 +546,7 @@ clean, object-oriented representation using Python. Instead of exposing dictiona
 and requiring callers to navigate the JSON structure using keys and indexing, 
 we introduced a hierarchy of Python objects that provides a more expressive and 
 intuitive interface. By separating the data into focused classes such as 
-`EmployeeInfo`, `Address`, `Location`, and `Company`, each class takes responsibility
+`EmployeeInfo`, `Address`, and `Location`, each class takes responsibility
 for representing a specific part of the underlying data. This keeps the implementation
 modular while allowing the client code to interact with the data through familiar 
 dot notation
