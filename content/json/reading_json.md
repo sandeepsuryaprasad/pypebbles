@@ -144,6 +144,7 @@ mode and inspect the resulting objects and their attributes.
 ```commandline
 ~$ python3 -i employee.py
 ```
+
 ```python
 >>> employees = Employees() # creating instance of `Employees` class
 >>> employees
