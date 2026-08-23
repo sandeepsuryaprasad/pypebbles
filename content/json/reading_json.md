@@ -119,6 +119,9 @@ class Employees:
         if self._employees is None:
             self._employees = [Employee(employee) for employee in self._data]
         return self._employees[index]
+    
+    def __len__(self):
+        return len(self._employees)
 ```
 Technically, the class performs three main operations:
 
@@ -131,6 +134,9 @@ resulting in a `list[dict]` where each dictionary represents an `Employee` recor
 
 * The `employees` property wraps each raw employee dictionary in an `Employee` object, 
 abstracting the underlying JSON representation behind a structured Python interface.
+
+* Sequence-style access, by implementing `__getitem__`, the Employees class 
+supports indexed access
 
 ```python
 class Employee:
@@ -189,6 +195,41 @@ mode and inspect the resulting objects and their attributes.
 'Laura'
 >>> employees.employees[1].last_name
 'White'
+```
+Since the `Employees` class implements the `__getitem__` special method, 
+its instances support sequence-style indexing and can be iterated over using 
+Python's iteration protocol.
+```python
+>>> employees[0]
+<__main__.Employee object at 0x10040aa30>   # instance of `Employee` class
+>>> employees[1]
+<__main__.Employee object at 0x10040aee0>   # instance of `Employee` class
+```
+```python
+>>> employees[0].first_name
+'David'
+>>> employees[0].last_name
+'Brown'
+```
+```python
+>>> employees[1].first_name
+'Laura'
+>>> employees[1].last_name
+'White'
+```
+We can iterate over `employees` object itself.
+```python
+>>> for employee in employees:
+...     print(employee.first_name, employee.last_name)
+... 
+David Brown
+Laura White
+>>> 
+```
+You can ask for length of `employees` object. 
+```python
+>>> len(employees)
+2
 ```
 
 ### Nested JSON structure
@@ -635,7 +676,7 @@ object attribute notation rather than dictionary key-based access.
 >>> employees.employees[1].skills[1].level
 'Advanced'
 ```
-Since the Skills class implements the `__getitem__` special method, 
+Since the `Skills` class implements the `__getitem__` special method, 
 its instances support sequence-style indexing and can be iterated over using 
 Python's iteration protocol.
 ```python
