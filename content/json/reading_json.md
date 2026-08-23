@@ -49,78 +49,89 @@ from pathlib import Path
 
 
 class Employees:
-    """Provide access to employee data loaded from a JSON file.
+    """Provide sequence-style access to employee information.
 
-    Loads employee records from ``employees.json`` and exposes them as
-    structured :class:`Employee` objects rather than raw dictionaries.
+    Loads employee records from ``data.json`` and converts each record into
+    an :class:`Employee` object during object initialization. The resulting
+    collection can be accessed through the ``employees`` property or using
+    standard sequence operations such as indexing and ``len()``.
+
+    Attributes:
+        _path: Path to the JSON file containing employee records.
+        _data: Raw employee records loaded from the JSON file.
+        _employees: Collection of :class:`Employee` objects created from
+            the raw employee records.
     """
 
     def __init__(self):
-        """Initialize the Employees object and load employee data."""
+        """Initialize the Employees collection.
+
+        Resolves the JSON file path, loads the employee records, and
+        converts the records into :class:`Employee` objects.
+        """
         self._path = self._json_file_path
         self._data = self._load_json_data
-        self._employees = None
+        self._employees = self.employees
 
     @property
     def _json_file_path(self) -> Path:
         """Return the path to the employee JSON file.
 
-        Raises:
-            FileNotFoundError: If ``employees.json`` does not exist.
-
         Returns:
-            Path: Path to the employee JSON file.
+            Path: Path to ``data.json``.
+
+        Raises:
+            FileNotFoundError: If ``data.json`` does not exist.
         """
-        path = Path("employees.json")
+        path = Path("data.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
         return path
 
     @property
     def _load_json_data(self) -> list[dict]:
-        """Load and parse employee data from the JSON file.
+        """Load and deserialize employee data from the JSON file.
 
         Returns:
-            list[dict]: A list of dictionaries, where each dictionary
-                represents an employee record.
+            list[dict]: A list of dictionaries representing employee
+                records.
         """
         with open(self._path, "r") as json_file:
-            json_object = load(json_file)
-        return json_object
+            return load(json_file)
 
     @property
     def employees(self) -> list[Employee]:
         """Return all employees as Employee objects.
 
-        Converts each employee dictionary loaded from the JSON file into an
-        :class:`Employee` object, providing a structured Python representation
-        of the employee data.
+        Converts each raw employee dictionary into an :class:`Employee`
+        object, providing a structured Python representation of the
+        underlying JSON data.
 
         Returns:
-            list[Employee]: A list of Employee objects created from the
-                employee records in the JSON data.
+            list[Employee]: A list of Employee objects.
         """
-        if self._employees is None:
-            self._employees =  [Employee(employee) for employee in self._data]
+        self._employees = [Employee(employee) for employee in self._data]
         return self._employees
 
     def __getitem__(self, index):
         """Return the employee at the specified index.
+
         Provides sequence-style indexed access to the employee collection.
+
         Args:
             index: Zero-based index of the employee to retrieve.
 
         Returns:
-            Employee: The employee object at the specified index.
-
-        Raises:
-            IndexError: If the specified index is outside the valid range.
+            Employee: The employee at the specified index.
         """
-        if self._employees is None:
-            self._employees = [Employee(employee) for employee in self._data]
         return self._employees[index]
-    
+
     def __len__(self):
+        """Return the number of employees in the collection.
+
+        Returns:
+            int: Number of Employee objects in the collection.
+        """
         return len(self._employees)
 ```
 Technically, the class performs three main operations:
