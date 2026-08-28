@@ -378,410 +378,172 @@ ReservationInfo
 </details>
 
 
-Let us re-use the code that I wrote in previous article _From JSON Data to Python Objects_ with 
-some minor modifications.
+Let us implement the `Reservations` class, which serves as the **data access layer** 
+responsible for loading and deserializing reservation data from the JSON file
+and making it available to the application through a structured Python interface.
+
 ```python
 from json import load
 from pathlib import Path
 
-class FlightReservation:
+class Reservations:
+    """Provide sequence-style access to reservation information.
+
+    Loads reservation data from ``reservation.json`` and converts each
+    reservation record into a :class:`Reservation` object. The resulting
+    collection supports sequence-style operations such as indexed access
+    and retrieving the number of reservations.
+
+    Attributes:
+        _path: Path to the JSON file containing the reservation data.
+        _data: Parsed reservation data loaded from the JSON file.
+        _reservations: List of :class:`Reservation` objects created from
+            the parsed reservation data.
+    """
+
     def __init__(self):
+        """Initialize the Reservations collection.
+
+        Resolves the reservation JSON file path, loads and deserializes
+        the reservation data, and creates the corresponding
+        :class:`Reservation` objects.
+        """
         self._path = self._json_file_path
         self._data = self._load_json_data
-        self._passenger = None
+        self._reservations = self._get_reservations
 
     @property
-    def _json_file_path(self):
-        path = Path("reservation.json")
+    def _json_file_path(self) -> Path:
+        """Return the path to the reservation JSON file.
+
+        Returns:
+            Path: Path to ``reservation.json``.
+
+        Raises:
+            FileNotFoundError: If ``reservation.json`` does not exist.
+        """
+        path = Path("reservations.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
         return path
 
     @property
     def _load_json_data(self):
+        """Load and deserialize reservation data from the JSON file.
+
+        Reads the JSON file and deserializes its contents into the
+        corresponding Python representation using :func:`json.load`.
+
+        Returns:
+            The parsed reservation data, typically a list of dictionaries
+            representing reservation records.
+        """
         with open(self._path, "r") as json_file:
-            json_object = load(json_file)
-            return json_object
+            return load(json_file)
 
     @property
-    def info(self):
-        if not self._passenger:
-            self._passenger = ReservationInfo(self._data)
-        return self._passenger
+    def _get_reservations(self):
+        """Convert reservation records into Reservation objects.
+
+        Iterates over the parsed reservation data and creates a
+        :class:`Reservation` object for each reservation record.
+
+        Returns:
+            list[Reservation]: A list of :class:`Reservation` objects
+                created from the parsed reservation data.
+        """
+        return [Reservation(reservation) for reservation in self._data]
+
+    def __getitem__(self, index):
+        """Return the reservation at the specified index.
+
+        Provides sequence-style indexed access to the collection of
+        :class:`Reservation` objects.
+
+        Args:
+            index: Zero-based index of the reservation to retrieve.
+
+        Returns:
+            Reservation: The reservation object at the specified index.
+
+        Raises:
+            IndexError: If the specified index is outside the valid range.
+        """
+        return self._reservations[index]
+
+    def __len__(self):
+        """Return the number of reservations in the collection.
+
+        Enables the use of the built-in :func:`len` function on a
+        ``Reservations`` instance.
+
+        Returns:
+            int: Number of :class:`Reservation` objects in the collection.
+        """
+        return len(self._reservations)
 ```
-The `info` property serves as the public interface to the underlying `ReservationInfo`
-object, providing controlled and lazy access to the reservation data.
-
-Now, let us introduce a layer of abstraction for nine top-level 
-nodes, encapsulating each section of the JSON response behind a
-dedicated Python object.  
-
+We can now instantiate the `Reservations` class to load the reservation data and access 
+individual reservation records through the resulting collection.
 ```python
-class ReservationInfo:
-    reservation = Field("reservation", field_type=Reservation)
-    passenger = Field("passenger", field_type=Passenger)
-    flight = Field("flight", field_type=Flight)
-    seat = Field("seat", field_type=Seat)
-    baggage = Field("baggage", field_type=Baggage)
-    payment = Field("payment", field_type=Payment)
-    services = Field("services")
-    emergency_contact = Field("emergency_contact", field_type=EmergencyContact)
-    notifications = Field("notifications", field_type=Notifications)
-
-    def __init__(self, reservation_info):
-        self._data = reservation_info
+>>> reservations = Reservations()
+>>> reservations
+<__main__.Reservations object at 0x107332850>
+>>> type(reservations)
+<class '__main__.Reservations'>
 ```
-In the `ReservationInfo` class, attributes such as `reservation`, `passenger`,
-`flight`, `seat`, and `payment` are class attributes whose values are instances 
-of the `Field` descriptor.
+We can now access individual reservation records using standard sequence-style indexing
+```python
+>>> reservations[0]
+<__main__.Reservation object at 0x10734e6a0>
+```
+Since the JSON data contains a single reservation record, 
+index `0` refers to the only available record in the collection. 
+The returned value is a `Reservation` object representing that record, 
+rather than the raw JSON dictionary.
+
 ### Field descriptor
 The `Field` class is a descriptor that provides controlled attribute access to
 the underlying JSON data.
 It acts as an abstraction layer between the Python object and the dictionary 
 containing the JSON response.
+
 ```python
 class Field:
-    def __init__(self, name, field_type=None):
-        self.name = name
-        self._field_type = field_type
+    """Descriptor that maps a Python attribute to a field in JSON data.
 
-    def __get__(self, obj, cls):
-        if obj is None:
-            return self
-        json_data = obj._data[self.name]    # this will do a dictionary look-up
-        if self._field_type:
-            return self._field_type(json_data)
-        return json_data
-
-    def __set__(self, obj, value):
-        raise AttributeError(f"Field {self.name} is read-only")
-```
-* `name` stores the corresponding key in the JSON object.
-* `field_type` optionally specifies the Python class used to represent a 
-nested JSON object.
-
-When we define `passenger = Field("passenger", Passenger)`, the `passenger` attribute is 
-mapped to the `"passenger"` key in the underlying JSON data. Since the value 
-associated with this key is a nested JSON object, the Field descriptor converts
-that dictionary into a `Passenger` object, providing structured attribute-based access
-to its contents.
-
-`__get__` is invoked automatically whenever the corresponding attribute 
-is accessed. For example,
-```commandline
->>> reservation = FlightReservation()
->>> reservation.info.passenger     # Causes python to invoke __get__ method in Field descriptor
-```
-Here is what happens when `__get__`, is invoked, 
-1. Retrieves the corresponding value from `obj._data`
-2. If `field_type` is specified, wraps that dictionary in the specified class.
-3. Otherwise, returns the value directly. (meaning there is no nested JSON object)
-
-`__set__` makes the descriptor read-only. So you cannot be doing something like,
-```commandline
->>> reservation.info.passenger.first_name = "hello"
-```
-The `Field` descriptor provides three important capabilities:
-* **Attribute mapping** - maps Python attributes to JSON keys.
-* **Nested object conversion** - converts nested dictionaries into appropriate Python objects.
-* **Read-only access** - prevents modification of the underlying JSON data.
-
-This allows code to navigate a deeply nested JSON response using normal 
-Python attribute access, while the descriptor handles the underlying dictionary
-access and object creation transparently.
-
-### Implementing the Mapped Types
-For the purpose of demonstration, I will be implementing two Mapped types,
-`Passenger` and `Services`. For nested JSON objects, 
-the Field descriptor will be configured with the corresponding mapped type so
-that the nested dictionary is automatically converted into an
-instance of that type.
-
-Let us implement a mapped type `Passenger` class,
-```python
-class Passenger: 
-    first_name = Field("first_name")
-    last_name = Field("last_name")
-    address = Field("address") 
-
-    def __init__(self, passenger_info):
-        self._data = passenger_info
-```
-So now when you say `reservation.info.passenger` it returns instance of `Passenger` class.
-```commandline
->>> reservation.info.passenger
-<__main__.Passenger object at 0x104542790>
-```
-You can now access all attributes of the Passenger object through standard 
-Python attribute notation,
-```commandline
->>> reservation.info.passenger.first_name
-'John'
->>> reservation.info.passenger.last_name
-'Doe'
-```
-However, accessing the address attribute returns the data associated with
-the corresponding JSON node, which is itself a nested JSON object containing
-additional address-related fields.
-```commandline
->>> reservation.info.passenger.address
-{'city': 'Sampleville', 'state': 'California', 'country': 'United States'}
-```
-If you want to access `city` or `state`or `country`, you will have to 
-use dictionary indexing or the `get` method to access the values within the dictionary.
-
-something like this,
-```commandline
->>> reservation.info.passenger.address["city"]
-'Sampleville'
->>> reservation.info.passenger.address["state"]
-'California'
->>> reservation.info.passenger.address["country"]
-'United States'
-```
-If the JSON node has a nested attribute, we are going to create one more level of
-abstraction, in this case `Address` and pass the class reference to `Field` 
-descriptor through argument `field_type`, which then the descriptor returns
-instance of the class that is passed.
-
-Let us implement `Address` mapped class and pass the reference of `Address` class
-in `Passenger` class. 
-```python
-class Address:
-    city = Field("city")
-    state = Field("state")
-    country = Field("country")
-
-    def __init__(self, address_info):
-        self._data = address_info
-```
-Below is the modified `Passenger` class
-```python
-class Passenger: 
-    first_name = Field("first_name")
-    last_name = Field("last_name")
-    address = Field("address", field_type=Address) # passing Address class as field_type to descriptor
-
-    def __init__(self, passenger_info):
-        self._data = passenger_info
-```
-Now when you access `address` attribute on `passenger` object, you will get 
-instance of `Address` class and not the actual value/dictionary
-```commandline
->>> reservation.info.passenger.address
-<__main__.Address object at 0x104542820>
-```
-Now you can access the nested `address` JSON nodes through their 
-corresponding Python attributes as shown below.
-```commandline
->>> reservation.info.passenger.address.city
-'Sampleville'
->>> reservation.info.passenger.address.state
-'California'
-```
-When you access `services` on the `ReservationInfo` object, it returns a list 
-containing the services selected by the passenger. Each element in the list is
-represented as a dictionary object containing the details of an individual service.
-```commandline
->>> reservation.info.services
-[{'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}, {'code': 'WIFI', 'name': 'Inflight Wi-Fi', 'description': 'High-speed internet access', 'status': 'CONFIRMED'}, {'code': 'LOUNGE', 'name': 'Elite Club', 'description': 'Airport lounge access', 'status': 'CONFIRMED'}]
->>> 
-```
-Now If you want to access the list of services that the passenger has opted for,
-you should index the list.
-```commandline
->>> reservation.info.services[0]
-{'code': 'MEAL', 'name': 'Premium Meal', 'description': 'Chicken and roasted vegetables', 'status': 'CONFIRMED'}
->>> 
->>> reservation.info.services[1]
-{'code': 'WIFI', 'name': 'Inflight Wi-Fi', 'description': 'High-speed internet access', 'status': 'CONFIRMED'}
->>> 
->>> reservation.info.services[2]
-{'code': 'LOUNGE', 'name': 'Elite Club', 'description': 'Airport lounge access', 'status': 'CONFIRMED'}
->>> 
-```
-Suppose if we wanted to access the service at 0th index, we would do something like this,
-```commandline
->>> reservation.info.services[0]["code"]
-'MEAL'
->>> reservation.info.services[0]["name"]
-'Premium Meal'
-```
-Again, we encounter the same limitation. When we access `reservation.info.services[0]`, 
-the expression returns the element at index 0, which is still a dictionary object.
-Therefore, we must use either dictionary indexing or the `get()` method to access 
-the individual values within that object. A more intuitive and object-oriented approach 
-would be to expose these values as attributes,
-```commandline
->>> reservation.info.services[0].code
-'MEAL'
->>> reservation.info.services[0].name
-'Premium Meal'
-```
-To achieve this, let us introduce one more layer of abstraction, `Services`
-```python
-class Services:
-    class Service:
-        code = Field("code")
-        name = Field("name")
-        description = Field("description")
-        status = Field("status")
-
-        def __init__(self, service_info):
-            self._data = service_info
-
-    def __init__(self, services_info):
-        """Convert list of dicts to Service object"""
-        self._data = [self.Service(service) for service in services_info]
-
-    def __getitem__(self, index):
-        if index > len(self._data) - 1:
-            raise IndexError(f"Service index must be less than {len(self._data)}")
-        return self._data[index]
-```
-The `Services` class is responsible for transforming the services JSON array into a
-collection of Python objects. Since each element in the JSON array represents an 
-individual service, the implementation uses a nested Service class to model the 
-structure of each `service` item. (It is not necessary to have `Service` class
-nested inside `Services`. You can choose to have `Service` class outside `Services` class)
-
-The nested `Service` class represents one service entry from the JSON array. 
-Its attributes are defined using the `Field` descriptor
-
-The descriptor maps each Python attribute to its corresponding key in the service dictionary.
-
-For example: `"code": "MEAL"` is exposed as `service.code`.
-
-### Converting dictionaries into `Service` objects
-```python
-def __init__(self, services_info):
-    self._data = [self.Service(service) for service in services_info]
-```
-The list comprehension iterates over each dictionary in `services_info` and 
-creates a `Service` object for it.
-
-The `__getitem__` method makes Services behave like a sequence. As a result, 
-callers can access an individual service using familiar indexing syntax
-
-Let us map `services` attribute in `ReservationInfo` class to `Service`
-```python
-class ReservationInfo:
-    ...
-    # Other attributes omitted
-    services = Field("services", field_type=Services)
-    ...
-```
-Now the individual service attributes can then be accessed using normal 
-attribute notation.
-```python
->>> reservation.info.services[0].code
-'MEAL'
->>> reservation.info.services[0].name
-'Premium Meal'
->>> reservation.info.services[0].status
-'CONFIRMED'
->>> reservation.info.services[1].name
-'Inflight Wi-Fi'
->>> reservation.info.services[1].code
-'WIFI'
->>> reservation.info.services[1].status
-'CONFIRMED'
-```
-The final implementation can be structured as shown below.
-```python
-from json import load
-from pathlib import Path
-
-
-class FlightReservation:
-    def __init__(self):
-        """Initialize the flight reservation and load reservation data."""
-        self._path = self._json_file_path
-        self._data = self._load_json_data
-        self._info = None
-
-    @property
-    def _json_file_path(self):
-        """Return the path to the reservation JSON file.
-
-        Raises:
-            FileNotFoundError: If the reservation JSON file does not exist.
-
-        Returns:
-            Path: Path object representing the reservation JSON file.
-        """
-        path = Path("reservation.json")
-        if not path.exists():
-            raise FileNotFoundError(f"{path} does not exist")
-        return path
-
-    @property
-    def _load_json_data(self):
-        """Load and return the reservation data from the JSON file.
-
-        Returns:
-            dict: Parsed reservation data from the JSON file.
-        """
-        with open(self._path, "r") as json_file:
-            json_object = load(json_file)
-            return json_object
-
-    @property
-    def info(self):
-        """Return the reservation information as a ReservationInfo object.
-
-        The ReservationInfo object is created lazily and cached for
-        subsequent accesses.
-
-        Returns:
-            ReservationInfo: Object representing the reservation data.
-        """
-        if not self._info:
-            self._info = ReservationInfo(self._data)
-        return self._info
-```
-```python
-class Field:
-    """Descriptor for mapping JSON fields to Python object attributes.
-
-    A Field descriptor provides controlled access to a value stored in the
-    underlying JSON data. For simple fields, the corresponding JSON value is
-    returned directly. For nested JSON objects, ``field_type`` can be
-    specified to convert the JSON dictionary into an instance of the
-    corresponding Python class.
-
-    Attributes:
-        name: Name of the corresponding field in the JSON data.
-        _field_type: Optional Python type used to represent a nested JSON
-            object.
+    Provides read-only attribute access to values stored in the underlying
+    JSON dictionary. When a ``field_type`` is specified, the retrieved JSON
+    value is wrapped in the corresponding Python class, allowing nested JSON
+    objects to be represented as structured Python objects.
     """
 
     def __init__(self, name, field_type=None):
         """Initialize a Field descriptor.
 
         Args:
-            name: Name of the field in the underlying JSON data.
-            field_type: Optional Python class used to map nested JSON data
-                to a Python object.
+            name: Name of the corresponding key in the JSON data.
+            field_type: Optional Python type used to wrap nested JSON data.
+                If omitted, the JSON value is returned directly.
         """
         self.name = name
         self._field_type = field_type
 
     def __get__(self, obj, cls):
-        """Retrieve the value associated with the JSON field.
+        """Retrieve the value associated with the mapped JSON field.
 
-        If accessed through the class, the descriptor itself is returned.
-        When accessed through an instance, the corresponding value is
-        retrieved from the instance's underlying JSON data. If a
-        ``field_type`` is specified, the JSON data is converted into an
-        instance of that type.
+        When accessed through an instance, the method performs a dictionary
+        lookup using the configured field name. If a ``field_type`` is
+        specified, the retrieved value is converted into an instance of that
+        type. When accessed through the class, the descriptor itself is
+        returned.
 
         Args:
-            obj: Instance whose underlying JSON data should be accessed.
-            cls: Class through which the descriptor is accessed.
+            obj: Instance through which the descriptor is accessed.
+            cls: Class that owns the descriptor.
 
         Returns:
-            The corresponding JSON value or an instance of ``field_type``.
+            The corresponding JSON value, or an instance of ``field_type``
+            when a mapped type is specified.
         """
         if obj is None:
             return self
@@ -797,197 +559,21 @@ class Field:
         """Prevent modification of the mapped JSON field.
 
         Args:
-            obj: Instance on which the assignment was attempted.
-            value: Value that was assigned to the field.
+            obj: Instance whose field is being modified.
+            value: Value that was supplied for the assignment.
 
         Raises:
             AttributeError: Always raised because mapped fields are read-only.
         """
-        raise AttributeError(
-            f"Field {self.name} is read-only"
-        )
+        raise AttributeError(f"Field {self.name} is read-only")
 ```
-```python
-class ReservationInfo:
-    """Represent the complete flight reservation information.
+* `name` stores the corresponding key/node in the JSON object.
+* `field_type` optionally specifies the Python class used to represent a 
+nested JSON object.
 
-    Provides a structured Python interface to the top-level nodes of the
-    reservation JSON response. Each field maps a JSON node to its
-    corresponding Python object, allowing nested reservation data to be
-    accessed through attribute notation.
 
-    Attributes:
-        reservation: Reservation and booking information.
-        passenger: Passenger details and contact information.
-        flight: Flight, airline, aircraft, departure, and arrival details.
-        seat: Seat assignment and seating information.
-        baggage: Baggage allowance and related information.
-        payment: Payment status, payment method, and fare details.
-        services: Collection of services selected by the passenger.
-        emergency_contact: Emergency contact information.
-        notifications: Email, SMS, and push notification preferences.
-    """
+The descriptor maps each Python attribute to its corresponding key in the service 
+dictionary.
 
-    reservation = Field("reservation", field_type=Reservation)
-    passenger = Field("passenger", field_type=Passenger)
-    flight = Field("flight", Flight) # Flight class should be implemented
-    seat = Field("seat", Seat)  # Seat class should be implemented
-    baggage = Field("baggage", Baggage) # Baggage class should be implemented
-    payment = Field("payment", Payment) # Payment class should be implemented
-    services = Field("services", field_type=Services)
-    emergency_contact = Field("emergency_contact", EmergencyContact)    # EmergencyContact should be implemented
-    notifications = Field("notifications", Notifications)   # Notifications class should be implemented
-
-    def __init__(self, reservation_info):
-        """Initialize a ReservationInfo object from reservation data.
-
-        Args:
-            reservation_info: Dictionary containing the complete flight
-                reservation information.
-        """
-        self._data = reservation_info
-```
-```python
-class Passenger:
-    """Represent passenger information from a reservation response.
-
-    Encapsulates the passenger's personal information and provides access
-    to related contact, address, and frequent-flyer information through
-    mapped Python objects.
-
-    Attributes:
-        passenger_id: Unique identifier assigned to the passenger.
-        title: Passenger's title, such as Mr, Mrs, or Ms.
-        first_name: Passenger's first name.
-        middle_name: Passenger's middle name.
-        last_name: Passenger's last name.
-        date_of_birth: Passenger's date of birth.
-        gender: Passenger's gender.
-        contact: Passenger's contact information represented by a
-            :class:`Contact` object.
-        address: Passenger's address represented by an :class:`Address`
-            object.
-        frequent_flyer: Passenger's frequent-flyer information represented
-            by a :class:`FrequentFlyer` object.
-    """
-
-    passenger_id = Field("passenger_id")
-    first_name = Field("first_name")
-    last_name = Field("last_name")
-    contact = Field("contact", field_type=Contact)  # Contact class should be implemented
-    address = Field("address", field_type=Address)
-    frequent_flyer = Field("frequent_flyer", field_type=FrequentFlyer)  # FrequentFlyer class should be implemented
-
-    def __init__(self, passenger_info):
-        """Initialize a Passenger object from passenger data.
-
-        Args:
-            passenger_info: Dictionary containing passenger details,
-                including contact, address, and frequent-flyer information.
-        """
-        self._data = passenger_info
-```
-```python
-class Address:
-    """Represent a passenger's address information.
-
-    Encapsulates the address details associated with a passenger, including
-    street, city, state, postal code, and country information.
-
-    Attributes:
-        street: Street address.
-        suite: Apartment, suite, or unit information.
-        city: City associated with the address.
-        state: State or administrative region.
-        state_code: Abbreviated state or region code.
-        zip_code: Postal or ZIP code.
-        country: Country associated with the address.
-    """
-
-    street = Field("street")
-    suite = Field("suite")
-    city = Field("city")
-    state = Field("state")
-    state_code = Field("state_code")
-    zip_code = Field("zip_code")
-    country = Field("country")
-
-    def __init__(self, address_info):
-        """Initialize an Address object from address data.
-
-        Args:
-            address_info: Dictionary containing the address information.
-        """
-        self._data = address_info
-```
-```python
-class Services:
-    """Represent the collection of services associated with a reservation.
-
-    Encapsulates a collection of :class:`Service` objects created from the
-    corresponding list of service dictionaries in the JSON response.
-
-    The nested ``Service`` class represents an individual service entry.
-    ``Services`` also implements indexed access through ``__getitem__()``,
-    allowing individual services to be accessed using standard sequence
-    notation.
-
-    Attributes:
-        _data: List containing the mapped :class:`Service` objects.
-    """
-
-    class Service:
-        """Represent an individual service selected by the passenger.
-
-        Attributes:
-            code: Unique code identifying the service.
-            name: Name of the service.
-            description: Description of the service.
-            status: Current status of the service.
-        """
-
-        code = Field("code")
-        name = Field("name")
-        description = Field("description")
-        status = Field("status")
-
-        def __init__(self, service_info):
-            """Initialize a Service object from service data.
-
-            Args:
-                service_info: Dictionary containing the service details.
-            """
-            self._data = service_info
-
-    def __init__(self, services_info):
-        """Initialize a Services collection from service data.
-
-        Each dictionary in ``services_info`` is converted into a
-        :class:`Service` object and stored internally.
-
-        Args:
-            services_info: List of dictionaries containing service details.
-        """
-        self._data = [self.Service(service) for service in services_info]
-
-    def __getitem__(self, index):
-        """Return the service at the specified index.
-
-        Args:
-            index: Zero-based index of the service to retrieve.
-
-        Returns:
-            Service: The service object at the specified index.
-
-        Raises:
-            IndexError: If the specified index is outside the valid range.
-        """
-        if index > len(self._data) - 1:
-            raise IndexError(
-                f"Service index must be less than {len(self._data)}"
-            )
-
-        return self._data[index]
-```
 
 Back to  [Articles](../articles.md)
