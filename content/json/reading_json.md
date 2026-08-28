@@ -51,37 +51,37 @@ from pathlib import Path
 class Employees:
     """Provide sequence-style access to employee information.
 
-    Loads employee records from ``data.json`` and converts each record into
-    an :class:`Employee` object during object initialization. The resulting
-    collection can be accessed through the ``employees`` property or using
-    standard sequence operations such as indexing and ``len()``.
+    Loads employee records from ``employee.json`` and converts each record
+    into an :class:`Employee` object during object initialization. The
+    resulting collection supports sequence-style operations such as
+    indexing and retrieving its length.
 
     Attributes:
         _path: Path to the JSON file containing employee records.
-        _data: Raw employee records loaded from the JSON file.
-        _employees: Collection of :class:`Employee` objects created from
-            the raw employee records.
+        _data: Raw employee records deserialized from the JSON file.
+        _employees: List of :class:`Employee` objects created from the raw
+            employee records.
     """
 
     def __init__(self):
         """Initialize the Employees collection.
 
-        Resolves the JSON file path, loads the employee records, and
-        converts the records into :class:`Employee` objects.
+        Resolves the JSON file path, loads and deserializes the employee
+        records, and converts each record into an :class:`Employee` object.
         """
         self._path = self._json_file_path
         self._data = self._load_json_data
-        self._employees = self.employees
+        self._employees = self._get_employees
 
     @property
     def _json_file_path(self) -> Path:
         """Return the path to the employee JSON file.
 
         Returns:
-            Path: Path to ``data.json``.
+            Path: Path to ``employee.json``.
 
         Raises:
-            FileNotFoundError: If ``data.json`` does not exist.
+            FileNotFoundError: If ``employee.json`` does not exist.
         """
         path = Path("employee.json")
         if not path.exists():
@@ -92,6 +92,10 @@ class Employees:
     def _load_json_data(self) -> list[dict]:
         """Load and deserialize employee data from the JSON file.
 
+        Reads the JSON file and deserializes its contents into Python
+        objects. The expected JSON structure is a list of dictionaries,
+        where each dictionary represents an employee record.
+
         Returns:
             list[dict]: A list of dictionaries representing employee
                 records.
@@ -100,19 +104,19 @@ class Employees:
             return load(json_file)
 
     @property
-    def employees(self) -> list[Employee]:
-        """Return all employees as Employee objects.
+    def _get_employees(self) -> list[Employee]:
+        """Convert raw employee records into Employee objects.
 
-        Converts each raw employee dictionary into an :class:`Employee`
-        object, providing a structured Python representation of the
-        underlying JSON data.
+        Iterates over the deserialized employee records and creates an
+        :class:`Employee` object for each record.
 
         Returns:
-            list[Employee]: A list of Employee objects.
+            list[Employee]: A list containing the corresponding Employee
+                objects.
         """
         return [Employee(employee) for employee in self._data]
 
-    def __getitem__(self, index) -> Employee:
+    def __getitem__(self, index):
         """Return the employee at the specified index.
 
         Provides sequence-style indexed access to the employee collection.
@@ -121,15 +125,21 @@ class Employees:
             index: Zero-based index of the employee to retrieve.
 
         Returns:
-            Employee: The employee at the specified index.
+            Employee: The employee object at the specified index.
+
+        Raises:
+            IndexError: If the specified index is outside the valid range.
         """
         return self._employees[index]
 
-    def __len__(self) -> int:
+    def __len__(self):
         """Return the number of employees in the collection.
 
+        Enables the use of the built-in :func:`len` function on an
+        ``Employees`` instance.
+
         Returns:
-            int: Number of Employee objects in the collection.
+            int: Number of employees in the collection.
         """
         return len(self._employees)
 ```
@@ -142,7 +152,7 @@ It raises a `FileNotFoundError` if the expected file is unavailable.
 The JSON document is converted into native Python objects, 
 resulting in a `list[dict]` where each dictionary represents an `Employee` record.
 
-* The `employees` property wraps each raw employee dictionary in an `Employee` object, 
+* The `_get_employees` property wraps each raw employee dictionary in an `Employee` object, 
 abstracting the underlying JSON representation behind a structured Python interface.
 
 * Sequence-style access, by implementing `__getitem__`, the Employees class 
