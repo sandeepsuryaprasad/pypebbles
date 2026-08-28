@@ -408,14 +408,14 @@ Traceback (most recent call last):
 AttributeError: 'dict' object has no attribute 'city'
 ```
 The problem becomes apparent when we attempt to access a nested attribute using 
-an expression such as `employees.employees[0].address.city`. If `employees.employees[0].address` 
+an expression such as `employees[0].address.city`. If `employees[0].address` 
 returns a dictionary, Python attempts to resolve `city` as an attribute of the `dict` 
 object. Since the built-in `dict` type does not define an attribute named `city`, 
 the attribute lookup fails with an `AttributeError`.
 A dictionary provides access to its contents through key-based indexing, 
 such as `address["city"]`, rather than attribute-based access using the dot 
 operator. Therefore, we cannot directly use dot notation to traverse nested 
-dictionary data. To support an expression such as `employees.employees[0].address.city`, 
+dictionary data. To support an expression such as `employees[0].address.city`, 
 the nested dictionary must first be represented by an object that exposes its keys 
 as attributes. 
 
@@ -641,8 +641,8 @@ behind a clean, object-oriented interface.
 >>> employees[1].address.country
 'United States'
 ```
-Here, `employees.employees[0].address` resolves to an instance of the `Address` class. 
-When we evaluate `employees.employees[0].address.city`, Python performs attribute lookup 
+Here, `employees[0].address` resolves to an instance of the `Address` class. 
+When we evaluate `employees[0].address.city`, Python performs attribute lookup 
 for `city` on that `Address` instance and returns the corresponding instance 
 attribute. This allows the nested address data to be accessed through standard 
 object attribute notation rather than dictionary key-based access.
