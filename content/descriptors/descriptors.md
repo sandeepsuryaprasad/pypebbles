@@ -759,11 +759,11 @@ def map_fields(cls):
 ### Reading the declarative field definition
 
 The `map_fields` function is a class decorator that performs dynamic class configuration . 
-It takes a declarative _nodes definition and converts each entry into a Field descriptor, 
+It takes a declarative `_nodes` definition and converts each entry into a Field descriptor, 
 then injects a common `__init__` implementation into the decorated class.
 
 `map_fields` receives the class object itself as its `cls` argument. The decorator expects the class to 
-define _nodes,
+define `_nodes`,
 ```python
 _nodes = [
     ("passenger_id", None),
@@ -781,38 +781,81 @@ _nodes = [
 Each tuple contains two pieces of information, `("field_name", field_type)`, for example,
 `("first_name", None)`, meaning `first_name` corresponds directly to `first_name` JSON key.
 when you say, `("contact", Contact)`, `contact` is the JSON node contains nested data and
-should be represented or mapped to `Contact` object. This makes _nodes effectively a declarative 
+should be represented or mapped to `Contact` object. This makes `_nodes` effectively a declarative 
 mapping specification.
 
 ### Dynamically creating descriptors
 
-The nested `_mapping` function processes the `_nodes` definition:
+The nested `_mapping` function processes the `_nodes` definition.
+This function is actually the core of the **metaprogramming** part of the mapper. 
+It takes the declarative `_nodes` definition and dynamically adds `Field` descriptors 
+to the class.
 ```python
 def _mapping(cls, nodes):
     for node, mapping in nodes:
         setattr(cls, node, Field(node, field_type=mapping))
 ```
-For example `("first_name", None)` the following operation effectively occurs,
+
+In the above function, the argument `cls` is the actual class or 
+the reference of the class that is being configured. 
+For example, when `Passenger` class is decorated,
 ```python
-setattr(Passenger, "first_name", Field("first_name", field_type=None))
+@map_fields
+class Passenger:
+    _nodes = [
+        ("first_name", None),
+        ("last_name", None),
+        ("address", Address),
+    ]
 ```
-which is equivalent to dynamically adding `Passenger.first_name = Field("first_name", None)`
-Similarly, when you say `("contact", Contact)` the following operation occurs,
-```python
-Passenger.contact = Field("contact", field_type=Contact)
-```
-So basically you only declare the mappings in `_nodes`
+`cls` refers to the `Passenger` class itself.`nodes` receives the `_nodes` list.
+
+For the tuple `("first_name", None)`, the `_mapping` function maps the `first_name` JSON
+node directly to python attribute `first_name`. where as for `("address", Address)` maps
+`address` JSON node and represent its nested JSON object using the `Address` class.
+The JSON node name and the corresponding Python attribute name are intentionally 
+kept identical to maintain a consistent and easily identifiable mapping between the 
+JSON structure and the Python object model.
 
 ### Importance of _setattr_
 
-The `setattr` dynamically adds an attribute to the class. When you say 
-`setattr(cls, node, Field(node, field_type=mapping))`, 
-Conceptually, `setattr(Passenger, "first_name", descriptor)` is equivalent to 
-`Passenger.first_name = descriptor`. The important difference is that the attribute name is 
-determined at runtime from `_nodes`
+The `setattr` function dynamically binds a `Field` descriptor instance to the target class.
+The attribute name is determined at runtime for each `(node, mapping)` tuple defined 
+at the class-level `_nodes` collection, enabling the decorator to construct the class's 
+field mappings dynamically rather than requiring them to be declared explicitly in the 
+class body. For example,
+```python
+setattr(Passenger, "first_name", Field("first_name", field_type=None))
+```
+is effectively equivalent to,
+```python
+Passenger.first_name = Field("first_name")
+```
+and similarly,
+```python
+setattr(Passenger, "address", Field("address", field_type=Address))
+```
+is equivalent to,
+```python
+Passenger.address = Field("address", field_type=Address)
+```
+Once the mapping is done, the class looks like,
+```python
+class Passenger:
+    _nodes = [
+        ("first_name", None),
+        ("last_name", None),
+        ("address", Address),
+    ]
+
+    first_name = Field("first_name")
+    last_name = Field("last_name")
+    address = Field("address", field_type=Address)
+```
+The important point is that **you did not explicitly write those Field assignments**. 
+They were generated dynamically at runtime.
 
 ### Injecting _ _ init_ _ to class
-
 The decorator also dynamically creates an initializer and attaches it to the class
 ```python
 def __init__(self, info):
