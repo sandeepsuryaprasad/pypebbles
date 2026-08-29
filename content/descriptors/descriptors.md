@@ -803,7 +803,7 @@ Passenger.contact = Field("contact", field_type=Contact)
 ```
 So basically you only declare the mappings in `_nodes`
 
-### Importance of "setattr"
+### Importance of _setattr_
 
 The `setattr` dynamically adds an attribute to the class. When you say 
 `setattr(cls, node, Field(node, field_type=mapping))`, 
@@ -811,7 +811,7 @@ Conceptually, `setattr(Passenger, "first_name", descriptor)` is equivalent to
 `Passenger.first_name = descriptor`. The important difference is that the attribute name is 
 determined at runtime from `_nodes`
 
-### Injecting "__init__" to class
+### Injecting _ _ init_ _ to class
 
 The decorator also dynamically creates an initializer and attaches it to the class
 ```python
@@ -865,7 +865,7 @@ class Passenger:
         self.__dict__.update(info)
 ```
 
-### How this works with the "Field" descriptor
+### How this works with the _Field_ descriptor
 
 The decorator itself does not retrieve values from the JSON. It only establishes the mapping
 The actual retrieval is delegated to the Field descriptor.
