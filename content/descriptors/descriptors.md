@@ -1,4 +1,5 @@
-## Python Descriptors - Building a Reusable JSON Field Mapping Framework
+## Metaprogramming with Python Descriptors and Class Decorators - Building a declarative JSON-to-Object Mapper
+
 **Last Updated:** August 15, 2026
 
 When working with real-world APIs, JSON responses are often far more complex than 
