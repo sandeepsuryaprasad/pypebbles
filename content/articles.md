@@ -6,7 +6,7 @@
 * [From JSON Data to Python Objects](json/reading_json.md)
 
 
-* [Python Descriptors - Building a Reusable JSON Field Mapping Framework](descriptors/descriptors.md)
+* [Metaprogramming with Python Descriptors and Class Decorators - Building a declarative JSON-to-Object Mapper](descriptors/descriptors.md)
 
 
 * [Recursive JSON-to-Object Mapping](recursive_json_mapping/recursive_json_mapping.md)
