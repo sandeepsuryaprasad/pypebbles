@@ -901,6 +901,27 @@ In other words, this is a classic example of Python metaprogramming
 ***The class declares its data model through `_nodes`, while the decorator generates the 
 corresponding class structure dynamically.***
 
+### Why it is interesting design
+The real strength of your decorator is that it removes repetitive structural code from the model classes.
+
+Without the decorator, every class would need to explicitly define
+```python
+field = Field(...)
+```
+and 
+```python
+def __init__(self, info):
+    self._data = info
+```
+But With the decorator, the model only describes what the structure is,
+```python
+_nodes = [
+    ("first_name", None),
+    ("contact", Contact),
+    ("address", Address),
+]
+```
+while the decorator and descriptor infrastructure define how that structure is implemented.
 
 
 ```python
