@@ -811,6 +811,7 @@ Conceptually, `setattr(Passenger, "first_name", descriptor)` is equivalent to
 determined at runtime from `_nodes`
 
 **Injecting `__init__` to class**
+
 The decorator also dynamically creates an initializer and attaches it to the class
 ```python
 def __init__(self, info):
@@ -864,6 +865,7 @@ class Passenger:
 ```
 
 **How this works with the `Field` descriptor**
+
 The decorator itself does not retrieve values from the JSON. It only establishes the mapping
 The actual retrieval is delegated to the Field descriptor.
 
