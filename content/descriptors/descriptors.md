@@ -852,17 +852,17 @@ class Passenger:
     last_name = Field("last_name")
     address = Field("address", field_type=Address)
 ```
-The important point is that **you did not explicitly write those Field assignments**. 
+The important point is that **we did not explicitly write those Field assignments**. 
 They were generated dynamically at runtime.
 
 ### Injecting _ _ init_ _ to class
 The decorator also dynamically creates an initializer and attaches it to the class
+
 ```python
-def __init__(self, info):
-    self.__dict__.update(info)
+setattr(cls, "__init__", __init__)
 ```
 
-`setattr(cls, "__init__", __init__)` is conceptually equivalent to adding
+is conceptually equivalent to adding
 ```python
 class Passenger:
     def __init__(self, info):
@@ -911,20 +911,8 @@ class Passenger:
 ### How this works with the _Field_ descriptor
 
 The decorator itself does not retrieve values from the JSON. It only establishes the mapping
-The actual retrieval is delegated to the Field descriptor.
+The actual retrieval is delegated to the `Field` descriptor.
 
-```python
-def __get__(self, obj, cls):
-    if obj is None:
-        return self
-
-    value = obj._data[self.name]
-
-    if self._field_type:
-        return self._field_type(value)
-
-    return value
-```
 So the responsibilities are clearly separated as shown below,
 
 | Component  | Responsibility                                   |
@@ -954,7 +942,7 @@ field = Field(...)
 and 
 ```python
 def __init__(self, info):
-    self._data = info
+    self.__dict__.update(info)
 ```
 But With the decorator, the model only describes what the structure is,
 ```python
@@ -966,7 +954,11 @@ _nodes = [
 ```
 while the decorator and descriptor infrastructure define how that structure is implemented.
 
-
+With the descriptor-based field mappings and class decorator in place, 
+we can now access the reservation data through a clean, attribute-based interface. 
+The following interactive Python session demonstrates how scalar fields, nested objects, 
+and collection elements can be accessed without directly navigating the 
+underlying JSON dictionaries:
 ```python
 >>> reservations[0].passenger.first_name
 'John'
@@ -985,8 +977,33 @@ while the decorator and descriptor infrastructure define how that structure is i
 >>> reservations[0].services[1].status
 'CONFIRMED'
 ```
-Here, nested attributes are accessed using dot notation, while individual service 
-records are accessed using standard sequence indexing since there can be one or more services.
+These lookups demonstrate the abstraction provided by the mapper. 
+The client code does not need to know how the underlying JSON dictionaries are
+structured or perform explicit key-based lookups. Instead, nested JSON objects are
+exposed as corresponding Python objects and can be traversed naturally using 
+attribute access.
+
+### Final Thoughts
+In this article, we built a lightweight, declarative JSON-to-Object mapper using Python 
+descriptors and class decorators. Rather than manually writing repetitive attribute
+mappings and nested object construction logic for every model class, we defined the
+JSON structure declaratively through the `_nodes` class attribute and allowed the
+mapping infrastructure to construct the required descriptors dynamically.
+
+The Field descriptor is responsible for controlling attribute access and resolving values
+from the underlying JSON data, while the `map_fields` class decorator dynamically 
+configures each model class based on its declared field mappings. 
+This separation of responsibilities keeps the model classes concise while centralizing 
+the mapping behavior in reusable components.
+
+One of the most interesting aspects of this approach is the use of Python metaprogramming.
+The classes describe what needs to be mapped, while the decorator and descriptors determine
+how that mapping is implemented. The use of `setattr` to dynamically attach descriptors 
+demonstrates how Python classes can be inspected and modified programmatically at runtime.
+
+The resulting object model provides a clean and intuitive interface for navigating
+deeply nested JSON structures. Instead of exposing dictionaries and requiring callers
+to perform repeated key-based lookups.
 
 
 Back to  [Articles](../articles.md)
