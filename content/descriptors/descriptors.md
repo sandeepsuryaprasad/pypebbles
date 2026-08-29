@@ -16,198 +16,204 @@ dictionary lookups became increasingly difficult to read and maintain.
 This article presents a real-world scenario inspired by that project and demonstrates how I approached the problem using Python's object-oriented capabilities.
 The solution uses Python descriptors to map fields from the JSON response to Python attributes and to transparently construct objects for nested structures.
 
-Let's consider below JSON response, For this demonstration, we will work with a 
-representative JSON response containing the reservation and associated information 
-for a single passenger. 
+Let us consider the following JSON response. For this demonstration, 
+we will work with a representative JSON containing reservation and 
+associated passenger information. The source JSON is structured as a list of 
+reservation records, with each record representing the reservation details of an 
+individual passenger. To keep the example concise and focused, we will use a 
+single reservation record from that collection.
+
 
 <details>
-<summary><strong>▸ Click here to expand/collapse complete JSON response</strong></summary>
+<summary><strong> Click here to expand/collapse complete JSON response</strong></summary>
 
 <div markdown="1">
 
 `reservations.json`
 ```json
-{
-  "reservation": {
-    "confirmation_number": "X7K9PQ",
-    "booking_status": "CONFIRMED",
-    "booking_date": "2026-08-10T14:32:18-05:00",
-    "ticket_status": "TICKETED",
-    "currency": "USD"
-  },
-  "passenger": {
-    "passenger_id": "PAX-104582",
-    "first_name": "John",
-    "last_name": "Doe",
-    "contact": {
-      "email": "john.doe@example.com",
-      "phone": "+1-123-555-0987",
-      "alternate_phone": "+1-111-222-3333"
-    },
-    "address": {
-      "city": "Sampleville",
-      "state": "California",
-      "country": "United States"
-    },
-    "frequent_flyer": {
-      "program": "Spam Airlines dvantage",
-      "membership_number": "SA987654321",
-      "status": "Executive Platinum",
-      "miles_balance": 184250
-    }
-  },
-  "flight": {
-    "airline": {
-      "code": "SA",
-      "name": "Spam Airlines",
-      "headquarters": {
-        "city": "Austin",
-        "state": "Texas",
-        "state_code": "TX"
-      }
-    },
-    "flight_number": "SA1234",
-    "flight_status": "SCHEDULED",
-    "aircraft": {
-      "registration": "N003AN",
-      "manufacturer": "Boeing",
-      "model": "737-800",
-      "configuration": "160"
-    },
-    "departure": {
-      "airport": {
-        "code": "AUS",
-        "name": "Austin-Bergstrom International Airport",
-        "city": "Austin",
-        "state": "Texas",
-        "state_code": "TX",
-        "country": "United States",
-        "terminal": "South Terminal"
-      },
-      "scheduled": {
-        "date": "2026-09-15",
-        "time": "08:30",
-        "timezone": "America/Chicago"
-      },
-      "gate": "34",
-      "boarding_time": "07:50"
-    },
-    "arrival": {
-      "airport": {
-        "code": "JFK",
-        "name": "John F. Kennedy International Airport",
-        "city": "New York",
-        "state": "New York",
-        "state_code": "NY",
-        "country": "United States",
-        "terminal": "Terminal 8"
-      },
-      "scheduled": {
-        "date": "2026-09-15",
-        "time": "13:25",
-        "timezone": "America/New_York"
-      },
-      "gate": "B22"
-    },
-    "duration": {
-      "hours": 3,
-      "minutes": 55
-    },
-    "distance": {
-      "value": 1511,
-      "unit": "miles"
-    }
-  },
-  "seat": {
-    "number": "12A",
-    "class": "Business",
-    "cabin": "Business",
-    "position": "Window",
-    "is_exit_row": false,
-    "is_extra_legroom": true
-  },
-  "baggage": {
-    "checked": {
-      "allowed_pieces": 2,
-      "weight_limit": {
-        "value": 50,
-        "unit": "lbs"
-      }
-    },
-    "carry_on": {
-      "allowed_pieces": 1,
-      "weight_limit": {
-        "value": 40,
-        "unit": "lbs"
-      }
-    },
-    "personal_item": {
-      "allowed": true,
-      "description": "One small personal item"
-    }
-  },
-  "payment": {
-    "status": "PAID",
-    "method": {
-      "type": "CREDIT_CARD",
-      "provider": "Visa"
-    },
-    "fare": {
-      "base_fare": 485,
-      "taxes": 72.75,
-      "airport_fees": 18.4,
-      "service_fee": 25,
-      "total": 601.15
-    }
-  },
-  "services": [
+[
     {
-      "code": "MEAL",
-      "name": "Premium Meal",
-      "description": "Chicken and roasted vegetables",
-      "status": "CONFIRMED"
-    },
-    {
-      "code": "WIFI",
-      "name": "Inflight Wi-Fi",
-      "description": "High-speed internet access",
-      "status": "CONFIRMED"
-    },
-    {
-      "code": "LOUNGE",
-      "name": "Elite Club",
-      "description": "Airport lounge access",
-      "status": "CONFIRMED"
+      "reservation": {
+        "confirmation_number": "X7K9PQ",
+        "booking_status": "CONFIRMED",
+        "booking_date": "2026-08-10T14:32:18-05:00",
+        "ticket_status": "TICKETED",
+        "currency": "USD"
+      },
+      "passenger": {
+        "passenger_id": "PAX-104582",
+        "first_name": "John",
+        "last_name": "Doe",
+        "contact": {
+          "email": "john.doe@example.com",
+          "phone": "+1-123-555-0987",
+          "alternate_phone": "+1-111-222-3333"
+        },
+        "address": {
+          "city": "Sampleville",
+          "state": "California",
+          "country": "United States"
+        },
+        "frequent_flyer": {
+          "program": "Spam Airlines dvantage",
+          "membership_number": "SA987654321",
+          "status": "Executive Platinum",
+          "miles_balance": 184250
+        }
+      },
+      "flight": {
+        "airline": {
+          "code": "SA",
+          "name": "Spam Airlines",
+          "headquarters": {
+            "city": "Austin",
+            "state": "Texas",
+            "state_code": "TX"
+          }
+        },
+        "flight_number": "SA1234",
+        "flight_status": "SCHEDULED",
+        "aircraft": {
+          "registration": "N003AN",
+          "manufacturer": "Boeing",
+          "model": "737-800",
+          "configuration": "160"
+        },
+        "departure": {
+          "airport": {
+            "code": "AUS",
+            "name": "Austin-Bergstrom International Airport",
+            "city": "Austin",
+            "state": "Texas",
+            "state_code": "TX",
+            "country": "United States",
+            "terminal": "South Terminal"
+          },
+          "scheduled": {
+            "date": "2026-09-15",
+            "time": "08:30",
+            "timezone": "America/Chicago"
+          },
+          "gate": "34",
+          "boarding_time": "07:50"
+        },
+        "arrival": {
+          "airport": {
+            "code": "JFK",
+            "name": "John F. Kennedy International Airport",
+            "city": "New York",
+            "state": "New York",
+            "state_code": "NY",
+            "country": "United States",
+            "terminal": "Terminal 8"
+          },
+          "scheduled": {
+            "date": "2026-09-15",
+            "time": "13:25",
+            "timezone": "America/New_York"
+          },
+          "gate": "B22"
+        },
+        "duration": {
+          "hours": 3,
+          "minutes": 55
+        },
+        "distance": {
+          "value": 1511,
+          "unit": "miles"
+        }
+      },
+      "seat": {
+        "number": "12A",
+        "class": "Business",
+        "cabin": "Business",
+        "position": "Window",
+        "is_exit_row": false,
+        "is_extra_legroom": true
+      },
+      "baggage": {
+        "checked": {
+          "allowed_pieces": 2,
+          "weight_limit": {
+            "value": 50,
+            "unit": "lbs"
+          }
+        },
+        "carry_on": {
+          "allowed_pieces": 1,
+          "weight_limit": {
+            "value": 40,
+            "unit": "lbs"
+          }
+        },
+        "personal_item": {
+          "allowed": true,
+          "description": "One small personal item"
+        }
+      },
+      "payment": {
+        "status": "PAID",
+        "method": {
+          "type": "CREDIT_CARD",
+          "provider": "Visa"
+        },
+        "fare": {
+          "base_fare": 485,
+          "taxes": 72.75,
+          "airport_fees": 18.4,
+          "service_fee": 25,
+          "total": 601.15
+        }
+      },
+      "services": [
+        {
+          "code": "MEAL",
+          "name": "Premium Meal",
+          "description": "Chicken and roasted vegetables",
+          "status": "CONFIRMED"
+        },
+        {
+          "code": "WIFI",
+          "name": "Inflight Wi-Fi",
+          "description": "High-speed internet access",
+          "status": "CONFIRMED"
+        },
+        {
+          "code": "LOUNGE",
+          "name": "Elite Club",
+          "description": "Airport lounge access",
+          "status": "CONFIRMED"
+        }
+      ],
+      "emergency_contact": {
+        "name": "Sarah Emergency",
+        "relationship": "Spouse",
+        "phone": "+1-000-999-0199",
+        "address": {
+          "street": "890 Another Example Avenue",
+          "suite": "Suite 205",
+          "city": "Springfield",
+          "state": "Illinois",
+          "state_code": "IL",
+          "zip_code": "62700",
+          "country": "United States"
+        }
+      },
+      "notifications": {
+        "email": {
+          "enabled": true,
+          "address": "john.doe@example.com"
+        },
+        "sms": {
+          "enabled": true,
+          "phone": "+1-000-000-0000"
+        },
+        "push": {
+          "enabled": false
+        }
+      }
     }
-  ],
-  "emergency_contact": {
-    "name": "Sarah Emergency",
-    "relationship": "Spouse",
-    "phone": "+1-000-999-0199",
-    "address": {
-      "street": "890 Another Example Avenue",
-      "suite": "Suite 205",
-      "city": "Springfield",
-      "state": "Illinois",
-      "state_code": "IL",
-      "zip_code": "62700",
-      "country": "United States"
-    }
-  },
-  "notifications": {
-    "email": {
-      "enabled": true,
-      "address": "john.doe@example.com"
-    },
-    "sms": {
-      "enabled": true,
-      "phone": "+1-000-000-0000"
-    },
-    "push": {
-      "enabled": false
-    }
-  }
-}
+]
 ```
 
 </div>
@@ -226,7 +232,7 @@ JSON structure. For example, the `passenger` node contains child objects such as
 their own attributes and, in some cases, additional nested objects.
 
 <details>
-<summary><strong>▸ Click here to expand/collapse complete JSON tree</strong></summary>
+<summary><strong> Click here to expand/collapse complete JSON tree</strong></summary>
 
 <div markdown="1">
 
@@ -380,11 +386,12 @@ ReservationInfo
 
 Let us implement the `Reservations` class, which serves as the **data access layer** 
 responsible for loading and deserializing reservation data from the JSON file
-and making it available to the application through a structured Python interface.
+and making it available through a structured Python interface.
 
 ```python
 from json import load
 from pathlib import Path
+
 
 class Reservations:
     """Provide sequence-style access to reservation information.
@@ -489,7 +496,7 @@ individual reservation records through the resulting collection.
 >>> reservations
 <__main__.Reservations object at 0x107332850>
 >>> type(reservations)
-<class '__main__.Reservations'>
+<class __main__.Reservations>
 ```
 We can now access individual reservation records using standard sequence-style indexing
 ```python
@@ -500,6 +507,32 @@ Since the JSON data contains a single reservation record,
 index `0` refers to the only available record in the collection. 
 The returned value is a `Reservation` object representing that record, 
 rather than the raw JSON dictionary.
+
+```python
+>>> reservations[0].passenger.first_name
+'John'
+>>> reservations[0].passenger.contact.email
+'john.doe@example.com'
+>>> reservations[0].services
+<__main__.Services object at 0x1057fb7f0>
+>>> reservations[0].services[0]
+<__main__.Services.Service object at 0x1057fb760>
+>>> reservations[0].services[0].name
+'Premium Meal'
+>>> reservations[0].services[0].status
+'CONFIRMED'
+>>> reservations[0].services[1].name
+'Inflight Wi-Fi'
+>>> reservations[0].services[1].status
+'CONFIRMED'
+```
+Here, nested attributes are accessed using dot notation, while individual service 
+records are accessed using standard sequence indexing since there can be one or more services.
+
+For the purpose of this demonstration and to keep the article concise, we will implement 
+only the `Passenger`, `Contact`, and `Services` classes. 
+This is sufficient to demonstrate how the descriptor-based model provides structured, 
+attribute-based access to both scalar and nested JSON data, as illustrated below,
 
 ### Field descriptor
 The `Field` class is a descriptor that provides controlled attribute access to
@@ -517,7 +550,7 @@ class Field:
     objects to be represented as structured Python objects.
     """
 
-    def __init__(self, name, field_type=None):
+    def __init__(self, json_node, field_type=None):
         """Initialize a Field descriptor.
 
         Args:
@@ -525,7 +558,7 @@ class Field:
             field_type: Optional Python type used to wrap nested JSON data.
                 If omitted, the JSON value is returned directly.
         """
-        self.name = name
+        self.json_node = json_node
         self._field_type = field_type
 
     def __get__(self, obj, cls):
@@ -548,7 +581,7 @@ class Field:
         if obj is None:
             return self
 
-        json_data = obj._data[self.name]
+        json_data = obj._data[self.json_node]
 
         if self._field_type:
             return self._field_type(json_data)
@@ -565,15 +598,11 @@ class Field:
         Raises:
             AttributeError: Always raised because mapped fields are read-only.
         """
-        raise AttributeError(f"Field {self.name} is read-only")
+        raise AttributeError(f"Field {self.json_node} is read-only")
 ```
-* `name` stores the corresponding key/node in the JSON object.
-* `field_type` optionally specifies the Python class used to represent a 
-nested JSON object.
+* `json_node` stores the corresponding key/node in the JSON object.
+* `field_type` optionally specifies the Python class used to represent a nested JSON object.
 
-
-The descriptor maps each Python attribute to its corresponding key in the service 
-dictionary.
 
 
 Back to  [Articles](../articles.md)
