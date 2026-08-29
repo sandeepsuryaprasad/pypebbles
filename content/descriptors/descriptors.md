@@ -1,4 +1,4 @@
-## Metaprogramming with Python Descriptors and Class Decorators - Building a declarative JSON-to-Object Mapper
+## Building a Declarative JSON-to-Object Mapper — A Metaprogramming Approach
 
 **Last Updated:** August 15, 2026
 
