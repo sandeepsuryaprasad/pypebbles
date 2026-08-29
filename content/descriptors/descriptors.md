@@ -1,4 +1,4 @@
-## Building a Declarative JSON-to-Object Mapper — A Metaprogramming Approach
+## Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach
 
 **Last Updated:** August 15, 2026
 
