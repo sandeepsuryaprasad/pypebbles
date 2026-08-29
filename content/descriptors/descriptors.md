@@ -715,7 +715,7 @@ class Field:
 * `json_node` stores the corresponding key/node in the JSON object.
 * `field_type` optionally specifies the Python class used to represent a nested JSON object.
 
-## A class Decorator that performs dynamic class configuration 
+### A class Decorator that performs dynamic class configuration 
 ```python
 def map_fields(cls):
     """Configure a JSON-backed class using its declared field mappings.
@@ -756,7 +756,7 @@ def map_fields(cls):
     return cls
 ```
 
-**Reading the declarative field definition**
+### Reading the declarative field definition
 
 The `map_fields` function is a class decorator that performs dynamic class configuration . 
 It takes a declarative _nodes definition and converts each entry into a Field descriptor, 
@@ -784,7 +784,7 @@ when you say, `("contact", Contact)`, `contact` is the JSON node contains nested
 should be represented or mapped to `Contact` object. This makes _nodes effectively a declarative 
 mapping specification.
 
-**Dynamically creating descriptors**
+### Dynamically creating descriptors
 
 The nested `_mapping` function processes the `_nodes` definition:
 ```python
@@ -803,14 +803,15 @@ Passenger.contact = Field("contact", field_type=Contact)
 ```
 So basically you only declare the mappings in `_nodes`
 
-**Importance of `setattr`**
+### Importance of `setattr`
+
 The `setattr` dynamically adds an attribute to the class. When you say 
 `setattr(cls, node, Field(node, field_type=mapping))`, 
 Conceptually, `setattr(Passenger, "first_name", descriptor)` is equivalent to 
 `Passenger.first_name = descriptor`. The important difference is that the attribute name is 
 determined at runtime from `_nodes`
 
-**Injecting `__init__` to class**
+### Injecting `__init__` to class
 
 The decorator also dynamically creates an initializer and attaches it to the class
 ```python
@@ -840,7 +841,7 @@ class Address:
 ```
 All the above of them automatically receive the same initialization behavior.
 
-**The complete transformation**
+### The complete transformation
 ```python
 @map_fields
 class Passenger:
@@ -864,7 +865,7 @@ class Passenger:
         self.__dict__.update(info)
 ```
 
-**How this works with the `Field` descriptor**
+### How this works with the `Field` descriptor
 
 The decorator itself does not retrieve values from the JSON. It only establishes the mapping
 The actual retrieval is delegated to the Field descriptor.
