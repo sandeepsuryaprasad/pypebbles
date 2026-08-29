@@ -509,6 +509,397 @@ index `0` refers to the only available record in the collection.
 The returned value is a `Reservation` object representing that record, 
 rather than the raw JSON dictionary.
 
+For the purpose of this demonstration and to keep the article concise, 
+we will implement only the `Passenger`, and `Services` classes. 
+Each JSON node is mapped to its corresponding Python attribute through the `Field` 
+descriptor. This provides a sufficient foundation to demonstrate how descriptors can 
+abstract the underlying JSON structure and expose both scalar values and nested 
+objects through a structured, attribute-based interface.
+
+```python
+@map_fields
+class Passenger:
+    """Represent passenger information using descriptor-based field mappings.
+
+    The class uses the :func:`map_fields` decorator to dynamically create
+    :class:`Field` descriptors for the JSON nodes declared in ``_nodes``.
+    Scalar fields are mapped directly to their corresponding JSON values,
+    while nested objects are mapped to their respective Python classes.
+
+    The ``_nodes`` definition acts as a declarative schema that describes
+    the structure of the passenger data and its corresponding Python
+    representations.
+
+    Attributes:
+        _nodes: Collection of JSON field names and their corresponding
+            Python types. A value of ``None`` indicates that the JSON value
+            is returned directly, while a class specifies the type used to
+            represent a nested JSON object.
+
+    Example:
+        ``passenger.first_name`` returns the value of the ``first_name``
+        JSON field, while ``passenger.address.city`` provides attribute-based
+        access to the nested address data.
+    """
+
+    _nodes = [
+        ("passenger_id", None),
+        ("title", None),
+        ("first_name", None),
+        ("middle_name", None),
+        ("last_name", None),
+        ("date_of_birth", None),
+        ("gender", None),
+        ("contact", Contact),
+        ("address", Address),
+        ("frequent_flyer", FrequentFlyer),
+    ]
+```
+
+```python
+@map_fields
+class Contact:
+    """Represent passenger contact information using descriptor mappings.
+
+    The class uses the :func:`map_fields` decorator to dynamically create
+    :class:`Field` descriptors for the contact-related JSON nodes declared
+    in ``_nodes``. Each field represents a scalar value in the underlying
+    JSON data and is therefore mapped directly without additional object
+    conversion.
+
+    Attributes:
+        _nodes: Mapping of contact JSON field names to their corresponding
+            Python representations.
+    """
+
+    _nodes = [
+        ("email", None),
+        ("phone", None),
+        ("alternate_phone", None),
+    ]
+```
+
+```python
+class Services:
+    """Represent a collection of services selected for a reservation.
+
+    Encapsulates the ``services`` JSON array and converts each service
+    dictionary into a structured :class:`Service` object. The nested
+    :class:`Service` class represents the individual service entries,
+    while ``Services`` provides indexed access to the collection.
+
+    Attributes:
+        _data: List of :class:`Service` objects created from the JSON service
+            records.
+    """
+
+    @map_fields
+    class Service:
+        """Represent an individual service associated with a reservation.
+
+        Uses the :func:`map_fields` decorator to create :class:`Field`
+        descriptors for the scalar attributes defined in ``_nodes``.
+
+        Attributes:
+            _nodes: Mapping of service JSON fields to their corresponding
+                Python representation.
+        """
+
+        _nodes = [
+            ("code", None),
+            ("name", None),
+            ("description", None),
+            ("status", None),
+        ]
+
+    def __init__(self, services_info):
+        """Initialize the service collection from JSON data.
+
+        Converts each service dictionary into a :class:`Service` object.
+
+        Args:
+            services_info: List of dictionaries containing service
+                information.
+        """
+        self._services = [self.Service(service) for service in services_info]
+
+    def __getitem__(self, index):
+        """Return the service at the specified index.
+
+        Provides sequence-style indexed access to the individual
+        :class:`Service` objects.
+
+        Args:
+            index: Zero-based index of the service to retrieve.
+
+        Returns:
+            Service: The service object at the specified index.
+
+        Raises:
+            IndexError: If the specified index is outside the valid range.
+        """
+        return self._services[index]
+```
+
+### Field descriptor
+The `Field` class is a descriptor that provides controlled attribute access to
+the underlying JSON data.
+It acts as an abstraction layer between the Python object and the dictionary 
+containing the JSON response.
+
+```python
+class Field:
+    """Descriptor for mapping JSON fields to Python object attributes.
+
+    A Field descriptor provides controlled access to a value stored in the
+    underlying JSON data. For simple fields, the corresponding JSON value is
+    returned directly. For nested JSON objects, ``field_type`` can be
+    specified to convert the JSON dictionary into an instance of the
+    corresponding Python class.
+
+    Attributes:
+        name: Name of the corresponding field in the JSON data.
+        _field_type: Optional Python type used to represent a nested JSON
+            object.
+    """
+
+    def __init__(self, json_node, field_type=None):
+        """Initialize a Field descriptor.
+
+        Args:
+            name: Name of the field in the underlying JSON data.
+            field_type: Optional Python class used to map nested JSON data
+                to a Python object.
+        """
+        self.json_node = json_node
+        self._field_type = field_type
+
+    def __get__(self, obj, cls):
+        """Retrieve the value associated with the JSON field.
+
+        If accessed through the class, the descriptor itself is returned.
+        When accessed through an instance, the corresponding value is
+        retrieved from the instance's underlying JSON data. If a
+        ``field_type`` is specified, the JSON data is converted into an
+        instance of that type.
+
+        Args:
+            obj: Instance whose underlying JSON data should be accessed.
+            cls: Class through which the descriptor is accessed.
+
+        Returns:
+            The corresponding JSON value or an instance of ``field_type``.
+        """
+        if obj is None:
+            return self
+
+        value = obj.__dict__[self.json_node]    
+
+        if self._field_type:
+            return self._field_type(value)
+
+        return value
+
+    def __set__(self, obj, value):
+        """Prevent modification of the mapped JSON field.
+
+        Args:
+            obj: Instance on which the assignment was attempted.
+            value: Value that was assigned to the field.
+
+        Raises:
+            AttributeError: Always raised because mapped fields are read-only.
+        """
+        raise AttributeError(f"Field {self.json_node} is read-only")
+```
+* `json_node` stores the corresponding key/node in the JSON object.
+* `field_type` optionally specifies the Python class used to represent a nested JSON object.
+
+## A class Decorator that performs dynamic class configuration 
+```python
+def map_fields(cls):
+    """Configure a JSON-backed class using its declared field mappings.
+    The decorator reads the class-level ``_nodes`` definition and dynamically
+    creates :class:`Field` descriptors for each mapped JSON node. It also
+    injects an ``__init__`` method that stores the supplied JSON data on the
+    instance.
+    Args:
+        cls: The class being decorated. The class must define a ``_nodes``
+            attribute containing the JSON field mappings.
+    Returns:
+        type: The configured class with its ``Field`` descriptors and
+            generated ``__init__`` method.
+    """
+
+    def _mapping(cls, nodes):
+        """Create and attach Field descriptors for the specified nodes.
+        Args:
+            cls: Class to which the descriptors are added.
+            nodes: Iterable containing JSON node names and their corresponding
+                Python types.
+        """
+        for node, mapping in nodes:
+            setattr(cls, node, Field(node, field_type=mapping))
+    
+    # calling _mapping function that creates descriptor objects on the class
+    _mapping(cls, cls._nodes) 
+
+    def __init__(self, info):
+        """Initialize an instance with its underlying JSON data.
+        Args:
+            info: Dictionary containing the JSON data represented by the
+                object.
+        """
+        self.__dict__.update(info)  # updating instance dict of obj
+
+    setattr(cls, "__init__", __init__)  # defining __init__ method on decorated class 
+    return cls
+```
+
+**Reading the declarative field definition**
+
+The `map_fields` function is a class decorator that performs dynamic class configuration . 
+It takes a declarative _nodes definition and converts each entry into a Field descriptor, 
+then injects a common `__init__` implementation into the decorated class.
+
+`map_fields` receives the class object itself as its `cls` argument. The decorator expects the class to 
+define _nodes,
+```python
+_nodes = [
+    ("passenger_id", None),
+    ("title", None),
+    ("first_name", None),
+    ("middle_name", None),
+    ("last_name", None),
+    ("date_of_birth", None),
+    ("gender", None),
+    ("contact", Contact),
+    ("address", Address),
+    ("frequent_flyer", FrequentFlyer),
+]
+```
+Each tuple contains two pieces of information, `("field_name", field_type)`, for example,
+`("first_name", None)`, meaning `first_name` corresponds directly to `first_name` JSON key.
+when you say, `("contact", Contact)`, `contact` is the JSON node contains nested data and
+should be represented or mapped to `Contact` object. This makes _nodes effectively a declarative 
+mapping specification.
+
+**Dynamically creating descriptors**
+
+The nested `_mapping` function processes the `_nodes` definition:
+```python
+def _mapping(cls, nodes):
+    for node, mapping in nodes:
+        setattr(cls, node, Field(node, field_type=mapping))
+```
+For example `("first_name", None)` the following operation effectively occurs,
+```python
+setattr(Passenger, "first_name", Field("first_name", field_type=None))
+```
+which is equivalent to dynamically adding `Passenger.first_name = Field("first_name", None)`
+Similarly, when you say `("contact", Contact)` the following operation occurs,
+```python
+Passenger.contact = Field("contact", field_type=Contact)
+```
+So basically you only declare the mappings in `_nodes`
+
+**Importance of `setattr`**
+The `setattr` dynamically adds an attribute to the class. When you say 
+`setattr(cls, node, Field(node, field_type=mapping))`, 
+Conceptually, `setattr(Passenger, "first_name", descriptor)` is equivalent to 
+`Passenger.first_name = descriptor`. The important difference is that the attribute name is 
+determined at runtime from `_nodes`
+
+**Injecting `__init__` to class**
+The decorator also dynamically creates an initializer and attaches it to the class
+```python
+def __init__(self, info):
+    self.__dict__.update(info)
+```
+
+`setattr(cls, "__init__", __init__)` is conceptually equivalent to adding
+```python
+class Passenger:
+    def __init__(self, info):
+        self.__dict__.update(info)
+```
+As a result, you don't need to repeat the same initialization logic in every model
+```python
+@map_fields
+class Passenger:
+    ...
+
+@map_fields
+class Contact:
+    ...
+
+@map_fields
+class Address:
+    ...
+```
+All the above of them automatically receive the same initialization behavior.
+
+**The complete transformation**
+```python
+@map_fields
+class Passenger:
+    _nodes = [
+        ("first_name", None),
+        ("contact", Contact),
+    ]
+```
+Conceptually, the decorator transforms it into something similar to
+```python
+class Passenger:
+    _nodes = [
+        ("first_name", None),
+        ("contact", Contact),
+    ]
+
+    first_name = Field("first_name", field_type=None)
+    contact = Field("contact", field_type=Contact)
+
+    def __init__(self, info):
+        self.__dict__.update(info)
+```
+
+**How this works with the `Field` descriptor**
+The decorator itself does not retrieve values from the JSON. It only establishes the mapping
+The actual retrieval is delegated to the Field descriptor.
+
+```python
+def __get__(self, obj, cls):
+    if obj is None:
+        return self
+
+    value = obj._data[self.name]
+
+    if self._field_type:
+        return self._field_type(value)
+
+    return value
+```
+So the responsibilities are clearly separated as shown below,
+
+| Component  | Responsibility                                   |
+| ---------- | ------------------------------------------------ |
+| `_nodes`   | Declares the JSON-to-Python mapping              |
+| `map_fields` | Dynamically creates the descriptors            |
+| `Field`    | Implements attribute access                      |
+| `__get__`  | Retrieves the corresponding JSON value           |
+| `field_type` | Determines whether nested data should be wrapped |
+| `__init__` | Stores the underlying JSON dictionary            |
+
+The `map_fields` decorator is doing more than simply "decorating" the class in the 
+conventional sense. It is modifying the class object at decoration time by dynamically
+attaching descriptors and replacing/injecting its `__init__` method. 
+In other words, this is a classic example of Python metaprogramming
+
+***The class declares its data model through `_nodes`, while the decorator generates the 
+corresponding class structure dynamically.***
+
+
+
 ```python
 >>> reservations[0].passenger.first_name
 'John'
@@ -529,81 +920,6 @@ rather than the raw JSON dictionary.
 ```
 Here, nested attributes are accessed using dot notation, while individual service 
 records are accessed using standard sequence indexing since there can be one or more services.
-
-For the purpose of this demonstration and to keep the article concise, we will implement 
-only the `Passenger`, `Contact`, and `Services` classes. 
-This is sufficient to demonstrate how the descriptor-based model provides structured, 
-attribute-based access to both scalar and nested JSON data, as illustrated below,
-
-### Field descriptor
-The `Field` class is a descriptor that provides controlled attribute access to
-the underlying JSON data.
-It acts as an abstraction layer between the Python object and the dictionary 
-containing the JSON response.
-
-```python
-class Field:
-    """Descriptor that maps a Python attribute to a field in JSON data.
-
-    Provides read-only attribute access to values stored in the underlying
-    JSON dictionary. When a ``field_type`` is specified, the retrieved JSON
-    value is wrapped in the corresponding Python class, allowing nested JSON
-    objects to be represented as structured Python objects.
-    """
-
-    def __init__(self, json_node, field_type=None):
-        """Initialize a Field descriptor.
-
-        Args:
-            name: Name of the corresponding key in the JSON data.
-            field_type: Optional Python type used to wrap nested JSON data.
-                If omitted, the JSON value is returned directly.
-        """
-        self.json_node = json_node
-        self._field_type = field_type
-
-    def __get__(self, obj, cls):
-        """Retrieve the value associated with the mapped JSON field.
-
-        When accessed through an instance, the method performs a dictionary
-        lookup using the configured field name. If a ``field_type`` is
-        specified, the retrieved value is converted into an instance of that
-        type. When accessed through the class, the descriptor itself is
-        returned.
-
-        Args:
-            obj: Instance through which the descriptor is accessed.
-            cls: Class that owns the descriptor.
-
-        Returns:
-            The corresponding JSON value, or an instance of ``field_type``
-            when a mapped type is specified.
-        """
-        if obj is None:
-            return self
-
-        json_data = obj._data[self.json_node]
-
-        if self._field_type:
-            return self._field_type(json_data)
-
-        return json_data
-
-    def __set__(self, obj, value):
-        """Prevent modification of the mapped JSON field.
-
-        Args:
-            obj: Instance whose field is being modified.
-            value: Value that was supplied for the assignment.
-
-        Raises:
-            AttributeError: Always raised because mapped fields are read-only.
-        """
-        raise AttributeError(f"Field {self.json_node} is read-only")
-```
-* `json_node` stores the corresponding key/node in the JSON object.
-* `field_type` optionally specifies the Python class used to represent a nested JSON object.
-
 
 
 Back to  [Articles](../articles.md)
