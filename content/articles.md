@@ -9,9 +9,6 @@
 * [Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach](descriptors/descriptors.md)
 
 
-* [Recursive JSON-to-Object Mapping](recursive_json_mapping/recursive_json_mapping.md)
-
-
 * [Building a Flexible Logging Abstraction](Logging/logging.md)
 
 
