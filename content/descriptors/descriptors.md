@@ -538,7 +538,7 @@ class Passenger:
 
     Example:
         ``passenger.first_name`` returns the value of the ``first_name``
-        JSON field, while ``passenger.address.city`` provides attribute-based
+        JSON field, while ``passenger.contact.email`` provides attribute-based
         access to the nested address data.
     """
 
@@ -589,7 +589,7 @@ class Services:
     while ``Services`` provides indexed access to the collection.
 
     Attributes:
-        _data: List of :class:`Service` objects created from the JSON service
+        _services: List of :class:`Service` objects created from the JSON service
             records.
     """
 
@@ -658,7 +658,7 @@ class Field:
     corresponding Python class.
 
     Attributes:
-        name: Name of the corresponding field in the JSON data.
+        json_node: Name/node/key of the corresponding field in the JSON data.
         _field_type: Optional Python type used to represent a nested JSON
             object.
     """
@@ -667,7 +667,7 @@ class Field:
         """Initialize a Field descriptor.
 
         Args:
-            name: Name of the field in the underlying JSON data.
+            json_node: Name/node/key of the field in the underlying JSON data.
             field_type: Optional Python class used to map nested JSON data
                 to a Python object.
         """
@@ -741,8 +741,7 @@ def map_fields(cls):
         for node, mapping in nodes:
             setattr(cls, node, Field(node, field_type=mapping))
     
-    # calling _mapping function that creates descriptor objects on the class
-    _mapping(cls, cls._nodes) 
+    _mapping(cls, cls._nodes)   # creating descriptor objects on the class 
 
     def __init__(self, info):
         """Initialize an instance with its underlying JSON data.
@@ -752,7 +751,7 @@ def map_fields(cls):
         """
         self.__dict__.update(info)  # updating instance dict of obj
 
-    setattr(cls, "__init__", __init__)  # defining __init__ method on decorated class 
+    setattr(cls, "__init__", __init__)  # attaching __init__ method on decorated class 
     return cls
 ```
 
@@ -926,8 +925,8 @@ So the responsibilities are clearly separated as shown below,
 
 The `map_fields` decorator is doing more than simply "decorating" the class in the 
 conventional sense. It is modifying the class object at decoration time by dynamically
-attaching descriptors and replacing/injecting its `__init__` method. 
-In other words, this is a classic example of Python metaprogramming
+attaching descriptors and injecting its `__init__` method. 
+This is a classic example of Python metaprogramming
 
 ***The class declares its data model through `_nodes`, while the decorator generates the 
 corresponding class structure dynamically.***
