@@ -1,3 +1,5 @@
+[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
+
 ## Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach
 
 **Last Updated:** August 15, 2026
@@ -1005,4 +1007,4 @@ deeply nested JSON structures. Instead of exposing dictionaries and requiring ca
 to perform repeated key-based lookups.
 
 
-Back to  [Articles](../articles.md)
+[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../logging/logging.md)

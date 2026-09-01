@@ -9,7 +9,7 @@
 * [Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach](descriptors/descriptors.md)
 
 
-* [Building a Flexible Logging Abstraction](Logging/logging.md)
+* [Building a Flexible Logging Abstraction](logging/logging.md)
 
 
 * [Profiling in Python: Building a Reusable Performance Profiler](profiling/profiling.md)

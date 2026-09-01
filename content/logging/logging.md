@@ -1,3 +1,5 @@
+[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
+
 ## Building a Flexible Logging Abstraction
 **Last Updated:** August 8, 2026
 
@@ -363,4 +365,4 @@ by calling `get_log_level_from_terminal()`, which determines the logging level
 based on the command-line arguments supplied when the application is executed.
 
 
-Back to  [Articles](../articles.md)
+[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)

@@ -1,3 +1,6 @@
+
+[Articles](../articles.md) \|  [Previous](../config/reading_config_file.md) \| [Next](../descriptors/descriptors.md)
+
 ## From JSON Data to Python Objects
 **Last Updated:** August 2, 2026
 
@@ -738,4 +741,4 @@ As applications grow and data structures become more complex, thoughtful
 abstraction can make the difference between code that merely works and code that 
 remains readable, maintainable, reusable, and extensible over time.
 
-Back to  [Articles](../articles.md)
+[Articles](../articles.md) \|  [Previous](../config/reading_config_file.md) \| [Next](../descriptors/descriptors.md)
