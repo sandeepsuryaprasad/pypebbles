@@ -1,5 +1,5 @@
 
-[Articles](../articles.md) | [Next](../json/reading_json.md)
+[Articles](../articles.md) \| [Next](../json/reading_json.md)
 
 ## Turning Configuration Files into Python Objects 
 **Last Updated:** August 1, 2026
@@ -263,4 +263,4 @@ We also saw how returning `self` from `__getattr__` enables chained attribute
 access and how the `value` property ultimately resolves the requested configuration 
 key from the underlying data.
 
-[Articles](../articles.md) | [Next](../json/reading_json.md)
+[Articles](../articles.md) \| [Next](../json/reading_json.md)
