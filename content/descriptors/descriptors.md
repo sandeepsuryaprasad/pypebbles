@@ -1007,4 +1007,4 @@ deeply nested JSON structures. Instead of exposing dictionaries and requiring ca
 to perform repeated key-based lookups.
 
 
-[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../logging/logging.md)
+[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
