@@ -189,14 +189,20 @@ activity captured by `cProfile`.
 ```python
 from httpx import get
 from os import environ
+from pytest import fixture
 
 headers = {
     "X-Reqres-Env": "prod",
     "x-api-key": environ["X_API_KEY"],
 }
 
-def test_delayed_users():
-    response = get("https://reqres.in/api/users?delay=2", headers=headers)
+@fixture(scope="module")
+def client():
+    with Client() as _client:
+        yield _client
+
+def test_delayed_users(client):
+    response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
     assert response.status_code == 200
 ```
 Before introducing any profiling , we will execute the `test_delayed_users` 
