@@ -219,5 +219,50 @@ collected 1 item
 profiler.py::test_delayed_users PASSED
 ====================================== 1 passed in 2.85s =============================== 
 ```
+The test is passed. Now let's start by profiling the `test_delayed_users` test.
+
+```python
+def test_delayed_users(client):
+    with Profiler() as profiler:
+        response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+        assert response.status_code == 200
+    print(f"Elapsed Time: {profiler.elapsed_time}")
+```
+```commandline
+~$ pytest -vs profiler.py::test_delayed_users
+============================= test session starts ======================================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item                                                                                                                                                                                        
+
+profiler.py::test_delayed_users :Elapsed Time: 2.675 secs
+PASSED
+=========================== 1 passed in 2.78s =========================================
+```
+Once again the test is passed, but this time the Elapsed Time is printed in the console
+which is `2.675 secs`.
+
+### Eliminating Profiling Code from Existing Tests
+The context-manager approach works well when we are writing new code or when we
+have complete control over the code being measured. However, consider a project in
+which hundreds of tests have already been implemented. Adding a `with Profiler(...)` block
+to every test would require modifying the existing test code and would introduce
+profiling-specific logic into the tests themselves.
+
+Ideally, we should be able to enable profiling without changing the implementation 
+of the functions or tests that we want to measure.
+
+That's where decorators come into picture. Python decorators provide an elegant solution 
+to this problem. A decorator allows us to wrap an existing function with additional 
+behavior without modifying the function's implementation.
+
+We can therefore move the profiling logic out of the test and into a reusable `@profile` 
+decorator. The test remains focused solely on its original purpose, 
+while the decorator transparently handles starting the profiler, measuring 
+execution time, collecting profiling statistics, and reporting the results.
+
+Let's see how we can implement a reusable function decorator for this purpose.
 
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
