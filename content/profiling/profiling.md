@@ -52,41 +52,53 @@ class Profiler:
     ``cProfile`` to measure wall-clock elapsed time and collect
     detailed function-call statistics.
 
-    The class is designed to be used as a context manager::
+    The profiling results can be sorted and limited when they are
+    displayed. The class is designed to be used as a context manager::
 
-        with Profiler() as profiler:
+        with Profiler(limit=10) as profiler:
             some_function()
 
         print(profiler.elapsed_time)
         profiler.print_stats()
+
+    Args:
+        limit: Maximum number of profiling entries to display.
+        sort_key: The ``pstats.SortKey`` used to sort the profiling
+            statistics. Defaults to ``SortKey.CUMULATIVE``.
 
     Attributes:
         _profile: The ``cProfile.Profile`` instance used to collect
             profiling data.
         _stats: The ``pstats.Stats`` instance created from the collected
             profiling data.
-        _start: The value of ``perf_counter()`` recorded when profiling
-            starts.
-        _end: The value of ``perf_counter()`` recorded when profiling
-            ends.
+        _start: The wall-clock time recorded when profiling starts.
+        _end: The wall-clock time recorded when profiling ends.
+        _limit: Maximum number of profiling entries to display.
+        _sort_key: Sorting criterion used when displaying profiling
+            statistics.
     """
 
-    def __init__(self):
+    def __init__(self, limit=10, sort_key=SortKey.CUMULATIVE):
         """Initialize a Profiler instance.
 
-        The actual profiling session is created when the context manager
-        is entered.
+        Args:
+            limit: Maximum number of profiling entries to display.
+            sort_key: The ``pstats.SortKey`` used to sort the profiling
+                statistics. Defaults to ``SortKey.CUMULATIVE``.
         """
         self._profile = None
         self._stats = None
         self._start = 0.0
         self._end = 0.0
+        self._limit = limit
+        self._sort_key = sort_key
 
     def __enter__(self):
         """Start the profiling session.
 
-        Creates a ``cProfile.Profile`` instance, enables profiling, and
-        records the starting wall-clock time using ``perf_counter()``.
+        Creates a ``cProfile.Profile`` instance, enables profiling,
+        and records the starting wall-clock time using
+        ``perf_counter()``.
 
         Returns:
             Profiler: The current Profiler instance.
@@ -97,7 +109,7 @@ class Profiler:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Stop the profiling session and collect statistics.
+        """Stop profiling and collect the profiling statistics.
 
         Records the ending wall-clock time, disables ``cProfile``,
         and creates a ``pstats.Stats`` object from the collected
@@ -115,20 +127,15 @@ class Profiler:
         self._profile.disable()
         self._stats = Stats(self._profile)
 
-    def print_stats(self, limit=10, sort_key=SortKey.CUMULATIVE):
-        """Display collected profiling statistics.
+    def print_stats(self):
+        """Display the collected profiling statistics.
 
         The statistics are stripped of directory information, sorted
-        using the specified sort key, and printed to the console.
-
-        Args:
-            limit: Maximum number of profiling entries to display.
-                Defaults to ``10``.
-            sort_key: The ``pstats.SortKey`` used to order the results.
-                Defaults to ``SortKey.CUMULATIVE``.
+        using the configured sort key, and limited to the configured
+        number of entries.
         """
-        self._stats.strip_dirs().sort_stats(sort_key)
-        self._stats.print_stats(limit)
+        self._stats.strip_dirs().sort_stats(self._sort_key)
+        self._stats.print_stats(self._limit)
 
     @property
     def elapsed_time(self):
@@ -144,7 +151,7 @@ class Profiler:
         """Save profiling statistics to a file.
 
         The generated statistics file can be loaded later using
-        ``pstats.Stats`` or other tools that understand cProfile
+        ``pstats.Stats`` or other tools that support cProfile
         statistics files.
 
         Args:
@@ -152,6 +159,51 @@ class Profiler:
                 should be saved.
         """
         self._stats.dump_stats(filename)
+```
+
+### Using the Profiler to profile API Calls
+
+Now that we have implemented the Profiler class, let's see how it can be used to measure 
+the performance of real-world operations.
+
+To keep the example practical, we will use API requests rather than artificial functions
+that perform simple calculations. API calls are particularly useful for demonstrating 
+profiling because their execution time can be influenced by several factors, including 
+network latency, server response time, and the processing performed by the HTTP client.
+
+
+The following examples use different endpoints and response scenarios to demonstrate 
+how the profiler behaves with API requests that complete at different speeds. 
+Some requests return immediately, while others intentionally introduce a delay in the
+server response.
+
+For each API request, we can measure the total wall-clock elapsed time and, 
+when required, inspect the function-call statistics collected by cProfile.
+
+Let's start by applying the profiler explicitly to each API test. 
+Consider the `test_delayed_users` test method, which invokes an HTTP `GET` 
+request against a delayed API endpoint. We will use the `Profiler` class to measure 
+the request's wall-clock execution time and analyze the underlying function-call 
+activity captured by `cProfile`.
+
+```python
+def test_delayed_users():
+    response = get("https://reqres.in/api/users?delay=2", headers=headers)
+    assert response.status_code == 200
+```
+Before introducing any profiling , we will execute the `test_delayed_users` 
+test independently using `pytest`
+```commandline
+~$ pytest -vs profiler.py::test_delayed_users
+====================================== test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item                                                                                                                                                                                        
+
+profiler.py::test_delayed_users PASSED
+====================================== 1 passed in 2.85s =============================== 
 ```
 
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
