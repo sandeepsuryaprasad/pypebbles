@@ -12,7 +12,7 @@
 * [Building a Flexible Logging Abstraction](logging/logging.md)
 
 
-* [Profiling in Python: Building a Reusable Performance Profiler](profiling/profiling.md)
+* [Profiling in Python - Building a Reusable Performance Profiler](profiling/profiling.md)
 
 
 
