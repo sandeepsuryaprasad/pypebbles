@@ -187,6 +187,14 @@ the request's wall-clock execution time and analyze the underlying function-call
 activity captured by `cProfile`.
 
 ```python
+from httpx import get
+from os import environ
+
+headers = {
+    "X-Reqres-Env": "prod",
+    "x-api-key": environ["X_API_KEY"],
+}
+
 def test_delayed_users():
     response = get("https://reqres.in/api/users?delay=2", headers=headers)
     assert response.status_code == 200
