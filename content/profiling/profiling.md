@@ -431,9 +431,47 @@ collected 1 item
 profiler.py::test_delayed_users Time Elapsed test_delayed_users:2.718 seconds
 WARNING: test_delayed_users took more than threshold limit of 2 seconds
 PASSED
-============================= 1 passed in 2.83s ======================================= 
+================================= 1 passed in 2.83s ======================================= 
 ```
-Let's modify the `threshold` for `test_single_user` 
+Let's modify the `threshold` and `stats` 
+```python
+@profile(threshold=2, stats=True)
+def test_delayed_users(client):
+    response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+    assert response.status_code == 200
+```
+```commandline
+~$ pytest -vs profiler.py::test_delayed_users
+================================ test session starts =======================================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item
+
+profiler.py::test_delayed_users Time Elapsed test_delayed_users:2.906 seconds
+WARNING: test_delayed_users took more than threshold limit of 2 seconds
+         2508 function calls (2456 primitive calls) in 2.906 seconds
+
+   Ordered by: cumulative time
+   List reduced from 459 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    2.906    2.906 profiler.py:182(test_delayed_users)
+        1    0.000    0.000    2.906    2.906 _client.py:1036(get)
+        1    0.000    0.000    2.906    2.906 _client.py:771(request)
+        1    0.000    0.000    2.906    2.906 _client.py:879(send)
+        1    0.000    0.000    2.905    2.905 _client.py:930(_send_handling_auth)
+        1    0.000    0.000    2.905    2.905 _client.py:964(_send_handling_redirects)
+        1    0.000    0.000    2.905    2.905 _client.py:1001(_send_single_request)
+        1    0.000    0.000    2.904    2.904 default.py:230(handle_request)
+        1    0.000    0.000    2.903    2.903 connection_pool.py:199(handle_request)
+        1    0.000    0.000    2.903    2.903 connection.py:69(handle_request)
+
+PASSED
+================================= 1 passed in 3.02s ===============================================================
+```
+Let's decorate and modify the `threshold` limit for `test_single_user`
 ```python
 @profile(threshold=1)
 def test_single_user(client):
