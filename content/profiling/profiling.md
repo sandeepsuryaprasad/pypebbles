@@ -214,7 +214,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item
 
 profiler.py::test_delayed_users PASSED
 ====================================== 1 passed in 2.85s =============================== 
@@ -235,7 +235,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item
 
 profiler.py::test_delayed_users :Elapsed Time: 2.675 secs
 PASSED
@@ -426,7 +426,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item                                                                                                                                                         
 
 profiler.py::test_delayed_users Time Elapsed test_delayed_users:2.718 seconds
 WARNING: test_delayed_users took more than threshold limit of 2 seconds
@@ -448,10 +448,11 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item                                                                                      
 
 profiler.py::test_single_user Time Elapsed test_single_user:0.708 seconds
 PASSED
 ================================= 1 passed in 0.83s ================================ 
 ```
+
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
