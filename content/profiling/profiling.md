@@ -395,9 +395,10 @@ def profile(func=None, *, threshold=1, elapsed_time=True, stats=False, stats_lim
             result = func(*args, **kwargs)
 
         if elapsed_time:
-            print(f"Time Elapsed {func.__name__}:{p.elapsed_time} secs")
-            if p.elapsed_time > threshold:
-                print(f"WARNING: {func.__name__} took more than threshold limit")
+            _elapsed_time = p.elapsed_time
+            print(f"Time Elapsed {func.__name__}:{_elapsed_time:.3f} seconds")
+            if _elapsed_time > threshold:
+                print(f"WARNING: {func.__name__} took more than threshold limit of {threshold} seconds")
 
         if stats:
             p.print_stats()
