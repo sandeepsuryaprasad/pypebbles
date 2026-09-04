@@ -402,8 +402,10 @@ def profile(func=None, *, threshold=1, elapsed_time=True, stats=False, stats_lim
 
         if stats:
             p.print_stats()
-
+        
         return result
+
+    return wrapper
 ```
 
 
