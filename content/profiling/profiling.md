@@ -187,8 +187,8 @@ the request's wall-clock execution time and analyze the underlying function-call
 activity captured by `cProfile`.
 
 ```python
-from httpx import get
 from os import environ
+from httpx import get
 from pytest import fixture
 
 headers = {
@@ -247,7 +247,7 @@ which is `2.675 secs`.
 ### Eliminating Profiling Code from Existing Tests
 The context-manager approach works well when we are writing new code or when we
 have complete control over the code being measured. However, consider a project in
-which hundreds of tests have already been implemented. Adding a `with Profiler(...)` block
+which hundreds of tests have already been implemented. Adding a `with` `Profiler(...)` block
 to every test would require modifying the existing test code and would introduce
 profiling-specific logic into the tests themselves.
 
@@ -264,5 +264,146 @@ while the decorator transparently handles starting the profiler, measuring
 execution time, collecting profiling statistics, and reporting the results.
 
 Let's see how we can implement a reusable function decorator for this purpose.
+
+Consider below tests that validates the response of code different end points,
+```python
+from os import environ
+from httpx import get
+from pytest import fixture
+
+headers = {
+    "X-Reqres-Env": "prod",
+    "x-api-key": environ["X_API_KEY"],
+}
+
+@fixture(scope="module")
+def client():
+    with Client() as _client:
+        yield _client
+
+        
+def test_single_user(client):
+    response = client.get("https://reqres.in/api/users/2", headers=headers)
+    assert response.status_code == 200
+
+def test_user_not_found(client):
+    response = client.get("https://reqres.in/api/users/23", headers=headers)
+    assert response.status_code == 404
+
+def test_list_users(client):
+    response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+    assert response.status_code == 200
+
+def test_resources(client):
+    response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+    assert response.status_code == 200
+
+def test_delayed_users(client):
+    response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+    assert response.status_code == 200
+
+def test_more_delayed_users(client):
+    response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
+    assert response.status_code == 200
+```
+
+We now have a set of existing API tests that exercise different endpoints and scenarios. 
+These tests are already implemented and their primary responsibility is to validate the 
+expected API behavior.
+
+Our next objective is to profile these tests without adding profiling logic directly 
+into each test function. Adding a `with` `Profiler(...)` block to every test would introduce 
+repetitive instrumentation code and would mix performance-measurement concerns with test
+logic.
+
+Let's now implement a `profile` decorator that uses our `Profiler` class to measure and 
+report the execution characteristics of these tests.
+
+For the initial implementation, we will use a function decorator and explicitly decorate
+each test function that we want to profile. This approach allows us to introduce 
+profiling with minimal changes to the existing test code while keeping the profiling 
+logic separate from the test implementation.
+
+Later in this article, we will refactor these tests into a test class and introduce a 
+**class decorator**. The class decorator will automatically apply the profiling behavior to
+the relevant test methods, eliminating the need to decorate each method individually.
+
+This progression allows us to start with a simple function-level solution and then extend
+the same concept to class-level profiling as the number of test methods grows.
+
+```python
+def profile(func=None, *, threshold=1, elapsed_time=True, stats=False, stats_limit=10):
+    """Profile a function and optionally report its execution characteristics.
+    Wraps a function with the :class:`Profiler` context manager to measure
+    wall-clock execution time and, optionally, display the function-call
+    statistics collected by ``cProfile``.
+
+    The decorator can be used either directly as ``@profile`` or with
+    configuration arguments such as ``threshold``, ``elapsed_time``, and
+    ``stats``.
+
+    Args:
+        func: Function to be profiled. When ``None``, the decorator is being
+            configured with keyword arguments and returns a partially
+            configured decorator.
+        threshold: Maximum expected execution time in seconds. A warning is
+            displayed when the measured execution time exceeds this value.
+        elapsed_time: Whether to display the wall-clock execution time after
+            the function completes.
+        stats: Whether to display the detailed function-call statistics
+            collected by ``cProfile``.
+        stats_limit: Maximum number of profiling entries to display when
+            ``stats`` is enabled.
+
+    Returns:
+        A wrapped function that executes the original function under the
+        configured profiling context.
+
+    Example:
+        Use the decorator with its default configuration::
+
+            @profile
+            def test_delayed_users(client):
+                ...
+
+        Configure the decorator explicitly::
+
+            @profile(threshold=2, stats=True)
+            def test_delayed_users(client):
+                ...
+    """
+    if func is None:
+        return partial(profile, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        """Execute the wrapped function within a profiling context.
+        Starts the configured profiler before invoking the wrapped function and
+        stops it after the function completes. Depending on the decorator
+        configuration, the wrapper reports the elapsed execution time, checks
+        the configured execution-time threshold, and displays the collected
+        profiling statistics.
+
+        Args:
+            *args: Positional arguments passed to the wrapped function.
+            **kwargs: Keyword arguments passed to the wrapped function.
+
+        Returns:
+            The value returned by the wrapped function.
+        """
+        with Profiler(limit=stats_limit) as p:
+            result = func(*args, **kwargs)
+
+        if elapsed_time:
+            print(f"Time Elapsed {func.__name__}:{p.elapsed_time} secs")
+            if p.elapsed_time > threshold:
+                print(f"WARNING: {func.__name__} took more than threshold limit")
+
+        if stats:
+            p.print_stats()
+
+        return result
+```
+
 
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
