@@ -332,7 +332,7 @@ This progression allows us to start with a simple function-level solution and th
 the same concept to class-level profiling as the number of test methods grows.
 
 ```python
-def profile(func=None, *, threshold=1, elapsed_time=True, stats=False, stats_limit=10):
+def profile(func=None, *, threshold=2, elapsed_time=True, stats=False, stats_limit=10):
     """Profile a function and optionally report its execution characteristics.
     Wraps a function with the :class:`Profiler` context manager to measure
     wall-clock execution time and, optionally, display the function-call
@@ -408,5 +408,50 @@ def profile(func=None, *, threshold=1, elapsed_time=True, stats=False, stats_lim
     return wrapper
 ```
 
+### Applying the Profile Decorator
+Now that we have implemented the profile decorator, let's apply it to the existing API 
+tests.
 
+```python
+@profile
+def test_delayed_users(client):
+    response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+    assert response.status_code == 200
+```
+Let's run the above test using pytest.
+```commandline
+~$ pytest -vs profiler.py::test_delayed_users
+============================== test session starts ====================================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item                                                                                                                                                                                        
+
+profiler.py::test_delayed_users Time Elapsed test_delayed_users:2.718 seconds
+WARNING: test_delayed_users took more than threshold limit of 2 seconds
+PASSED
+============================= 1 passed in 2.83s ======================================= 
+```
+Let's modify the `threshold` for `test_single_user` 
+```python
+@profile(threshold=1)
+def test_single_user(client):
+    response = client.get("https://reqres.in/api/users/2", headers=headers)
+    assert response.status_code == 200
+```
+
+```commandline
+~$ pytest -vs profiler.py::test_single_user  
+================================ test session starts ================================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item                                                                                                                                                                                        
+
+profiler.py::test_single_user Time Elapsed test_single_user:0.708 seconds
+PASSED
+================================= 1 passed in 0.83s ================================ 
+```
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
