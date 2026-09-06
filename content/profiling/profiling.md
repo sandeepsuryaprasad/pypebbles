@@ -688,7 +688,7 @@ PASSED
 ### Limitation of class decorator
 Although the class decorator significantly reduces repetitive code by applying the 
 profiling configuration to multiple test methods, it introduces a 
-limitation: **the same profiling configuration is applied to all decorated methods 
+limitation, **the same profiling configuration is applied to all decorated methods 
 in the class**.
 
 For example, if the class decorator is configured with `threshold=5`, every test 
@@ -701,7 +701,7 @@ For example, a test that performs a simple API request might reasonably have a t
 of two seconds, while another test involving a large file upload or download might 
 require a higher threshold.
 
-In such cases, the function decorator provides greater flexibility because each method 
+In such cases, the function decorator offers greater flexibility because each method 
 can be configured independently.
 
 ```python
