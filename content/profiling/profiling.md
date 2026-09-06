@@ -534,10 +534,40 @@ in that class.
 
 ```python
 def profile_class(cls=None, *, threshold=5, elapsed_time=True, stats=False, stats_limit=10):
+    """Profile methods defined in a class using the ``profile`` decorator.
+    Applies the :func:`profile` decorator to each callable method defined
+    directly on the class, allowing multiple methods to be profiled without
+    explicitly decorating each method individually.
+
+    The decorator can be used either directly as ``@profile_class`` or with
+    configuration arguments such as ``threshold``, ``elapsed_time``, ``stats``,
+    and ``stats_limit``.
+
+    Args:
+        cls: Class whose methods should be profiled. When ``None``, the
+            decorator is being configured with keyword arguments and returns
+            a partially configured decorator.
+        threshold: Maximum expected execution time in seconds. A warning is
+            displayed when a profiled method exceeds this value.
+        elapsed_time: Whether to display the wall-clock execution time of
+            each profiled method.
+        stats: Whether to display the detailed function-call statistics
+            collected by ``cProfile``.
+        stats_limit: Maximum number of profiling entries to display when
+            ``stats`` is enabled.
+
+    Returns:
+        The class with its applicable methods wrapped by the configured
+        ``profile`` decorator.
+    """
     if cls is None:
         return partial(profile_class, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
 
     def _decorate_each_method(method):
+        """Apply the configured profile decorator to a class method.
+        Captures the profiling configuration from the enclosing
+        ``profile_class`` function and applies it to the supplied method.
+        """
         return profile(method, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
 
     for name, value in cls.__dict__.items():
