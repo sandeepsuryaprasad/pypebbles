@@ -575,48 +575,91 @@ class TestUsers:
         response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
         assert response.status_code == 200
 ```
+When we execute the above test class we get the below response.
 ```commandline
 ~$ pytest -vs profiler.py::TestUsers
-========================================================================================== test session starts ==========================================================================================
+===================================== test session starts ============================================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 6 items                                                                                                                                                                                       
 
-profiler.py::TestUsers::test_single_user Time Elapsed test_single_user:0.208 seconds
-         2517 function calls (2465 primitive calls) in 0.208 seconds
+profiler.py::TestUsers::test_single_user Time Elapsed test_single_user:0.447 seconds
+         2498 function calls (2446 primitive calls) in 0.447 seconds
 
    Ordered by: cumulative time
    List reduced from 459 to 2 due to restriction <2>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.208    0.208 profiler.py:220(test_single_user)
-        1    0.000    0.000    0.208    0.208 _client.py:1036(get)
+        1    0.000    0.000    0.447    0.447 profiler.py:209(test_single_user)
+        1    0.000    0.000    0.447    0.447 _client.py:1036(get)
 
 
 PASSED
-profiler.py::TestUsers::test_user_not_found Time Elapsed test_user_not_found:0.237 seconds
-         1621 function calls in 0.237 seconds
+profiler.py::TestUsers::test_user_not_found Time Elapsed test_user_not_found:0.522 seconds
+         1621 function calls in 0.522 seconds
 
    Ordered by: cumulative time
    List reduced from 279 to 2 due to restriction <2>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.237    0.237 profiler.py:224(test_user_not_found)
-        1    0.000    0.000    0.237    0.237 _client.py:1036(get)
+        1    0.000    0.000    0.522    0.522 profiler.py:213(test_user_not_found)
+        1    0.000    0.000    0.522    0.522 _client.py:1036(get)
 
 
 PASSED
-profiler.py::TestUsers::test_list_users Time Elapsed test_list_users:0.056 seconds
-         1729 function calls (1728 primitive calls) in 0.056 seconds
+profiler.py::TestUsers::test_list_users Time Elapsed test_list_users:0.505 seconds
+         1710 function calls (1709 primitive calls) in 0.505 seconds
 
    Ordered by: cumulative time
    List reduced from 281 to 2 due to restriction <2>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.056    0.056 profiler.py:228(test_list_users)
-        1    0.000    0.000    0.056    0.056 _client.py:1036(get)
+        1    0.000    0.000    0.505    0.505 profiler.py:217(test_list_users)
+        1    0.000    0.000    0.505    0.505 _client.py:1036(get)
+
+
+PASSED
+profiler.py::TestUsers::test_resources Time Elapsed test_resources:0.057 seconds
+         1727 function calls (1726 primitive calls) in 0.057 seconds
+
+   Ordered by: cumulative time
+   List reduced from 279 to 2 due to restriction <2>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.057    0.057 profiler.py:221(test_resources)
+        1    0.000    0.000    0.057    0.057 _client.py:1036(get)
+
+
+PASSED
+profiler.py::TestUsers::test_delayed_users Time Elapsed test_delayed_users:2.246 seconds
+         1711 function calls (1710 primitive calls) in 2.246 seconds
+
+   Ordered by: cumulative time
+   List reduced from 281 to 2 due to restriction <2>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    2.246    2.246 profiler.py:225(test_delayed_users)
+        1    0.000    0.000    2.246    2.246 _client.py:1036(get)
+
+
+PASSED
+profiler.py::TestUsers::test_more_delayed_users Time Elapsed test_more_delayed_users:3.322 seconds
+WARNING: test_more_delayed_users took more than threshold limit of 2.5 seconds
+         1711 function calls (1710 primitive calls) in 3.322 seconds
+
+   Ordered by: cumulative time
+   List reduced from 281 to 2 due to restriction <2>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    3.322    3.322 profiler.py:229(test_more_delayed_users)
+        1    0.000    0.000    3.322    3.322 _client.py:1036(get)
+
+
+PASSED
+
+======================================= 6 passed in 7.28s ========================================
 ```
 
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
