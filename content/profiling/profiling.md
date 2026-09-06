@@ -575,7 +575,8 @@ class TestUsers:
         response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
         assert response.status_code == 200
 ```
-When we execute the above test class we get the below response.
+When we execute the above test class, the class-level decorator automatically profiles 
+each test method and produces the following output.
 ```commandline
 ~$ pytest -vs profiler.py::TestUsers
 ===================================== test session starts ============================================
@@ -595,7 +596,6 @@ profiler.py::TestUsers::test_single_user Time Elapsed test_single_user:0.447 sec
         1    0.000    0.000    0.447    0.447 profiler.py:209(test_single_user)
         1    0.000    0.000    0.447    0.447 _client.py:1036(get)
 
-
 PASSED
 profiler.py::TestUsers::test_user_not_found Time Elapsed test_user_not_found:0.522 seconds
          1621 function calls in 0.522 seconds
@@ -606,7 +606,6 @@ profiler.py::TestUsers::test_user_not_found Time Elapsed test_user_not_found:0.5
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
         1    0.000    0.000    0.522    0.522 profiler.py:213(test_user_not_found)
         1    0.000    0.000    0.522    0.522 _client.py:1036(get)
-
 
 PASSED
 profiler.py::TestUsers::test_list_users Time Elapsed test_list_users:0.505 seconds
@@ -619,7 +618,6 @@ profiler.py::TestUsers::test_list_users Time Elapsed test_list_users:0.505 secon
         1    0.000    0.000    0.505    0.505 profiler.py:217(test_list_users)
         1    0.000    0.000    0.505    0.505 _client.py:1036(get)
 
-
 PASSED
 profiler.py::TestUsers::test_resources Time Elapsed test_resources:0.057 seconds
          1727 function calls (1726 primitive calls) in 0.057 seconds
@@ -631,7 +629,6 @@ profiler.py::TestUsers::test_resources Time Elapsed test_resources:0.057 seconds
         1    0.000    0.000    0.057    0.057 profiler.py:221(test_resources)
         1    0.000    0.000    0.057    0.057 _client.py:1036(get)
 
-
 PASSED
 profiler.py::TestUsers::test_delayed_users Time Elapsed test_delayed_users:2.246 seconds
          1711 function calls (1710 primitive calls) in 2.246 seconds
@@ -642,7 +639,6 @@ profiler.py::TestUsers::test_delayed_users Time Elapsed test_delayed_users:2.246
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
         1    0.000    0.000    2.246    2.246 profiler.py:225(test_delayed_users)
         1    0.000    0.000    2.246    2.246 _client.py:1036(get)
-
 
 PASSED
 profiler.py::TestUsers::test_more_delayed_users Time Elapsed test_more_delayed_users:3.322 seconds
@@ -656,10 +652,23 @@ WARNING: test_more_delayed_users took more than threshold limit of 2.5 seconds
         1    0.000    0.000    3.322    3.322 profiler.py:229(test_more_delayed_users)
         1    0.000    0.000    3.322    3.322 _client.py:1036(get)
 
-
 PASSED
-
 ======================================= 6 passed in 7.28s ========================================
 ```
+### Final Thoughts
+In this article, we started by building a reusable Profiler class that combines 
+`time.perf_counter` for measuring wall-clock execution time with `cProfile` for 
+collecting function-call statistics. We then used the profiler as a context manager 
+to explicitly define the portion of code that should be measured.
+
+As the number of tests increased, we saw that adding profiling logic directly to 
+every test introduced unnecessary repetition. We addressed this by implementing a 
+function decorator that allowed profiling to be added to existing functions without
+embedding profiling logic into their implementation.
+
+Finally, we extended the same approach to a class decorator. 
+Instead of decorating every test method individually, the class decorator can 
+automatically apply the profiling behavior to the relevant methods in the class. 
+This provides a more scalable solution when profiling a larger collection of tests.
 
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
