@@ -685,6 +685,42 @@ WARNING: test_more_delayed_users took more than threshold limit of 2.5 seconds
 PASSED
 ======================================= 6 passed in 7.28s ========================================
 ```
+### Limitation of class decorator
+Although the class decorator significantly reduces repetitive code by applying the 
+profiling configuration to multiple test methods, it introduces a 
+limitation: **the same profiling configuration is applied to all decorated methods 
+in the class**.
+
+For example, if the class decorator is configured with `threshold=5`, every test 
+method decorated by the class decorator will use the same five-second threshold. 
+We cannot directly specify a different threshold for individual test methods through 
+the class decorator.
+
+A test suite may contain operations with significantly different expected execution times. 
+For example, a test that performs a simple API request might reasonably have a threshold 
+of two seconds, while another test involving a large file upload or download might 
+require a higher threshold.
+
+In such cases, the function decorator provides greater flexibility because each method 
+can be configured independently.
+
+```python
+@profile(threshold=2)
+def test_single_user(self):
+    ...
+
+@profile(threshold=10)
+def test_large_file_download(self):
+    ...
+```
+
+Therefore, the two approaches serve different purposes:
+
+* **Function decorator** — provides fine-grained, method-level configuration.
+* **Class decorator** — provides convenient, consistent configuration across multiple methods.
+
+The choice between them depends on whether the primary requirement is **individual control** or **convenient class-level configuration**.
+
 ### Final Thoughts
 In this article, we started by building a reusable Profiler class that combines 
 `time.perf_counter` for measuring wall-clock execution time with `cProfile` for 
