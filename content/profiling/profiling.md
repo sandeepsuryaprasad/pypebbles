@@ -492,5 +492,131 @@ profiler.py::test_single_user Time Elapsed test_single_user:0.708 seconds
 PASSED
 ================================= 1 passed in 0.83s ================================ 
 ```
+Consider a test class containing several test methods. 
+```python
+class TestUsers:
+    def test_single_user(self, client):
+        response = client.get("https://reqres.in/api/users/2", headers=headers)
+        assert response.status_code == 200
+
+    def test_user_not_found(self, client):
+        response = client.get("https://reqres.in/api/users/23", headers=headers)
+        assert response.status_code == 404
+
+    def test_list_users(self, client):
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_resources(self, client):
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_delayed_users(self, client):
+        response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_more_delayed_users(self, client):
+        response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
+        assert response.status_code == 200
+```
+If we want to profile all of those methods, we would have to apply the `@profile` 
+decorator to each method individually. This introduces unnecessary repetition and 
+requires us to remember to decorate every new test method added to the class.
+
+A better approach is to apply the profiling behavior at the class level. 
+A class decorator can inspect the methods defined in a class and automatically apply 
+the profile decorator to the methods that need to be profiled.
+
+Let's implement a `profile_class` decorator that automatically profiles the test methods 
+in that class.
+
+### Introducing the Class Decorator
+
+```python
+def profile_class(cls=None, *, threshold=5, elapsed_time=True, stats=False, stats_limit=10):
+    if cls is None:
+        return partial(profile_class, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
+
+    def _decorate_each_method(method):
+        return profile(method, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
+
+    for name, value in cls.__dict__.items():
+        if callable(value) and not name.startswith("__"):
+            setattr(cls, name, _decorate_each_method(value))
+
+    return cls
+```
+Now let's apply the above class decorator the our test class `TestUsers`
+
+```python
+@profile_class(threshold=2.5, stats=True, stats_limit=2)
+class TestUsers:
+    def test_single_user(self, client):
+        response = client.get("https://reqres.in/api/users/2", headers=headers)
+        assert response.status_code == 200
+
+    def test_user_not_found(self, client):
+        response = client.get("https://reqres.in/api/users/23", headers=headers)
+        assert response.status_code == 404
+
+    def test_list_users(self, client):
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_resources(self, client):
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_delayed_users(self, client):
+        response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_more_delayed_users(self, client):
+        response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
+        assert response.status_code == 200
+```
+```commandline
+~$ pytest -vs profiler.py::TestUsers
+========================================================================================== test session starts ==========================================================================================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 6 items                                                                                                                                                                                       
+
+profiler.py::TestUsers::test_single_user Time Elapsed test_single_user:0.208 seconds
+         2517 function calls (2465 primitive calls) in 0.208 seconds
+
+   Ordered by: cumulative time
+   List reduced from 459 to 2 due to restriction <2>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.208    0.208 profiler.py:220(test_single_user)
+        1    0.000    0.000    0.208    0.208 _client.py:1036(get)
+
+
+PASSED
+profiler.py::TestUsers::test_user_not_found Time Elapsed test_user_not_found:0.237 seconds
+         1621 function calls in 0.237 seconds
+
+   Ordered by: cumulative time
+   List reduced from 279 to 2 due to restriction <2>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.237    0.237 profiler.py:224(test_user_not_found)
+        1    0.000    0.000    0.237    0.237 _client.py:1036(get)
+
+
+PASSED
+profiler.py::TestUsers::test_list_users Time Elapsed test_list_users:0.056 seconds
+         1729 function calls (1728 primitive calls) in 0.056 seconds
+
+   Ordered by: cumulative time
+   List reduced from 281 to 2 due to restriction <2>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.056    0.056 profiler.py:228(test_list_users)
+        1    0.000    0.000    0.056    0.056 _client.py:1036(get)
+```
 
 [Articles](../articles.md) \|  [Previous](../logging/logging.md)
