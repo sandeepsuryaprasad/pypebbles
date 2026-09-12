@@ -266,13 +266,14 @@ from typing import Optional
 import argparse
 
 class Logger:
+
     _LOG_FORMAT = "[%(levelname)s] [%(asctime)s]  %(message)s"
 
     def __init__(
             self, name: str,
             handler: Optional[logging.Handler] = None
     ):
-        self._level = self.get_log_level_from_terminal() # setting log level from CLI input 
+        self._level = self._get_cli_log_level() # setting log level from CLI input 
         self.handler = handler
         self.logger = self._set_logger(name)
     
