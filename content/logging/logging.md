@@ -266,20 +266,13 @@ from typing import Optional
 import argparse
 
 class Logger:
-    _VALID_LOG_LEVELS = {
-        logging.DEBUG,
-        logging.INFO,
-        logging.WARNING,
-        logging.ERROR,
-        logging.CRITICAL,
-    }
     _LOG_FORMAT = "[%(levelname)s] [%(asctime)s]  %(message)s"
 
     def __init__(
             self, name: str,
             handler: Optional[logging.Handler] = None
     ):
-        self._level = self.get_log_level_from_terminal(), # setting log level from CLI input 
+        self._level = self.get_log_level_from_terminal() # setting log level from CLI input 
         self.handler = handler
         self.logger = self._set_logger(name)
     
@@ -326,7 +319,23 @@ class Logger:
         """
         Set the logging handler.
         """
-        self._handler = value if value else logging.StreamHandler()
+        if value:
+            if not isinstance(value, logging.Handler):
+                raise TypeError(f"{value} is not a valid Handler")
+            self._handler = value
+        else:
+            self._handler = logging.StreamHandler()
+        self._handler.setFormatter(self.formatter)
+    
+    @property
+    def formatter(self):
+        """Return a logging formatter configured with the application log format.
+
+        Returns:
+            logging.Formatter: A formatter configured with the application
+                logging format.
+        """
+        return logging.Formatter(self._LOG_FORMAT)
 
     def _set_logger(self, name):
         """
@@ -340,9 +349,7 @@ class Logger:
             A configured :class:`logging.Logger` instance.
         """
         logger = logging.getLogger(name)
-        logger.setLevel(self._level)
-        formatter = logging.Formatter(self._LOG_FORMAT)
-        self._handler.setFormatter(formatter)
+        logger.setLevel(self.level)
         if not logger.handlers:
             logger.addHandler(self._handler)
         return logger
@@ -363,15 +370,16 @@ class Logger:
         """
         return getattr(self.logger, name)
 ```
+### Final Thoughts
 
-In the above code we have made few changes, 
-* We are no longer configuring the logging level through a property setter. 
-The `@level.setter` method has been removed from the `Logger` class, leaving 
-only the getter to provide read-only access to the configured logging level.
+In this article, we built a wrapper `Logger` abstraction that provides a simpler interface 
+while continuing to use Python's standard `logging` framework underneath. We started by
+creating and configuring a named logger, then introduced configurable handlers and formatters 
+to control how log messages are written.
 
-* In the `__init__` method, the instance variable `self._level` is initialized 
-by calling `get_log_level_from_terminal()`, which determines the logging level 
-based on the command-line arguments supplied when the application is executed.
+We also added command-line configuration so that the logging level can be selected when the
+application starts. This allows developers to enable more detailed `DEBUG` logging when
+troubleshooting without changing the application code.
 
 
 [Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
