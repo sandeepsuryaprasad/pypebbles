@@ -91,10 +91,7 @@ class Config:
         """
         if self.section not in self._parser.sections():
             raise KeyError(f"Invalid section {self.section}")
-        config_data = {}
-        for key, value in self._parser[self.section].items():
-            config_data[key] = value
-        return config_data
+        return { key: value for key, value in self._parser[self.section].items() }
 
     @property
     def value(self):
