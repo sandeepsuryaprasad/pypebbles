@@ -129,7 +129,8 @@ class Config:
 ```
 Suppose if we want to read the contents of the section `APPLE` here is what we 
 can do,
-```python
+```commandline
+~$ python3 -i config.py 
 >>> config = Config("APPLE")
 >>> config.year.value
 '2026'
@@ -143,7 +144,7 @@ can do,
 Similarly if we wanted to read a different section, create a separate instance
 of `Config` object,
 
-```python
+```commandline
 >>> config = Config("GOOGLE")
 >>> config.serial_number.value
 'GGL987654321'
@@ -155,7 +156,7 @@ of `Config` object,
 'Demo Pixel'
 ```
 when you try to access the `section` data that does not exist, for example
-```python
+```commandline
 >>> config.phone_number.value  # this returns empty string
 ```
 The key mechanism is implemented through the `__getattr__` method. 
@@ -190,60 +191,15 @@ Finally, we implement the `__repr__` method to provide a clear and meaningful st
 representation of the `Config` object, making the object's identity and associated 
 configuration section immediately apparent during debugging and interactive use.
 
-```python
+```commandline
 >>> config = Config("APPLE")
 >>> print(config)
 Config("APPLE")
 ```
-```python
+```commandline
 >>> config = Config("GOOGLE")
 >>> print(config)
 Config("GOOGLE")
-```
-
-### Taking inputs from terminal
-We can further enhance our script by accepting the configuration section name 
-as a command-line argument, allowing users to dynamically specify the section to 
-load at runtime rather than hard-coding it in the application.
-
-`main.py`
-
-```python
-import argparse
-from config import Config
-
-def console_entry():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--section",
-        dest="section",
-        default="APPLE",
-        help= "Name of the section in config.ini"
-    )
-    args = parser.parse_args()
-    config = Config(args.section)
-    return config
-
-
-if __name__ == "__main__":
-    config = console_entry()
-    print(f"Serial No: {config.serial_number.value}")
-    print(f"Model: {config.model.value}")
-    print(f"Device Name: {config.device_name.value}")
-```
-
-Now we can pass the section name from terminal and will result in the following output
-```commandline
-~$ python3 main.py --section APPLE
-Serial No: APL123456789
-Model: iPhone-17
-Device Name: Demo iPhone
-```
-```commandline
-~$ python3 main.py --section GOOGLE
-Serial No: GGL987654321
-Model: Pixel-10
-Device Name: Demo Pixel
 ```
 
 ### Final Thoughts
