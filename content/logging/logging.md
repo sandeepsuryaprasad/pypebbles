@@ -265,25 +265,6 @@ import logging
 from typing import Optional
 import argparse
 
-
-def get_log_level_from_terminal():
-    """Determine the logging level from command-line arguments.
-
-    Parses the command-line arguments and returns `DEBUG` when the
-    `--debug` option is specified. Otherwise, `INFO` is returned
-    as the default logging level.
-
-    Returns:
-        The logging level selected from the command-line arguments.
-    """
-    parser = argparse.ArgumentParser(description="Set the logging level via command line")
-    parser.add_argument('--debug', action="store_true",
-                        help='Set the logging level (DEBUG, INFO)')
-    args = parser.parse_args()
-    
-    return logging.DEBUG if args.debug else logging.INFO
-
-
 class Logger:
     _VALID_LOG_LEVELS = {
         logging.DEBUG,
@@ -298,9 +279,37 @@ class Logger:
             self, name: str,
             handler: Optional[logging.Handler] = None
     ):
-        self._level = get_log_level_from_terminal(), # setting log level from CLI input 
+        self._level = self.get_log_level_from_terminal(), # setting log level from CLI input 
         self.handler = handler
         self.logger = self._set_logger(name)
+    
+    def _parse_cli(self):
+        """Parse command-line arguments.
+
+        Configures and parses the command-line arguments supported by the
+        application. The ``--debug`` option enables DEBUG-level logging;
+        otherwise, the application uses INFO-level logging.
+
+        Returns:
+            argparse.Namespace: Parsed command-line arguments.
+        """
+        parser = argparse.ArgumentParser(description="Set the logging level via command line")
+        parser.add_argument("--debug", action="store_true", help="Enable DEBUG-level logging.")
+        args = parser.parse_args()
+        return args
+
+    def _get_cli_log_level(self):
+        """Determine the logging level from command-line arguments.
+
+        Parses the command-line arguments and returns ``logging.DEBUG`` when
+        the ``--debug`` option is specified. Otherwise, ``logging.INFO`` is
+        returned as the default logging level.
+
+        Returns:
+            int: The logging level selected from the command-line arguments.
+        """
+        cli_args = self._parse_cli()
+        return logging.DEBUG if cli_args.debug else logging.INFO
 
     @property
     def level(self):
