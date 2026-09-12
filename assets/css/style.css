@@ -1,82 +1,8 @@
-.featured-articles {
-  margin-top: 50px;
-}
+---
+---
 
-.featured-articles h2 {
-  margin-bottom: 10px;
-}
+@import "{{ site.theme }}";
 
-.section-intro {
-  margin-bottom: 30px;
-  color: #586069;
-}
-
-.article-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.article-card {
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  border: 1px solid #e1e4e8;
-  border-radius: 10px;
-  background: #ffffff;
-  text-decoration: none;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.article-card:hover {
-  transform: translateY(-4px);
-  border-color: #159957;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  text-decoration: none;
-}
-
-.article-category {
-  margin-bottom: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #159957;
-}
-
-.article-card h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  color: #1f2933;
-  font-size: 1.2rem;
-}
-
-.article-card p {
-  margin-bottom: 20px;
-  color: #586069;
-  line-height: 1.6;
-}
-
-.read-more {
-  margin-top: auto;
-  font-weight: 600;
-  color: #1f6feb;
-}
-
-.all-articles {
-  margin-top: 30px;
-  text-align: center;
-}
-
-.all-articles a {
-  font-weight: 600;
-}
-
-@media screen and (max-width: 700px) {
-  .article-grid {
-    grid-template-columns: 1fr;
-  }
+.main-content p {
+    text-align: justify;
 }
