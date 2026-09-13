@@ -4,7 +4,8 @@
 
 In this article, we will build a reusable Python performance profiler that combines 
 `cProfile` for function-level execution analysis with `perf_counter` for measuring 
-wall-clock elapsed time. The profiler will initially be implemented as a context manager 
+wall-clock elapsed time and `process_time` for measuring the amount of CPU time consumed by 
+the current process. The profiler will initially be implemented as a context manager 
 and then extended using function decorators and class decorators, allowing the same 
 profiling functionality to be applied to individual functions or entire classes with 
 minimal changes to application code. 
