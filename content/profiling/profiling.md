@@ -31,6 +31,8 @@ This keeps the profiling logic separate from the application code being measured
 The class combines two complementary approaches:
 
 * `perf_counter` measures the total wall-clock time taken by an operation.
+* `process_time` measures the amount of CPU time consumed by the current process. 
+It **excludes** time during which the process is idle or waiting, such as waiting for I/O operations.
 * `cProfile` collects detailed information about function calls made during that operation.
 * `pstats.Stats` provides an interface for sorting, displaying, and exporting the 
 collected profiling statistics.
@@ -45,37 +47,42 @@ elapsed time, displaying profiling statistics, and exporting the collected
 statistics for further analysis.
 
 ```python
+from pstats import Stats
+from cProfile import Profile
+from pstats import SortKey
+from time import perf_counter, process_time
+
+
 class Profiler:
-    """Measure execution time and collect Python profiling statistics.
+    """Profile code execution and measure its performance characteristics.
 
-    The Profiler class combines ``time.perf_counter()`` with
-    ``cProfile`` to measure wall-clock elapsed time and collect
-    detailed function-call statistics.
+    This context-manager class combines wall-clock timing with Python's
+    ``cProfile`` module to provide both execution-time measurements and
+    function-call profiling statistics.
 
-    The profiling results can be sorted and limited when they are
-    displayed. The class is designed to be used as a context manager::
+    Wall-clock execution time is measured using :func:`time.perf_counter`,
+    while CPU execution time is measured using :func:`time.process_time`.
+    Detailed profiling statistics are collected by ``cProfile`` and can be
+    displayed or saved for further analysis.
 
-        with Profiler(limit=10) as profiler:
-            some_function()
+    The class is intended to be used as a context manager::
 
-        print(profiler.elapsed_time)
-        profiler.print_stats()
+        with Profiler() as profiler:
+            perform_operation()
+
+        profiler.print_execution_stats()
+        profiler.print_profile_stats()
 
     Args:
-        limit: Maximum number of profiling entries to display.
-        sort_key: The ``pstats.SortKey`` used to sort the profiling
-            statistics. Defaults to ``SortKey.CUMULATIVE``.
+        limit: Maximum number of profiling entries to display when printing
+            profile statistics. Defaults to ``10``.
+        sort_key: :class:`pstats.SortKey` used to determine how profiling
+            statistics are sorted. Defaults to
+            :attr:`pstats.SortKey.CUMULATIVE`.
 
     Attributes:
-        _profile: The ``cProfile.Profile`` instance used to collect
-            profiling data.
-        _stats: The ``pstats.Stats`` instance created from the collected
-            profiling data.
-        _start: The wall-clock time recorded when profiling starts.
-        _end: The wall-clock time recorded when profiling ends.
-        _limit: Maximum number of profiling entries to display.
-        _sort_key: Sorting criterion used when displaying profiling
-            statistics.
+        elapsed_time: Wall-clock execution time in seconds.
+        cpu_time: CPU execution time consumed by the process in seconds.
     """
 
     def __init__(self, limit=10, sort_key=SortKey.CUMULATIVE):
@@ -90,6 +97,8 @@ class Profiler:
         self._stats = None
         self._start = 0.0
         self._end = 0.0
+        self._cpu_start = 0.0
+        self._cpu_end = 0.0
         self._limit = limit
         self._sort_key = sort_key
 
@@ -106,6 +115,7 @@ class Profiler:
         self._profile = Profile(builtins=False)
         self._profile.enable()
         self._start = perf_counter()
+        self._cpu_start = process_time()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -124,6 +134,7 @@ class Profiler:
                 otherwise ``None``.
         """
         self._end = perf_counter()
+        self._cpu_end = process_time()
         self._profile.disable()
         self._stats = Stats(self._profile)
 
@@ -137,6 +148,19 @@ class Profiler:
         self._stats.strip_dirs().sort_stats(self._sort_key)
         self._stats.print_stats(self._limit)
 
+    def print_execution_stats(self):
+        """Display the wall-clock and CPU execution times.
+    
+        Prints the elapsed wall-clock time measured using ``perf_counter()``
+        and the CPU time consumed by the process, measured using
+        ``process_time()``. Both values are displayed in seconds with
+        three decimal places.
+        """
+        _elapsed_time = self.elapsed_time
+        _cpu_time = self.cpu_time
+        print(f"\n{'Time Elapsed':<13}: {_elapsed_time:.3f} seconds")
+        print(f"{'CPU Time':<13}: {_cpu_time:.3f} seconds")
+
     @property
     def elapsed_time(self):
         """Return the total wall-clock elapsed time in seconds.
@@ -146,6 +170,16 @@ class Profiler:
                 profiling context, rounded to three decimal places.
         """
         return round(self._end - self._start, 3)
+
+    @property
+    def cpu_time(self):
+        """Return the CPU execution time consumed by the process.
+
+        Calculates the difference between the CPU time recorded when profiling
+        started and the CPU time recorded when profiling ended. The result is
+        returned in seconds, rounded to three decimal places.
+        """
+        return round(self._cpu_end - self._cpu_start, 3)
 
     def dump_stats(self, filename):
         """Save profiling statistics to a file.
@@ -332,7 +366,10 @@ This progression allows us to start with a simple function-level solution and th
 the same concept to class-level profiling as the number of test methods grows.
 
 ```python
-def profile(func=None, *, threshold=2, elapsed_time=True, stats=False, stats_limit=10):
+from functools import partial, wraps
+
+
+def profile(func=None, *, threshold=2, execution_stats=True, profile_stats=False, stats_limit=10):
     """Profile a function and optionally report its execution characteristics.
     Wraps a function with the :class:`Profiler` context manager to measure
     wall-clock execution time and, optionally, display the function-call
@@ -373,7 +410,7 @@ def profile(func=None, *, threshold=2, elapsed_time=True, stats=False, stats_lim
                 ...
     """
     if func is None:
-        return partial(profile, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
+        return partial(profile, threshold=threshold, execution_stats=execution_stats, profile_stats=profile_stats, stats_limit=stats_limit)
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -394,15 +431,12 @@ def profile(func=None, *, threshold=2, elapsed_time=True, stats=False, stats_lim
         with Profiler(limit=stats_limit) as p:
             result = func(*args, **kwargs)
 
-        if elapsed_time:
-            _elapsed_time = p.elapsed_time
-            print(f"Time Elapsed {func.__name__}:{_elapsed_time:.3f} seconds")
-            if _elapsed_time > threshold:
-                print(f"WARNING: {func.__name__} took more than threshold limit of {threshold} seconds")
+        if execution_stats:
+            p.print_execution_stats()
 
-        if stats:
-            p.print_stats()
-        
+        if profile_stats:
+            p.print_profile_stats()
+
         return result
 
     return wrapper
@@ -533,7 +567,10 @@ in that class.
 ### Introducing the Class Decorator
 
 ```python
-def profile_class(cls=None, *, threshold=5, elapsed_time=True, stats=False, stats_limit=10):
+from functools import partial, wraps
+
+
+def profile_class(cls=None, *, threshold=2, execution_stats=True, profile_stats=False, stats_limit=10):
     """Profile methods defined in a class using the ``profile`` decorator.
     Applies the :func:`profile` decorator to each callable method defined
     directly on the class, allowing multiple methods to be profiled without
@@ -561,14 +598,15 @@ def profile_class(cls=None, *, threshold=5, elapsed_time=True, stats=False, stat
         ``profile`` decorator.
     """
     if cls is None:
-        return partial(profile_class, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
-
+        return partial(profile_class, threshold=threshold, execution_stats=execution_stats, profile_stats=profile_stats, stats_limit=stats_limit)
+    
+    @wraps(cls)
     def _decorate_each_method(method):
         """Apply the configured profile decorator to a class method.
         Captures the profiling configuration from the enclosing
         ``profile_class`` function and applies it to the supplied method.
         """
-        return profile(method, threshold=threshold, elapsed_time=elapsed_time, stats=stats, stats_limit=stats_limit)
+        return profile(method, threshold=threshold, execution_stats=execution_stats, profile_stats=profile_stats, stats_limit=stats_limit)
 
     for name, value in cls.__dict__.items():
         if callable(value) and not name.startswith("__"):
