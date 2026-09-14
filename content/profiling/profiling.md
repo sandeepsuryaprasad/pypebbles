@@ -48,70 +48,48 @@ elapsed time, displaying profiling statistics, and exporting the collected
 statistics for further analysis.
 
 ```python
+from dataclasses import dataclass
 from pstats import Stats
 from cProfile import Profile
 from pstats import SortKey
 from time import perf_counter, process_time
 
 
-class Profiler:
-    """Profile code execution and measure its performance characteristics.
-
-    This context-manager class combines wall-clock timing with Python's
-    ``cProfile`` module to provide both execution-time measurements and
-    function-call profiling statistics.
-
-    Wall-clock execution time is measured using :func:`time.perf_counter`,
-    while CPU execution time is measured using :func:`time.process_time`.
-    Detailed profiling statistics are collected by ``cProfile`` and can be
-    displayed or saved for further analysis.
-
-    The class is intended to be used as a context manager::
-
-        with Profiler() as profiler:
-            perform_operation()
-
-        profiler.print_execution_stats()
-        profiler.print_profile_stats()
-
-    Args:
-        limit: Maximum number of profiling entries to display when printing
-            profile statistics. Defaults to ``10``.
-        sort_key: :class:`pstats.SortKey` used to determine how profiling
-            statistics are sorted. Defaults to
-            :attr:`pstats.SortKey.CUMULATIVE`.
+@dataclass
+class ProfilerConfig:
+    """Configuration settings for the :class:`Profiler`.
 
     Attributes:
-        elapsed_time: Wall-clock execution time in seconds.
-        cpu_time: CPU execution time consumed by the process in seconds.
+        limit: Maximum number of profiling entries to display. Defaults to 10.
+        sort_key: Sorting criterion for the profiling statistics.
+            Defaults to :attr:`pstats.SortKey.CUMULATIVE`.
     """
+    limit: int = 10
+    sort_key: SortKey = SortKey.CUMULATIVE
 
-    def __init__(self, limit=10, sort_key=SortKey.CUMULATIVE):
-        """Initialize a Profiler instance.
 
-        Args:
-            limit: Maximum number of profiling entries to display.
-            sort_key: The ``pstats.SortKey`` used to sort the profiling
-                statistics. Defaults to ``SortKey.CUMULATIVE``.
-        """
-        self._profile = None
-        self._stats = None
-        self._start = 0.0
-        self._end = 0.0
-        self._cpu_start = 0.0
-        self._cpu_end = 0.0
-        self._limit = limit
-        self._sort_key = sort_key
+class Profiler:
+    """Profile code execution and collect performance statistics.
+    Provides wall-clock time, CPU time, and ``cProfile`` function-call statistics
+    through a context-manager interface. Profiling results can be displayed or
+    exported for further analysis.
+
+    Args:
+        config: Optional :class:`ProfilerConfig` containing profiling settings.
+    """
+    def __init__(self, config: ProfilerConfig=None):
+        self.config: ProfilerConfig = config if config is not None else ProfilerConfig()
+        self._profile: Profile = None
+        self._stats: Stats = None
+        self._start: float = 0.0
+        self._end: float = 0.0
+        self._cpu_start: float = 0.0
+        self._cpu_end: float = 0.0
 
     def __enter__(self):
-        """Start the profiling session.
-
-        Creates a ``cProfile.Profile`` instance, enables profiling,
-        and records the starting wall-clock time using
-        ``perf_counter()``.
-
+        """Start profiling and record the initial execution times.
         Returns:
-            Profiler: The current Profiler instance.
+            Profiler: The current profiler instance.
         """
         self._profile = Profile(builtins=False)
         self._profile.enable()
@@ -120,78 +98,45 @@ class Profiler:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Stop profiling and collect the profiling statistics.
-
-        Records the ending wall-clock time, disables ``cProfile``,
-        and creates a ``pstats.Stats`` object from the collected
-        profiling data.
-
-        Args:
-            exc_type: Exception type if an exception was raised inside
-                the context manager; otherwise ``None``.
-            exc_val: Exception instance if an exception was raised;
-                otherwise ``None``.
-            exc_tb: Traceback object associated with the exception;
-                otherwise ``None``.
-        """
+        """Stop profiling and collect the execution statistics."""
         self._end = perf_counter()
         self._cpu_end = process_time()
         self._profile.disable()
         self._stats = Stats(self._profile)
 
-    def print_stats(self):
-        """Display the collected profiling statistics.
-
-        The statistics are stripped of directory information, sorted
-        using the configured sort key, and limited to the configured
-        number of entries.
-        """
-        self._stats.strip_dirs().sort_stats(self._sort_key)
-        self._stats.print_stats(self._limit)
+    def print_profile_stats(self):
+        """Display formatted function-call profiling statistics."""
+        self._stats.strip_dirs().sort_stats(self.config.sort_key)
+        self._stats.print_stats(self.config.limit)
 
     def print_execution_stats(self):
-        """Display the wall-clock and CPU execution times.
-    
-        Prints the elapsed wall-clock time measured using ``perf_counter()``
-        and the CPU time consumed by the process, measured using
-        ``process_time()``. Both values are displayed in seconds with
-        three decimal places.
-        """
-        _elapsed_time = self.elapsed_time
-        _cpu_time = self.cpu_time
-        print(f"\n{'Time Elapsed':<13}: {_elapsed_time:.3f} seconds")
-        print(f"{'CPU Time':<13}: {_cpu_time:.3f} seconds")
+        """Display wall-clock and CPU execution times in seconds."""
+        print()
+        print("-" * 30)
+        print(f"{'Time Elapsed':<13}: {self.elapsed_time:.3f} seconds")
+        print(f"{'CPU Time':<13}: {self.cpu_time:.3f} seconds")
+        print("-" * 30)
 
     @property
     def elapsed_time(self):
-        """Return the total wall-clock elapsed time in seconds.
-
+        """Return the elapsed wall-clock time in seconds, rounded to three decimals.
         Returns:
-            float: The elapsed time between entering and exiting the
-                profiling context, rounded to three decimal places.
+        float: Elapsed wall-clock time in seconds.
         """
         return round(self._end - self._start, 3)
 
     @property
     def cpu_time(self):
-        """Return the CPU execution time consumed by the process.
-
-        Calculates the difference between the CPU time recorded when profiling
-        started and the CPU time recorded when profiling ended. The result is
-        returned in seconds, rounded to three decimal places.
+        """Return the CPU execution time in seconds, rounded to three decimals.
+        Returns:
+            float: CPU execution time consumed by the process in seconds.
         """
         return round(self._cpu_end - self._cpu_start, 3)
 
     def dump_stats(self, filename):
         """Save profiling statistics to a file.
-
-        The generated statistics file can be loaded later using
-        ``pstats.Stats`` or other tools that support cProfile
-        statistics files.
-
         Args:
-            filename: Path of the file where the profiling statistics
-                should be saved.
+            filename: Path to the file where profiling statistics are saved.
         """
         self._stats.dump_stats(filename)
 ```
@@ -231,14 +176,20 @@ headers = {
     "x-api-key": environ["X_API_KEY"],
 }
 
+
 @fixture(scope="module")
 def client():
     with Client() as _client:
         yield _client
 
+
 def test_delayed_users(client):
     response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
     assert response.status_code == 200
+
+
+def test_loop():
+    total = sum(i for i in range(0, 100000000))
 ```
 Before introducing any profiling , we will execute the `test_delayed_users` 
 test independently using `pytest`
@@ -257,11 +208,17 @@ profiler.py::test_delayed_users PASSED
 The test is passed. Now let's start by profiling the `test_delayed_users` test.
 
 ```python
-def test_delayed_users(client):
-    with Profiler() as profiler:
-        response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+def test_resources(client):
+    with Profiler() as p:
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
         assert response.status_code == 200
-    print(f"Elapsed Time: {profiler.elapsed_time}")
+    p.print_execution_stats()
+
+
+def test_loop():
+    with Profiler() as p:
+        total = sum(i for i in range(0, 100000000))
+    p.print_execution_stats()
 ```
 ```commandline
 ~$ pytest -vs profiler.py::test_delayed_users
@@ -370,66 +327,25 @@ the same concept to class-level profiling as the number of test methods grows.
 from functools import partial, wraps
 
 
-def profile(func=None, *, threshold=2, execution_stats=True, profile_stats=False, stats_limit=10):
-    """Profile a function and optionally report its execution characteristics.
-    Wraps a function with the :class:`Profiler` context manager to measure
-    wall-clock execution time and, optionally, display the function-call
-    statistics collected by ``cProfile``.
-
-    The decorator can be used either directly as ``@profile`` or with
-    configuration arguments such as ``threshold``, ``elapsed_time``, and
-    ``stats``.
+def profile(func=None, *, execution_stats=True, profile_stats=False):
+    """Profile a function and optionally display execution statistics.
+    Wraps the function in a :class:`Profiler` context manager. Execution timing
+    and detailed ``cProfile`` statistics can be enabled independently.
 
     Args:
-        func: Function to be profiled. When ``None``, the decorator is being
-            configured with keyword arguments and returns a partially
-            configured decorator.
-        threshold: Maximum expected execution time in seconds. A warning is
-            displayed when the measured execution time exceeds this value.
-        elapsed_time: Whether to display the wall-clock execution time after
-            the function completes.
-        stats: Whether to display the detailed function-call statistics
-            collected by ``cProfile``.
-        stats_limit: Maximum number of profiling entries to display when
-            ``stats`` is enabled.
+        func: Function to profile.
+        execution_stats: Display execution timing statistics.
+        profile_stats: Display detailed profiling statistics.
 
     Returns:
-        A wrapped function that executes the original function under the
-        configured profiling context.
-
-    Example:
-        Use the decorator with its default configuration::
-
-            @profile
-            def test_delayed_users(client):
-                ...
-
-        Configure the decorator explicitly::
-
-            @profile(threshold=2, stats=True)
-            def test_delayed_users(client):
-                ...
+        The wrapped function.
     """
     if func is None:
-        return partial(profile, threshold=threshold, execution_stats=execution_stats, profile_stats=profile_stats, stats_limit=stats_limit)
+        return partial(profile, execution_stats=execution_stats, profile_stats=profile_stats)
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        """Execute the wrapped function within a profiling context.
-        Starts the configured profiler before invoking the wrapped function and
-        stops it after the function completes. Depending on the decorator
-        configuration, the wrapper reports the elapsed execution time, checks
-        the configured execution-time threshold, and displays the collected
-        profiling statistics.
-
-        Args:
-            *args: Positional arguments passed to the wrapped function.
-            **kwargs: Keyword arguments passed to the wrapped function.
-
-        Returns:
-            The value returned by the wrapped function.
-        """
-        with Profiler(limit=stats_limit) as p:
+        with Profiler() as p:
             result = func(*args, **kwargs)
 
         if execution_stats:
@@ -449,9 +365,14 @@ tests.
 
 ```python
 @profile
-def test_delayed_users(client):
-    response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+def test_resources(client):
+    response = client.get("https://reqres.in/api/users?page=2", headers=headers)
     assert response.status_code == 200
+
+
+@profile
+def test_loop():
+    total = sum(i for i in range(0, 100000000))
 ```
 Let's run the above test using pytest.
 ```commandline
@@ -568,46 +489,28 @@ in that class.
 ### Introducing the Class Decorator
 
 ```python
-from functools import partial, wraps
+from functools import partial
 
 
-def profile_class(cls=None, *, threshold=2, execution_stats=True, profile_stats=False, stats_limit=10):
-    """Profile methods defined in a class using the ``profile`` decorator.
+def profile_class(cls=None, *, execution_stats=True, profile_stats=False):
+    """Profile callable methods in a class.
     Applies the :func:`profile` decorator to each callable method defined
-    directly on the class, allowing multiple methods to be profiled without
-    explicitly decorating each method individually.
-
-    The decorator can be used either directly as ``@profile_class`` or with
-    configuration arguments such as ``threshold``, ``elapsed_time``, ``stats``,
-    and ``stats_limit``.
+    directly in the class.
 
     Args:
-        cls: Class whose methods should be profiled. When ``None``, the
-            decorator is being configured with keyword arguments and returns
-            a partially configured decorator.
-        threshold: Maximum expected execution time in seconds. A warning is
-            displayed when a profiled method exceeds this value.
-        elapsed_time: Whether to display the wall-clock execution time of
-            each profiled method.
-        stats: Whether to display the detailed function-call statistics
-            collected by ``cProfile``.
-        stats_limit: Maximum number of profiling entries to display when
-            ``stats`` is enabled.
+        cls: Class whose methods are to be profiled.
+        execution_stats: Display execution timing statistics.
+        profile_stats: Display detailed profiling statistics.
 
     Returns:
-        The class with its applicable methods wrapped by the configured
-        ``profile`` decorator.
+        The decorated class.
     """
     if cls is None:
-        return partial(profile_class, threshold=threshold, execution_stats=execution_stats, profile_stats=profile_stats, stats_limit=stats_limit)
-    
-    @wraps(cls)
+        return partial(profile_class, execution_stats=execution_stats, profile_stats=profile_stats)
+
     def _decorate_each_method(method):
-        """Apply the configured profile decorator to a class method.
-        Captures the profiling configuration from the enclosing
-        ``profile_class`` function and applies it to the supplied method.
-        """
-        return profile(method, threshold=threshold, execution_stats=execution_stats, profile_stats=profile_stats, stats_limit=stats_limit)
+        """Apply the profiling decorator to a class method."""
+        return profile(method, execution_stats=execution_stats, profile_stats=profile_stats)
 
     for name, value in cls.__dict__.items():
         if callable(value) and not name.startswith("__"):
@@ -618,7 +521,7 @@ def profile_class(cls=None, *, threshold=2, execution_stats=True, profile_stats=
 Now let's apply the above class decorator the our test class `TestUsers`
 
 ```python
-@profile_class(threshold=2.5, stats=True, stats_limit=2)
+@profile_class
 class TestUsers:
     def test_single_user(self, client):
         response = client.get("https://reqres.in/api/users/2", headers=headers)
@@ -762,9 +665,10 @@ The choice between them depends on whether the primary requirement is **individu
 
 ### Final Thoughts
 In this article, we started by building a reusable Profiler class that combines 
-`time.perf_counter` for measuring wall-clock execution time with `cProfile` for 
-collecting function-call statistics. We then used the profiler as a context manager 
-to explicitly define the portion of code that should be measured.
+`time.perf_counter` and `time.process_time` for measuring wall-clock execution time and 
+cpu time with `cProfile` for collecting function-call statistics. 
+We then used the profiler as a context manager to explicitly define the portion of code
+that should be measured.
 
 As the number of tests increased, we saw that adding profiling logic directly to 
 every test introduced unnecessary repetition. We addressed this by implementing a 
