@@ -3,6 +3,10 @@
 
 @import "{{ site.theme }}";
 
+.main-content {
+  max-width: 1100px;
+}
+
 .main-content p {
     text-align: justify;
 }
