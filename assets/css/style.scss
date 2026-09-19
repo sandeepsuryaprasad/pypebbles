@@ -40,3 +40,21 @@
     grid-template-columns: 1fr;
   }
 }
+
+.site-nav {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: right;
+}
+
+.site-nav a {
+  margin-left: 20px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  text-decoration: underline;
+}
