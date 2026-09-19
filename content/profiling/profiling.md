@@ -382,6 +382,7 @@ def test_resources(client):
 @profile
 def test_loop():
     total = sum(i for i in range(0, 100000000))
+    assert total == 4999999950000000
 ```
 Let's run the above test using pytest.
 ```commandline
@@ -489,29 +490,13 @@ total wall-clock time and CPU time, do not turn on the profiling switch by enabl
 Consider a test class containing several test methods. 
 ```python
 class TestUsers:
-    def test_single_user(self, client):
-        response = client.get("https://reqres.in/api/users/2", headers=headers)
-        assert response.status_code == 200
-
-    def test_user_not_found(self, client):
-        response = client.get("https://reqres.in/api/users/23", headers=headers)
-        assert response.status_code == 404
-
-    def test_list_users(self, client):
-        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
-        assert response.status_code == 200
-
-    def test_resources(self, client):
-        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
-        assert response.status_code == 200
-
     def test_delayed_users(self, client):
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
 
-    def test_more_delayed_users(self, client):
-        response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
-        assert response.status_code == 200
+    def test_loop():
+        total = sum(i for i in range(0, 100000000))
+        assert total == 4999999950000000
 ```
 If we want to profile all of those methods, we would have to apply the `@profile` 
 decorator to each method individually. This introduces unnecessary repetition and 
@@ -528,7 +513,6 @@ in that class.
 
 ```python
 from functools import partial
-
 
 def profile_class(cls=None, *, execution_stats=True, profile_stats=False):
     """Profile callable methods in a class.
@@ -561,29 +545,13 @@ Now let's apply the above class decorator the our test class `TestUsers`
 ```python
 @profile_class
 class TestUsers:
-    def test_single_user(self, client):
-        response = client.get("https://reqres.in/api/users/2", headers=headers)
-        assert response.status_code == 200
-
-    def test_user_not_found(self, client):
-        response = client.get("https://reqres.in/api/users/23", headers=headers)
-        assert response.status_code == 404
-
-    def test_list_users(self, client):
-        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
-        assert response.status_code == 200
-
-    def test_resources(self, client):
-        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
-        assert response.status_code == 200
-
     def test_delayed_users(self, client):
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
 
-    def test_more_delayed_users(self, client):
-        response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
-        assert response.status_code == 200
+    def test_loop():
+        total = sum(i for i in range(0, 100000000))
+        assert total == 4999999950000000
 ```
 When we execute the above test class, the class-level decorator automatically profiles 
 each test method and produces the following output.
