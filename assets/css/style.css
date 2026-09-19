@@ -6,18 +6,3 @@
 .main-content p {
     text-align: justify;
 }
-
-.article-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  padding: 1rem 0;
-}
-
-.article-card {
-  border: 1px solid #e1e4e8;
-  border-radius: 6px;
-  padding: 1.5rem;
-  background-color: #fff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
