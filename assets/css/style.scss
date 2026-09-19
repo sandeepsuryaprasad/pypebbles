@@ -17,6 +17,7 @@
 .article-box {
   border: 1px solid #e5e5e5;
   padding: 18px;
+  display: flex;
   flex-direction: column;
   min-height: 150px;
 }
