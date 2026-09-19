@@ -6,7 +6,7 @@
         Convert traditional configuration files into easy-to-use Python objects, 
         providing a clean and object-oriented way to access configuration values.
     </p>
-    <a href="./config/reading_config_file.html">Read article →</a>
+    <a href="./content/config/reading_config_file.html">Read article →</a>
   </div>
 
   <div class="article-box">
@@ -16,7 +16,7 @@
         making nested data easier to access, manage, and work with in
         an object-oriented way.
     </p>
-    <a href="./json/reading_json.html">Read article →</a>
+    <a href="./content/json/reading_json.html">Read article →</a>
   </div>
   
    <div class="article-box">
@@ -26,7 +26,7 @@
         metaprogramming approach to automatically transform JSON data into 
         structured Python objects with minimal boilerplate.
     </p>
-    <a href="./descriptors/descriptors.html">Read article →</a>
+    <a href="./content/descriptors/descriptors.html">Read article →</a>
   </div>
 
    <div class="article-box">
@@ -37,7 +37,7 @@
         while supporting configurable log levels, handlers, and consistent 
         message formatting.
     </p>
-    <a href="./logging/logging.html">Read article →</a>
+    <a href="./content/logging/logging.html">Read article →</a>
   
    </div>
       <div class="article-box">
@@ -48,7 +48,7 @@
         utilization to identify performance bottlenecks and evaluate 
         computational efficiency.
     </p>
-    <a href="./profiling/profiling.html">Read article →</a>
+    <a href="./content/profiling/profiling.html">Read article →</a>
   </div>
 
 
