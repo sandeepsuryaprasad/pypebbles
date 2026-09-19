@@ -1,8 +1,11 @@
 <div class="articles-grid">
 
   <div class="article-box">
-    <h3>Python Profiling</h3>
-    <p>Profiling Python applications using cProfile and pstats.</p>
+    <h3>Configuration Files as Python Objects</h3>
+    <p>
+        Convert traditional configuration files into easy-to-use Python objects, 
+        providing a clean and object-oriented way to access configuration values.
+    </p>
     <a href="articles/profiling/">Read article →</a>
   </div>
 
