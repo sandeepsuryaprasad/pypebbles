@@ -37,7 +37,7 @@
         while supporting configurable log levels, handlers, and consistent 
         message formatting.
     </p>
-    <a href="./descriptors/descriptors.html">Read article →</a>
+    <a href="./logging/logging.html">Read article →</a>
   
    </div>
       <div class="article-box">
@@ -48,7 +48,7 @@
         utilization to identify performance bottlenecks and evaluate 
         computational efficiency.
     </p>
-    <a href="./descriptors/descriptors.html">Read article →</a>
+    <a href="./profiling/profiling.html">Read article →</a>
   </div>
 
 
