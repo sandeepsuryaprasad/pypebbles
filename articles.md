@@ -1,5 +1,6 @@
-<div class="articles-grid">
+<h2>Articles</h2>
 
+<div class="articles-grid">
   <div class="article-box">
     <h3>Configuration Files as Python Objects</h3>
     <p>

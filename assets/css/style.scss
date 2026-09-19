@@ -11,6 +11,12 @@
     text-align: justify;
 }
 
+.articles-heading {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
 .articles-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
