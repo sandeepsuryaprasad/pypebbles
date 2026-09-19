@@ -1,4 +1,4 @@
-[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
+[Articles](../index.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
 
 ## Building a Flexible Logging Abstraction
 **Last Updated:** August 8, 2026
@@ -383,4 +383,4 @@ application starts. This allows developers to enable more detailed `DEBUG` loggi
 troubleshooting without changing the application code.
 
 
-[Articles](../articles.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
+[Articles](../index.md) \|  [Previous](../json/reading_json.md) \| [Next](../profiling/profiling.md)
