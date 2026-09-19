@@ -54,7 +54,7 @@
         computational efficiency.
         <br><br>September 17, 2026
     </p>
-    <a href="./content/profiling/profiling.html">Read article →</a>
+    <a href="./content/profiling/profiling_time.html">Read article →</a>
   </div>
 
    <div class="article-box">
