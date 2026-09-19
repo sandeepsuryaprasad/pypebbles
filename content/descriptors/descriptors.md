@@ -1,4 +1,4 @@
-[Articles](../index.md) \|  [Previous](../json/reading_json.md) \| [Next](../logging/logging.md)
+[Previous Articel](../json/reading_json.md) \| [Next Article](../logging/logging.md)
 
 ## Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach
 
@@ -1007,4 +1007,4 @@ deeply nested JSON structures. Instead of exposing dictionaries and requiring ca
 to perform repeated key-based lookups.
 
 
-[Articles](../index.md) \|  [Previous](../json/reading_json.md) \| [Next](../logging/logging.md)
+[Previous Article](../json/reading_json.md) \| [Next Article](../logging/logging.md)
