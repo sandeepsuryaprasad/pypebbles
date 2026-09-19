@@ -5,6 +5,7 @@
     <p>
         Convert traditional configuration files into easy-to-use Python objects, 
         providing a clean and object-oriented way to access configuration values.
+        <br><br>August 1, 2026
     </p>
     <a href="./content/config/reading_config_file.html">Read article →</a>
   </div>
