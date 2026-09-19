@@ -643,7 +643,7 @@ CPU Time     : 6.455 seconds
 PASSED
 ======================================= 2 passed in 8.96s =======================================
 ```
-### Limitation of class decorator
+### Trade-off introduced by class decorator
 Although the class decorator significantly reduces repetitive code by applying the 
 profiling configuration to multiple test methods, it introduces a 
 limitation: **the same profiling configuration is applied to every decorated method 
