@@ -2,7 +2,6 @@
 [Next Article](../json/reading_json.md)
 
 ## Turning Configuration Files into Python Objects 
-**Last Updated:** August 1, 2026
 
 Configuration files are commonly used to store application settings such as database details, 
 API endpoints, credentials, feature flags, and environment-specific parameters.

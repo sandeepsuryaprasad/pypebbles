@@ -4,8 +4,8 @@
     <h3>Configuration Files as Python Objects</h3>
     <p>
         Convert traditional configuration files into easy-to-use Python objects, 
-        providing a clean and object-oriented way to access configuration values.
-        <br><br>August 1, 2026
+        providing a clean and object-oriented way to access configuration values. 
+        <br><br>August 01, 2026
     </p>
     <a href="./content/config/reading_config_file.html">Read article →</a>
   </div>
@@ -15,7 +15,8 @@
     <p>
         Transform JSON data into structured Python objects, 
         making nested data easier to access, manage, and work with in
-        an object-oriented way.
+        an object-oriented way. 
+        <br><br>August 04, 2026
     </p>
     <a href="./content/json/reading_json.html">Read article →</a>
   </div>
@@ -26,6 +27,7 @@
         Build a declarative JSON-to-object mapper using Python 
         metaprogramming approach to automatically transform JSON data into 
         structured Python objects with minimal boilerplate.
+        <br><br>August 10, 2026
     </p>
     <a href="./content/descriptors/descriptors.html">Read article →</a>
   </div>
@@ -37,6 +39,7 @@
         logging framework behind a clean, reusable interface, 
         while supporting configurable log levels, handlers, and consistent 
         message formatting.
+        <br><br>August 26, 2026
     </p>
     <a href="./content/logging/logging.html">Read article →</a>
   
@@ -48,6 +51,7 @@
         execution time, differentiating elapsed time from processor 
         utilization to identify performance bottlenecks and evaluate 
         computational efficiency.
+        <br><br>September 17, 2026
     </p>
     <a href="./content/profiling/profiling.html">Read article →</a>
   </div>

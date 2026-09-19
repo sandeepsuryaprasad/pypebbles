@@ -2,7 +2,6 @@
 [Previous Article](../config/reading_config_file.md) \| [Next Article](../descriptors/descriptors.md)
 
 ## From JSON Data to Python Objects
-**Last Updated:** August 2, 2026
 
 Python makes it easy to work with JSON through its built-in `json` module. 
 We can load a JSON document into Python and access its contents using dictionaries, 

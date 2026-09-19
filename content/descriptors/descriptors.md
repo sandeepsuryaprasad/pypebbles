@@ -2,8 +2,6 @@
 
 ## Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach
 
-**Last Updated:** August 15, 2026
-
 When working with real-world APIs, JSON responses are often far more complex than 
 simple key-value structures. A single response can contain deeply nested objects, 
 collections, optional fields, and multiple levels of related data. Accessing such 

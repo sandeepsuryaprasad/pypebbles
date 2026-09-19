@@ -1,7 +1,6 @@
 [Previous Article](../json/reading_json.md) \| [Next Article](../profiling/profiling.md)
 
 ## Building a Flexible Logging Abstraction
-**Last Updated:** August 8, 2026
 
 In this article, we will build a lightweight logging abstraction around Python's 
 built-in logging module. Rather than replacing the standard logging framework, 
