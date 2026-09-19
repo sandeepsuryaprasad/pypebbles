@@ -646,18 +646,13 @@ PASSED
 ### Limitation of class decorator
 Although the class decorator significantly reduces repetitive code by applying the 
 profiling configuration to multiple test methods, it introduces a 
-limitation, **the same profiling configuration is applied to all decorated methods 
-in the class**.
+limitation: **the same profiling configuration is applied to every decorated method 
+in the class.**
 
-For example, if the class decorator is configured with `threshold=5`, every test 
-method decorated by the class decorator will use the same five-second threshold. 
-We cannot directly specify a different threshold for individual test methods through 
-the class decorator.
-
-A test suite may contain operations with significantly different expected execution times. 
-For example, a test that performs a simple API request might reasonably have a threshold 
-of two seconds, while another test involving a large file upload or download might 
-require a higher threshold.
+For example, if the class decorator is configured with `enable_profile=True`, 
+profile statistics will be collected and displayed for every test method. 
+This means we cannot configure individual methods to display detailed profile 
+statistics while allowing others to display only execution timing statistics.
 
 In such cases, the function decorator offers greater flexibility because each method 
 can be configured independently.
@@ -677,10 +672,11 @@ Therefore, the two approaches serve different purposes:
 * **Function decorator** — provides fine-grained, method-level configuration.
 * **Class decorator** — provides convenient, consistent configuration across multiple methods.
 
-The choice between them depends on whether the primary requirement is **individual control** or **convenient class-level configuration**.
+The choice between them depends on whether the primary requirement is
+**individual control** or **convenient class-level configuration**.
 
 ### Final Thoughts
-In this article, we started by building a reusable Profiler class that combines 
+In this article, we started by building a reusable `Profiler` class that combines 
 `time.perf_counter` and `time.process_time` for measuring wall-clock execution time and 
 cpu time with `cProfile` for collecting function-call statistics. 
 We then used the profiler as a context manager to explicitly define the portion of code
