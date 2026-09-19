@@ -406,9 +406,9 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item                                                                                                             
 
-profiler.py::test_delayed_users 
+profiler.py::test_delayed_users
 ------------------------------
 Time Elapsed : 2.435 seconds
 CPU Time     : 0.015 seconds
@@ -423,7 +423,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item                                                                                                             
 
 profiler.py::test_loop 
 ------------------------------
@@ -448,7 +448,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item                                                                                      
 
 profiler.py::test_delayed_users 
 ------------------------------
@@ -475,7 +475,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item                                                                                      
 
 profiler.py::test_loop 
 ------------------------------
