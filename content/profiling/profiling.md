@@ -16,14 +16,14 @@ rather than executing Python code locally. This distinction is important when an
 application performance because CPU execution time and end-to-end response time represent
 different aspects of system performance.
 
-The objective is not simply to measure how fast a piece of code runs, but to build a 
+The objective is not to simply measure how fast a piece of code runs, but to build a 
 reusable profiling utility that can help identify performance characteristics and 
 potential bottlenecks in real-world Python applications.
 
 ### Building a Reusable Profiler
 
-Instead of placing `perf_counter` and `cProfile` calls directly inside every function
-that needs to be measured, we can encapsulate the profiling logic in a reusable class.
+Instead of placing `perf_counter`, `process_time` and `cProfile` calls directly inside every 
+function that needs to be measured, we can encapsulate the profiling logic in a reusable class.
 
 The Profiler class acts as a context manager, allowing profiling to be enabled 
 automatically when entering a with block and disabled when leaving it. 
@@ -44,7 +44,7 @@ be investigated.
 
 The following implementation provides the basic profiling functionality. 
 Each method has a specific responsibility: starting the profiler, stopping it, calculating 
-elapsed time, displaying profiling statistics, and exporting the collected 
+elapsed time and process time, displaying profiling statistics, and exporting the collected 
 statistics for further analysis.
 
 ```python
@@ -76,33 +76,34 @@ class Profiler:
 
     Args:
         config: Optional :class:`ProfilerConfig` containing profiling settings.
+        enable_profile: Optional :bool: Enable detailed cProfile statistics.
     """
-    def __init__(self, config: ProfilerConfig=None):
-        self.config: ProfilerConfig = config if config is not None else ProfilerConfig()
-        self._profile: Profile = None
-        self._stats: Stats = None
+    def __init__(self, *, config=None, enable_profile=False):
+        self.config = config if config is not None else ProfilerConfig()
         self._start: float = 0.0
         self._end: float = 0.0
         self._cpu_start: float = 0.0
         self._cpu_end: float = 0.0
+        self._profile: Profile = None
+        self._stats: Stats = None
+        self.enable_profile = enable_profile
 
     def __enter__(self):
-        """Start profiling and record the initial execution times.
-        Returns:
-            Profiler: The current profiler instance.
-        """
-        self._profile = Profile(builtins=False)
-        self._profile.enable()
+        """Start timing and optionally enable detailed profiling."""
         self._start = perf_counter()
         self._cpu_start = process_time()
+        if self.enable_profile:
+            self._profile = Profile(builtins=False)
+            self._profile.enable()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Stop profiling and collect the execution statistics."""
+        """Stop timing and collect profiling statistics."""
         self._end = perf_counter()
         self._cpu_end = process_time()
-        self._profile.disable()
-        self._stats = Stats(self._profile)
+        if self._profile:
+            self._profile.disable()
+            self._stats = Stats(self._profile)
 
     def print_profile_stats(self):
         """Display formatted function-call profiling statistics."""
@@ -157,18 +158,19 @@ how the profiler behaves with API requests that complete at different speeds.
 Some requests return immediately, while others intentionally introduce a delay in the
 server response.
 
-For each API request, we can measure the total wall-clock elapsed time and, 
+For each API request, we can measure the total wall-clock elapsed time, CPU process time and, 
 when required, inspect the function-call statistics collected by cProfile.
 
 Let's start by applying the profiler explicitly to each API test. 
-Consider the `test_delayed_users` test method, which invokes an HTTP `GET` 
-request against a delayed API endpoint. We will use the `Profiler` class to measure 
-the request's wall-clock execution time and analyze the underlying function-call 
+Let's Consider two test methods, `test_delayed_users` and `test_loop`, the first method 
+invokes an HTTP `GET` to request against a delayed API endpoint and the second test method 
+that calculates the sum of 100 million integers. We will use the `Profiler` class to measure 
+the request's wall-clock execution time, CPU process time  and analyze the underlying function-call 
 activity captured by `cProfile`.
 
 ```python
 from os import environ
-from httpx import get
+from httpx import Client
 from pytest import fixture
 
 headers = {
@@ -190,9 +192,10 @@ def test_delayed_users(client):
 
 def test_loop():
     total = sum(i for i in range(0, 100000000))
+    assert total == 4999999950000000
 ```
-Before introducing any profiling , we will execute the `test_delayed_users` 
-test independently using `pytest`
+Before introducing any profiling , we will execute the `test_delayed_users` and `test_loop`
+tests independently using `pytest`
 ```commandline
 ~$ pytest -vs profiler.py::test_delayed_users
 ====================================== test session starts ==============================
@@ -203,14 +206,27 @@ plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item
 
 profiler.py::test_delayed_users PASSED
-====================================== 1 passed in 2.85s =============================== 
+====================================== 1 passed in 2.33 =============================== 
 ```
-The test is passed. Now let's start by profiling the `test_delayed_users` test.
+```commandline
+~$ pytest -vs profiler.py::test_loop         
+====================================== test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item                                                                                                                                                                                        
+
+profiler.py::test_loop PASSED
+===================================== 1 passed in 2.52s =================================
+```
+The tests are passed. Now let's start by profiling the `test_delayed_users` and `test_loop` tests
+by wrapping them inside the context manager.
 
 ```python
-def test_resources(client):
+def test_delayed_users(client):
     with Profiler() as p:
-        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
     p.print_execution_stats()
 
@@ -218,23 +234,44 @@ def test_resources(client):
 def test_loop():
     with Profiler() as p:
         total = sum(i for i in range(0, 100000000))
+        assert total == 4999999950000000
     p.print_execution_stats()
 ```
 ```commandline
 ~$ pytest -vs profiler.py::test_delayed_users
-============================= test session starts ======================================
+====================================== test session starts ==============================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item
+collected 1 item                                                                                                                                                                                        
 
-profiler.py::test_delayed_users :Elapsed Time: 2.675 secs
+profiler.py::test_delayed_users 
+------------------------------
+Time Elapsed : 2.208 seconds
+CPU Time     : 0.008 seconds
+------------------------------
 PASSED
-=========================== 1 passed in 2.78s =========================================
+====================================== 1 passed in 2.32s =================================
 ```
-Once again the test is passed, but this time the Elapsed Time is printed in the console
-which is `2.675 secs`.
+```commandline
+~$ pytest -vs profiler.py::test_loop         
+====================================== test session starts ==============================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item                                                                                                                                                                                        
+
+profiler.py::test_loop 
+------------------------------
+Time Elapsed : 2.428 seconds
+CPU Time     : 2.427 seconds
+------------------------------
+PASSED
+====================================== 1 passed in 5.51s ==================================
+```
+This time the Elapsed Time and CPU Time is printed in the console for both the tests.
 
 ### Eliminating Profiling Code from Existing Tests
 The context-manager approach works well when we are writing new code or when we
@@ -260,7 +297,7 @@ Let's see how we can implement a reusable function decorator for this purpose.
 Consider below tests that validates the response of code different end points,
 ```python
 from os import environ
-from httpx import get
+from httpx import Client
 from pytest import fixture
 
 headers = {
@@ -298,7 +335,6 @@ def test_more_delayed_users(client):
     response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
     assert response.status_code == 200
 ```
-
 We now have a set of existing API tests that exercise different endpoints and scenarios. 
 These tests are already implemented and their primary responsibility is to validate the 
 expected API behavior.
@@ -326,43 +362,31 @@ the same concept to class-level profiling as the number of test methods grows.
 ```python
 from functools import partial, wraps
 
-
-def profile(func=None, *, execution_stats=True, profile_stats=False):
-    """Profile a function and optionally display execution statistics.
-    Wraps the function in a :class:`Profiler` context manager. Execution timing
-    and detailed ``cProfile`` statistics can be enabled independently.
-
+def profile(func=None, *, enable_profile=False, execution_stats=True):
+    """Profile a function and optionally display performance statistics.
     Args:
         func: Function to profile.
+        enable_profile: Enable detailed cProfile profiling.
         execution_stats: Display execution timing statistics.
-        profile_stats: Display detailed profiling statistics.
-
     Returns:
         The wrapped function.
     """
     if func is None:
-        return partial(profile, execution_stats=execution_stats, profile_stats=profile_stats)
+        return partial(profile, enable_profile=enable_profile, execution_stats=execution_stats)
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        with Profiler() as p:
+        with Profiler(enable_profile=enable_profile) as p:
             result = func(*args, **kwargs)
-
         if execution_stats:
             p.print_execution_stats()
-
-        if profile_stats:
+        if enable_profile:
             p.print_profile_stats()
-
         return result
-
     return wrapper
 ```
-
 ### Applying the Profile Decorator
-Now that we have implemented the profile decorator, let's apply it to the existing API 
-tests.
-
+Now that we have implemented the profile decorator, let's apply it to the existing API tests.
 ```python
 @profile
 def test_resources(client):
@@ -377,77 +401,106 @@ def test_loop():
 Let's run the above test using pytest.
 ```commandline
 ~$ pytest -vs profiler.py::test_delayed_users
-============================== test session starts ====================================
+============================================= test session starts =========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item
+collected 1 item                                                                                                                                                                                        
 
-profiler.py::test_delayed_users Time Elapsed test_delayed_users:2.718 seconds
-WARNING: test_delayed_users took more than threshold limit of 2 seconds
+profiler.py::test_delayed_users 
+------------------------------
+Time Elapsed : 2.435 seconds
+CPU Time     : 0.015 seconds
+------------------------------
 PASSED
-================================= 1 passed in 2.83s ======================================= 
+============================================ 1 passed in 2.56s ============================ 
 ```
-Let's modify the `threshold` and `stats` 
+```commandline
+~$ pytest -vs profiler.py::test_loop         
+============================================ test session starts ==========================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 1 item                                                                                                                                                                                        
+
+profiler.py::test_loop 
+------------------------------
+Time Elapsed : 2.446 seconds
+CPU Time     : 2.437 seconds
+------------------------------
+PASSED
+========================================= 1 passed in 2.53s ==============================
+```
+Let's print the profile stats 
 ```python
-@profile(threshold=2, stats=True)
+@profile(enable_profile=True)
 def test_delayed_users(client):
-    response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
-    assert response.status_code == 200
+    with Profiler(enable_profile=True) as p:
+        response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+        assert response.status_code == 200
 ```
 ```commandline
 ~$ pytest -vs profiler.py::test_delayed_users
-================================ test session starts =======================================
+============================================= test session starts ========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item
+collected 1 item                                                                                                                                                                                        
 
-profiler.py::test_delayed_users Time Elapsed test_delayed_users:2.906 seconds
-WARNING: test_delayed_users took more than threshold limit of 2 seconds
-         2508 function calls (2456 primitive calls) in 2.906 seconds
+profiler.py::test_delayed_users 
+------------------------------
+Time Elapsed : 2.443 seconds
+CPU Time     : 0.013 seconds
+------------------------------
+         4 function calls in 2.443 seconds
 
    Ordered by: cumulative time
-   List reduced from 459 to 10 due to restriction <10>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    2.906    2.906 profiler.py:182(test_delayed_users)
-        1    0.000    0.000    2.906    2.906 _client.py:1036(get)
-        1    0.000    0.000    2.906    2.906 _client.py:771(request)
-        1    0.000    0.000    2.906    2.906 _client.py:879(send)
-        1    0.000    0.000    2.905    2.905 _client.py:930(_send_handling_auth)
-        1    0.000    0.000    2.905    2.905 _client.py:964(_send_handling_redirects)
-        1    0.000    0.000    2.905    2.905 _client.py:1001(_send_single_request)
-        1    0.000    0.000    2.904    2.904 default.py:230(handle_request)
-        1    0.000    0.000    2.903    2.903 connection_pool.py:199(handle_request)
-        1    0.000    0.000    2.903    2.903 connection.py:69(handle_request)
+        1    0.000    0.000    2.443    2.443 profiler.py:165(test_delayed_users)
+        1    2.443    2.443    2.443    2.443 profiler.py:64(__enter__)
+        1    0.000    0.000    0.000    0.000 profiler.py:54(__init__)
+        1    0.000    0.000    0.000    0.000 <string>:2(__init__)
 
 PASSED
-================================= 1 passed in 3.02s ===============================================================
+============================================= 1 passed in 2.56s ============================
 ```
-Let's decorate and modify the `threshold` limit for `test_single_user`
-```python
-@profile(threshold=1)
-def test_single_user(client):
-    response = client.get("https://reqres.in/api/users/2", headers=headers)
-    assert response.status_code == 200
-```
-
 ```commandline
-~$ pytest -vs profiler.py::test_single_user  
-================================ test session starts ================================
+~$ pytest -vs profiler.py::test_loop         
+============================================= test session starts ===========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item
+collected 1 item                                                                                                                                                                                        
 
-profiler.py::test_single_user Time Elapsed test_single_user:0.708 seconds
+profiler.py::test_loop 
+------------------------------
+Time Elapsed : 6.492 seconds
+CPU Time     : 6.482 seconds
+------------------------------
+         100000003 function calls in 6.492 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    3.501    3.501    6.492    6.492 profiler.py:172(test_loop)
+100000001    2.991    0.000    2.991    0.000 profiler.py:174(<genexpr>)
+        1    0.000    0.000    0.000    0.000 profiler.py:72(__exit__)
+
 PASSED
-================================= 1 passed in 0.83s ================================ 
+============================================ 1 passed in 6.58s ================================
 ```
+**Observation:** When the tests are executed without profiling, execution time is less than 
+when the same tests are executed under cProfile. The increase is caused by the 
+**overhead introduced by collecting detailed profiling information**. 
+
+So enable profiling only if it is needed. If you are interested only in measuring 
+total wall-clock time and CPU time, do not turn on the profiling switch by enabling `enable_profile`.
+
 Consider a test class containing several test methods. 
 ```python
 class TestUsers:
