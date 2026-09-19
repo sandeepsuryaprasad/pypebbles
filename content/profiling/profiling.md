@@ -480,7 +480,7 @@ CPU Time     : 6.482 seconds
 PASSED
 ============================================ 1 passed in 6.58s ================================
 ```
-**Observation:** When the tests are executed without profiling, execution time is less than 
+**Observation:** When the tests are executed without profiling, execution time is lesser 
 when the same tests are executed under cProfile. The increase is caused by the 
 **overhead introduced by collecting detailed profiling information**. 
 
@@ -556,82 +556,92 @@ class TestUsers:
 When we execute the above test class, the class-level decorator automatically profiles 
 each test method and produces the following output.
 ```commandline
-~$ pytest -vs profiler.py::TestUsers
-===================================== test session starts ============================================
+~$ pytest -vs profiler.py::TestClass
+======================================== test session starts ======================================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 6 items                                                                                                                                                                                       
+collected 2 items                                                                                                                                                                                       
 
-profiler.py::TestUsers::test_single_user Time Elapsed test_single_user:0.447 seconds
-         2498 function calls (2446 primitive calls) in 0.447 seconds
-
-   Ordered by: cumulative time
-   List reduced from 459 to 2 due to restriction <2>
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.447    0.447 profiler.py:209(test_single_user)
-        1    0.000    0.000    0.447    0.447 _client.py:1036(get)
+profiler.py::TestClass::test_delayed_users 
+------------------------------
+Time Elapsed : 2.382 seconds
+CPU Time     : 0.010 seconds
+------------------------------
+PASSED
+profiler.py::TestClass::test_loop 
+------------------------------
+Time Elapsed : 2.627 seconds
+CPU Time     : 2.626 seconds
+------------------------------
 
 PASSED
-profiler.py::TestUsers::test_user_not_found Time Elapsed test_user_not_found:0.522 seconds
-         1621 function calls in 0.522 seconds
+============================================ 2 passed in 5.12s ====================================
+```
+
+```python
+@profile_class(enable_profile=True)
+class TestClass:
+    def test_delayed_users(self, client):
+        response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_loop(self):
+        total = sum(i for i in range(0, 100000000))
+        assert total == 4999999950000000
+```
+
+```commandline
+~$ pytest -vs profiler.py::TestClass
+==================================== test session starts ==========================================================
+platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
+collected 2 items                                                                                                                                                                                       
+
+profiler.py::TestClass::test_delayed_users 
+------------------------------
+Time Elapsed : 2.381 seconds
+CPU Time     : 0.010 seconds
+------------------------------
+         2508 function calls (2456 primitive calls) in 2.381 seconds
 
    Ordered by: cumulative time
-   List reduced from 279 to 2 due to restriction <2>
+   List reduced from 459 to 10 due to restriction <10>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.522    0.522 profiler.py:213(test_user_not_found)
-        1    0.000    0.000    0.522    0.522 _client.py:1036(get)
+        1    0.000    0.000    2.381    2.381 profiler.py:214(test_delayed_users)
+        1    0.000    0.000    2.381    2.381 _client.py:1036(get)
+        1    0.000    0.000    2.381    2.381 _client.py:771(request)
+        1    0.000    0.000    2.381    2.381 _client.py:879(send)
+        1    0.000    0.000    2.380    2.380 _client.py:930(_send_handling_auth)
+        1    0.000    0.000    2.380    2.380 _client.py:964(_send_handling_redirects)
+        1    0.000    0.000    2.380    2.380 _client.py:1001(_send_single_request)
+        1    0.000    0.000    2.378    2.378 default.py:230(handle_request)
+        1    0.000    0.000    2.378    2.378 connection_pool.py:199(handle_request)
+        1    0.000    0.000    2.378    2.378 connection.py:69(handle_request)
+
 
 PASSED
-profiler.py::TestUsers::test_list_users Time Elapsed test_list_users:0.505 seconds
-         1710 function calls (1709 primitive calls) in 0.505 seconds
+profiler.py::TestClass::test_loop 
+------------------------------
+Time Elapsed : 6.461 seconds
+CPU Time     : 6.455 seconds
+------------------------------
+         100000003 function calls in 6.461 seconds
 
    Ordered by: cumulative time
-   List reduced from 281 to 2 due to restriction <2>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.505    0.505 profiler.py:217(test_list_users)
-        1    0.000    0.000    0.505    0.505 _client.py:1036(get)
+        1    3.481    3.481    6.461    6.461 profiler.py:218(test_loop)
+100000001    2.980    0.000    2.980    0.000 profiler.py:219(<genexpr>)
+        1    0.000    0.000    0.000    0.000 profiler.py:72(__exit__)
+
 
 PASSED
-profiler.py::TestUsers::test_resources Time Elapsed test_resources:0.057 seconds
-         1727 function calls (1726 primitive calls) in 0.057 seconds
-
-   Ordered by: cumulative time
-   List reduced from 279 to 2 due to restriction <2>
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.057    0.057 profiler.py:221(test_resources)
-        1    0.000    0.000    0.057    0.057 _client.py:1036(get)
-
-PASSED
-profiler.py::TestUsers::test_delayed_users Time Elapsed test_delayed_users:2.246 seconds
-         1711 function calls (1710 primitive calls) in 2.246 seconds
-
-   Ordered by: cumulative time
-   List reduced from 281 to 2 due to restriction <2>
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    2.246    2.246 profiler.py:225(test_delayed_users)
-        1    0.000    0.000    2.246    2.246 _client.py:1036(get)
-
-PASSED
-profiler.py::TestUsers::test_more_delayed_users Time Elapsed test_more_delayed_users:3.322 seconds
-WARNING: test_more_delayed_users took more than threshold limit of 2.5 seconds
-         1711 function calls (1710 primitive calls) in 3.322 seconds
-
-   Ordered by: cumulative time
-   List reduced from 281 to 2 due to restriction <2>
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    3.322    3.322 profiler.py:229(test_more_delayed_users)
-        1    0.000    0.000    3.322    3.322 _client.py:1036(get)
-
-PASSED
-======================================= 6 passed in 7.28s ========================================
+======================================= 2 passed in 8.96s =======================================
 ```
 ### Limitation of class decorator
 Although the class decorator significantly reduces repetitive code by applying the 
@@ -653,11 +663,11 @@ In such cases, the function decorator offers greater flexibility because each me
 can be configured independently.
 
 ```python
-@profile(threshold=2)
+@profile(enable_profile=True)
 def test_single_user(self):
     ...
 
-@profile(threshold=10)
+@profile
 def test_large_file_download(self):
     ...
 ```
