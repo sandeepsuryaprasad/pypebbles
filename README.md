@@ -23,6 +23,6 @@ I hope these articles, examples, and code snippets help you develop a
 stronger understanding of Python and become a more confident, effective,
 and thoughtful Python programmer.
 
-Read my articles [HERE](content/articles.md)
+Read my articles [HERE](content/index.md)
 
 Happy coding!
