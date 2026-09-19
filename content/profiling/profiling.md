@@ -334,6 +334,10 @@ def test_delayed_users(client):
 def test_more_delayed_users(client):
     response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
     assert response.status_code == 200
+
+def test_loop():
+    total = sum(i for i in range(0, 100000000))
+    assert total == 4999999950000000
 ```
 We now have a set of existing API tests that exercise different endpoints and scenarios. 
 These tests are already implemented and their primary responsibility is to validate the 
