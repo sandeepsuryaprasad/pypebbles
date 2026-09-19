@@ -1,6 +1,6 @@
 [Previous Article](../logging/logging.md)
 
-## Profiling in Python
+## Time Profiling in Python
 
 In this article, we will build a reusable Python performance profiler that combines 
 `cProfile` for function-level execution analysis with `perf_counter` for measuring 
