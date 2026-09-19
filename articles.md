@@ -45,8 +45,8 @@
     <a href="./content/logging/logging.html">Read article →</a>
   
    </div>
-      <div class="article-box">
-    <h3>Python Time Profiling</h3>
+   <div class="article-box">
+    <h3>Time Profiling in Python</h3>
     <p>
         Analyze Python code performance by measuring wall-clock and CPU 
         execution time, differentiating elapsed time from processor 
@@ -57,5 +57,16 @@
     <a href="./content/profiling/profiling.html">Read article →</a>
   </div>
 
+   <div class="article-box">
+      <h3>Memory Profiling in Python</h3>
+    <p>
+        Explore the memory characteristics of different Python data 
+        structures using tracemalloc to measure and compare their 
+        memory footprints, providing practical insight into the memory 
+        trade-offs of different data representations.
+        <br><br>September 28, 2026
+    </p>
+    <a href="./content/profiling/profiling_memory.html">Read article →</a>
+  </div>
 
 </div>
