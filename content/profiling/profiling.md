@@ -489,7 +489,7 @@ total wall-clock time and CPU time, do not turn on the profiling switch by enabl
 
 Consider a test class containing several test methods. 
 ```python
-class TestUsers:
+class TestClass:
     def test_delayed_users(self, client):
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
@@ -544,7 +544,7 @@ Now let's apply the above class decorator the our test class `TestUsers`
 
 ```python
 @profile_class
-class TestUsers:
+class TestClass:
     def test_delayed_users(self, client):
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
