@@ -10,9 +10,13 @@
   </div>
 
   <div class="article-box">
-    <h3>Memory Profiling</h3>
-    <p>Analyzing Python memory allocations using tracemalloc.</p>
-    <a href="articles/memory-profiling/">Read article →</a>
+    <h3>JSON Data as Python Objects</h3>
+    <p>
+        Transform JSON data into structured Python objects, 
+        making nested data easier to access, manage, and work with in
+        an object-oriented way.
+    </p>
+    <a href="./json/reading_json.html">Read article →</a>
   </div>
 
 </div>
