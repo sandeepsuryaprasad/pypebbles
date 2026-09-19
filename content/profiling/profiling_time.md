@@ -215,7 +215,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item
 
 profiler.py::test_loop PASSED
 ===================================== 1 passed in 2.52s =================================
@@ -244,7 +244,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item
 
 profiler.py::test_delayed_users 
 ------------------------------
@@ -261,9 +261,9 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                                                                                                        
+collected 1 item
 
-profiler.py::test_loop 
+profiler.py::test_loop
 ------------------------------
 Time Elapsed : 2.428 seconds
 CPU Time     : 2.427 seconds
@@ -392,7 +392,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                             
+collected 1 item                                  
 
 profiler.py::test_delayed_users
 ------------------------------
@@ -403,15 +403,15 @@ PASSED
 ============================================ 1 passed in 2.56s ============================ 
 ```
 ```commandline
-~$ pytest -vs profiler.py::test_loop         
+~$ pytest -vs profiler.py::test_loop
 ============================================ test session starts ==========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                                             
+collected 1 item
 
-profiler.py::test_loop 
+profiler.py::test_loop
 ------------------------------
 Time Elapsed : 2.446 seconds
 CPU Time     : 2.437 seconds
@@ -434,9 +434,9 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                      
+collected 1 item
 
-profiler.py::test_delayed_users 
+profiler.py::test_delayed_users
 ------------------------------
 Time Elapsed : 2.443 seconds
 CPU Time     : 0.013 seconds
@@ -455,15 +455,15 @@ PASSED
 ============================================= 1 passed in 2.56s ============================
 ```
 ```commandline
-~$ pytest -vs profiler.py::test_loop         
+~$ pytest -vs profiler.py::test_loop
 ============================================= test session starts ===========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 1 item                                                                                      
+collected 1 item
 
-profiler.py::test_loop 
+profiler.py::test_loop
 ------------------------------
 Time Elapsed : 6.492 seconds
 CPU Time     : 6.482 seconds
@@ -562,7 +562,7 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 2 items                                                                                                                                                                                       
+collected 2 items                                                             
 
 profiler.py::TestClass::test_delayed_users 
 ------------------------------
@@ -570,7 +570,7 @@ Time Elapsed : 2.382 seconds
 CPU Time     : 0.010 seconds
 ------------------------------
 PASSED
-profiler.py::TestClass::test_loop 
+profiler.py::TestClass::test_loop
 ------------------------------
 Time Elapsed : 2.627 seconds
 CPU Time     : 2.626 seconds
@@ -599,9 +599,9 @@ platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Develope
 cachedir: .pytest_cache
 rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
-collected 2 items                                                                                                                                                                                       
+collected 2 items
 
-profiler.py::TestClass::test_delayed_users 
+profiler.py::TestClass::test_delayed_users
 ------------------------------
 Time Elapsed : 2.381 seconds
 CPU Time     : 0.010 seconds
@@ -625,7 +625,7 @@ CPU Time     : 0.010 seconds
 
 
 PASSED
-profiler.py::TestClass::test_loop 
+profiler.py::TestClass::test_loop
 ------------------------------
 Time Elapsed : 6.461 seconds
 CPU Time     : 6.455 seconds
