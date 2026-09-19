@@ -1,4 +1,4 @@
-[Previous Article](../logging/logging.md)
+[Next Article](../profiling/profiling_memory.md) \| [Previous Article](../logging/logging.md)
 
 ## Time Profiling in Python
 
@@ -692,4 +692,4 @@ Instead of decorating every test method individually, the class decorator can
 automatically apply the profiling behavior to the relevant methods in the class. 
 This provides a more scalable solution when profiling a larger collection of tests.
 
-[Previous Article](../logging/logging.md)
+[Next Article](../profiling/profiling_memory.md) \| [Previous Article](../logging/logging.md)
