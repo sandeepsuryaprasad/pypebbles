@@ -22,7 +22,7 @@
   </div>
   
    <div class="article-box">
-    <h3>Declarative JSON-to-Object Mapping</h3>
+    <h3>Declarative JSON-to-Object Mapping - Metaprogramming</h3>
     <p>
         Build a declarative JSON-to-object mapper using Python 
         metaprogramming approach to automatically transform JSON data into 
