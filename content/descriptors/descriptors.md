@@ -1,4 +1,4 @@
-[Previous Articel](../json/reading_json.md) \| [Next Article](../logging/logging.md)
+[Previous Article](../json/reading_json.md) \| [Next Article](../logging/logging.md)
 
 ## Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach
 
