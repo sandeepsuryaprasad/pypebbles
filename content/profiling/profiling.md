@@ -310,30 +310,11 @@ def client():
     with Client() as _client:
         yield _client
 
-        
-def test_single_user(client):
-    response = client.get("https://reqres.in/api/users/2", headers=headers)
-    assert response.status_code == 200
-
-def test_user_not_found(client):
-    response = client.get("https://reqres.in/api/users/23", headers=headers)
-    assert response.status_code == 404
-
-def test_list_users(client):
-    response = client.get("https://reqres.in/api/users?page=2", headers=headers)
-    assert response.status_code == 200
-
-def test_resources(client):
-    response = client.get("https://reqres.in/api/users?page=2", headers=headers)
-    assert response.status_code == 200
 
 def test_delayed_users(client):
     response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
     assert response.status_code == 200
 
-def test_more_delayed_users(client):
-    response = client.get("https://reqres.in/api/users?delay=3", headers=headers)
-    assert response.status_code == 200
 
 def test_loop():
     total = sum(i for i in range(0, 100000000))
