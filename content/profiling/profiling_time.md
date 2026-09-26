@@ -561,6 +561,11 @@ Time Elapsed : 2.382 seconds
 CPU Time     : 0.010 seconds
 ------------------------------
 PASSED
+profiler.py::TestClass::test_resources
+------------------------------
+Time Elapsed : 0.313 seconds
+CPU Time     : 0.003 seconds
+------------------------------
 profiler.py::TestClass::test_loop
 ------------------------------
 Time Elapsed : 2.627 seconds
