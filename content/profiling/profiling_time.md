@@ -403,6 +403,11 @@ def test_delayed_users(client):
     with Profiler(enable_profile=True) as p:
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
+
+@profile(enable_profile=True)
+def test_loop():
+    total = sum(i for i in range(0, 100000000))
+    assert total == 4999999950000000
 ```
 ```commandline
 ~$ pytest -vs profiler.py::test_delayed_users
