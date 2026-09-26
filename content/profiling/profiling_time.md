@@ -2,13 +2,14 @@
 
 ## Time Profiling in Python
 
-In this article, we will build a reusable Python performance profiler that combines 
-`cProfile` for function-level execution analysis with `perf_counter` for measuring 
-wall-clock elapsed time and `process_time` for measuring the amount of CPU time consumed by 
-the current process. The profiler will initially be implemented as a context manager 
-and then extended using function decorators and class decorators, allowing the same 
-profiling functionality to be applied to individual functions or entire classes with 
-minimal changes to application code. 
+In this article, we will build a reusable Python performance profiler that 
+combines three complementary mechanisms for analyzing application performance. 
+`cProfile` provides function-level execution statistics, while `perf_counter` 
+measures high-resolution wall-clock elapsed time and `process_time` measures the CPU 
+time consumed by the current process.The profiler will initially be implemented as a 
+context manager and then extended using function decorators and class decorators, 
+allowing the same profiling functionality to be applied to individual functions or 
+entire classes with minimal changes to application code. 
 
 The examples use API calls to demonstrate profiling in a realistic scenario, 
 where the majority of the elapsed time may be spent waiting for a remote server 
@@ -25,15 +26,15 @@ potential bottlenecks in real-world Python applications.
 Instead of placing `perf_counter`, `process_time` and `cProfile` calls directly inside every 
 function that needs to be measured, we can encapsulate the profiling logic in a reusable class.
 
-The Profiler class acts as a context manager, allowing profiling to be enabled 
+The `Profiler` class acts as a context manager, allowing profiling to be enabled 
 automatically when entering a with block and disabled when leaving it. 
 This keeps the profiling logic separate from the application code being measured.
 
-The class combines two complementary approaches:
+The class combines three complementary approaches:
 
 * `perf_counter` measures the total wall-clock time taken by an operation.
 * `process_time` measures the amount of CPU time consumed by the current process. 
-It **excludes** time during which the process is idle or waiting, such as waiting for I/O operations.
+It **excludes** time during which the processor is idle or waiting, such as waiting for I/O operations.
 * `cProfile` collects detailed information about function calls made during that operation.
 * `pstats.Stats` provides an interface for sorting, displaying, and exporting the 
 collected profiling statistics.
@@ -43,7 +44,7 @@ database operations, or any other Python code where execution performance needs 
 be investigated.
 
 The following implementation provides the basic profiling functionality. 
-Each method has a specific responsibility: starting the profiler, stopping it, calculating 
+Each method has a specific responsibility, starting the profiler, stopping it, calculating 
 elapsed time and process time, displaying profiling statistics, and exporting the collected 
 statistics for further analysis.
 
@@ -86,7 +87,7 @@ class Profiler:
         self._cpu_end: float = 0.0
         self._profile: Profile = None
         self._stats: Stats = None
-        self.enable_profile = enable_profile
+        self.enable_profile: bool = enable_profile
 
     def __enter__(self):
         """Start timing and optionally enable detailed profiling."""
@@ -181,16 +182,17 @@ headers = {
 
 @fixture(scope="module")
 def client():
+    """Provide a shared HTTP client for the test module."""
     with Client() as _client:
         yield _client
 
-
 def test_delayed_users(client):
+    """Verify that the delayed users API request succeeds."""
     response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
     assert response.status_code == 200
 
-
 def test_loop():
+    """Verify the result of a large summation."""
     total = sum(i for i in range(0, 100000000))
     assert total == 4999999950000000
 ```
@@ -213,7 +215,7 @@ profiler.py::test_delayed_users PASSED
 ====================================== test session starts ==============================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item
 
@@ -230,7 +232,6 @@ def test_delayed_users(client):
         assert response.status_code == 200
     p.print_execution_stats()
 
-
 def test_loop():
     with Profiler() as p:
         total = sum(i for i in range(0, 100000000))
@@ -242,7 +243,7 @@ def test_loop():
 ====================================== test session starts ==============================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item
 
@@ -259,7 +260,7 @@ PASSED
 ====================================== test session starts ==============================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item
 
@@ -292,45 +293,12 @@ decorator. The test remains focused solely on its original purpose,
 while the decorator transparently handles starting the profiler, measuring 
 execution time, collecting profiling statistics, and reporting the results.
 
-Let's see how we can implement a reusable function decorator for this purpose.
-
-Consider below tests that validates the response of code different end points,
-```python
-from os import environ
-from httpx import Client
-from pytest import fixture
-
-headers = {
-    "X-Reqres-Env": "prod",
-    "x-api-key": environ["X_API_KEY"],
-}
-
-@fixture(scope="module")
-def client():
-    with Client() as _client:
-        yield _client
-
-
-def test_delayed_users(client):
-    response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
-    assert response.status_code == 200
-
-
-def test_loop():
-    total = sum(i for i in range(0, 100000000))
-    assert total == 4999999950000000
-```
-We now have a set of existing API tests that exercise different endpoints and scenarios. 
-These tests are already implemented and their primary responsibility is to validate the 
-expected API behavior.
-
-Our next objective is to profile these tests without adding profiling logic directly 
+The objective is to profile these tests without adding profiling logic directly 
 into each test function. Adding a `with` `Profiler(...)` block to every test would introduce 
 repetitive instrumentation code and would mix performance-measurement concerns with test
 logic.
 
-Let's now implement a `profile` decorator that uses our `Profiler` class to measure and 
-report the execution characteristics of these tests.
+Let's see how we can implement a reusable function decorator for this purpose.
 
 For the initial implementation, we will use a function decorator and explicitly decorate
 each test function that we want to profile. This approach allows us to introduce 
@@ -347,7 +315,7 @@ the same concept to class-level profiling as the number of test methods grows.
 ```python
 from functools import partial, wraps
 
-def profile(func=None, *, enable_profile=False, execution_stats=True):
+def profile(func=None, *, execution_stats=True, enable_profile=False):
     """Profile a function and optionally display performance statistics.
     Args:
         func: Function to profile.
@@ -361,6 +329,7 @@ def profile(func=None, *, enable_profile=False, execution_stats=True):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
+        """Execute the wrapped function within the profiler."""
         with Profiler(enable_profile=enable_profile) as p:
             result = func(*args, **kwargs)
         if execution_stats:
@@ -378,7 +347,6 @@ def test_resources(client):
     response = client.get("https://reqres.in/api/users?page=2", headers=headers)
     assert response.status_code == 200
 
-
 @profile
 def test_loop():
     total = sum(i for i in range(0, 100000000))
@@ -390,7 +358,7 @@ Let's run the above test using pytest.
 ============================================= test session starts =========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item                                  
 
@@ -407,7 +375,7 @@ PASSED
 ============================================ test session starts ==========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item
 
@@ -432,7 +400,7 @@ def test_delayed_users(client):
 ============================================= test session starts ========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item
 
@@ -459,7 +427,7 @@ PASSED
 ============================================= test session starts ===========================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 1 item
 
@@ -485,7 +453,7 @@ when the same tests are executed under cProfile. The increase is caused by the
 **overhead introduced by collecting detailed profiling information**. 
 
 So enable profiling only if it is needed. If you are interested only in measuring 
-total wall-clock time and CPU time, do not turn on the profiling switch by enabling `enable_profile`.
+total wall-clock time and CPU time, do not turn on the profiling.
 
 Consider a test class containing several test methods. 
 ```python
@@ -513,6 +481,7 @@ in that class.
 
 ```python
 from functools import partial
+from typing import Callable
 
 def profile_class(cls=None, *, execution_stats=True, profile_stats=False):
     """Profile callable methods in a class.
@@ -530,7 +499,7 @@ def profile_class(cls=None, *, execution_stats=True, profile_stats=False):
     if cls is None:
         return partial(profile_class, execution_stats=execution_stats, profile_stats=profile_stats)
 
-    def _decorate_each_method(method):
+    def _decorate_each_method(method: Callable):
         """Apply the profiling decorator to a class method."""
         return profile(method, execution_stats=execution_stats, profile_stats=profile_stats)
 
@@ -549,7 +518,7 @@ class TestClass:
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
 
-    def test_loop():
+    def test_loop(self):
         total = sum(i for i in range(0, 100000000))
         assert total == 4999999950000000
 ```
@@ -560,7 +529,7 @@ each test method and produces the following output.
 ======================================== test session starts ======================================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 2 items                                                             
 
@@ -597,7 +566,7 @@ class TestClass:
 ==================================== test session starts ==========================================================
 platform darwin -- Python 3.9.6, pytest-7.4.4, pluggy-1.3.0 -- /Library/Developer/CommandLineTools/usr/bin/python3
 cachedir: .pytest_cache
-rootdir: /Users/sandeepsuryaprasad/Documents/pro_tips/profiler
+rootdir: /Users/sandeepsuryaprasad/Documents/articles/profiler
 plugins: anyio-4.12.1, instafail-0.5.0, trio-0.8.0, mock-3.12.0
 collected 2 items
 
@@ -646,7 +615,7 @@ PASSED
 ### Trade-off introduced by class decorator
 Although the class decorator significantly reduces repetitive code by applying the 
 profiling configuration to multiple test methods, it introduces a 
-limitation: **the same profiling configuration is applied to every decorated method 
+limitation, **the same profiling configuration is applied to every decorated method 
 in the class.**
 
 For example, if the class decorator is configured with `enable_profile=True`, 
