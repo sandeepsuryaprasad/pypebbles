@@ -9,7 +9,7 @@ measures high-resolution wall-clock elapsed time and `process_time` measures the
 time consumed by the current process.The profiler will initially be implemented as a 
 context manager and then extended using function decorators and class decorators, 
 allowing the same profiling functionality to be applied to individual functions or 
-entire classes with minimal changes to application code. 
+to entire classes with minimal changes to application code. 
 
 The examples use API calls to demonstrate profiling in a realistic scenario, 
 where the majority of the elapsed time may be spent waiting for a remote server 
@@ -27,7 +27,7 @@ Instead of placing `perf_counter`, `process_time` and `cProfile` calls directly 
 function that needs to be measured, we can encapsulate the profiling logic in a reusable class.
 
 The `Profiler` class acts as a context manager, allowing profiling to be enabled 
-automatically when entering a with block and disabled when leaving it. 
+automatically when entering a `with` block and disabled when leaving it. 
 This keeps the profiling logic separate from the application code being measured.
 
 The class combines three complementary approaches:
@@ -36,7 +36,7 @@ The class combines three complementary approaches:
 * `process_time` measures the amount of CPU time consumed by the current process. 
 It **excludes** time during which the processor is idle or waiting, such as waiting for I/O operations.
 * `cProfile` collects detailed information about function calls made during that operation.
-* `pstats.Stats` provides an interface for sorting, displaying, and exporting the 
+* `pstats.Stats` provides an interface for sorting, displaying, and exploring the 
 collected profiling statistics.
 
 This design allows the same profiler to be reused for API calls, file operations, 
@@ -189,6 +189,10 @@ def client():
 def test_delayed_users(client):
     """Verify that the delayed users API request succeeds."""
     response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
+    assert response.status_code == 200
+
+def test_resources(client):
+    response = client.get("https://reqres.in/api/users?page=2", headers=headers)
     assert response.status_code == 200
 
 def test_loop():
@@ -348,6 +352,11 @@ def test_resources(client):
     assert response.status_code == 200
 
 @profile
+def test_resources(client):
+    response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+    assert response.status_code == 200
+
+@profile
 def test_loop():
     total = sum(i for i in range(0, 100000000))
     assert total == 4999999950000000
@@ -462,7 +471,11 @@ class TestClass:
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
 
-    def test_loop():
+    def test_resources(self, client):
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        assert response.status_code == 200
+
+    def test_loop(self):
         total = sum(i for i in range(0, 100000000))
         assert total == 4999999950000000
 ```
@@ -517,6 +530,10 @@ class TestClass:
     def test_delayed_users(self, client):
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
+    
+    def test_resources(self, client):
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        assert response.status_code == 200
 
     def test_loop(self):
         total = sum(i for i in range(0, 100000000))
@@ -555,6 +572,10 @@ class TestClass:
     def test_delayed_users(self, client):
         response = client.get("https://reqres.in/api/users?delay=2", headers=headers)
         assert response.status_code == 200
+    
+    def test_resources(self, client):
+        response = client.get("https://reqres.in/api/users?page=2", headers=headers)
+        assert response.status_code == 200
 
     def test_loop(self):
         total = sum(i for i in range(0, 100000000))
@@ -592,6 +613,28 @@ CPU Time     : 0.010 seconds
         1    0.000    0.000    2.378    2.378 connection_pool.py:199(handle_request)
         1    0.000    0.000    2.378    2.378 connection.py:69(handle_request)
 
+PASSED
+profiler.py::TestClass::test_resources 
+------------------------------
+Time Elapsed : 0.313 seconds
+CPU Time     : 0.005 seconds
+------------------------------
+         1710 function calls (1709 primitive calls) in 0.313 seconds
+
+   Ordered by: cumulative time
+   List reduced from 281 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.313    0.313 profiler.py:222(test_resources)
+        1    0.000    0.000    0.313    0.313 _client.py:1036(get)
+        1    0.000    0.000    0.313    0.313 _client.py:771(request)
+        1    0.000    0.000    0.313    0.313 _client.py:879(send)
+        1    0.000    0.000    0.312    0.312 _client.py:930(_send_handling_auth)
+        1    0.000    0.000    0.312    0.312 _client.py:964(_send_handling_redirects)
+        1    0.000    0.000    0.312    0.312 _client.py:1001(_send_single_request)
+        1    0.000    0.000    0.311    0.311 default.py:230(handle_request)
+        1    0.000    0.000    0.311    0.311 connection_pool.py:199(handle_request)
+        1    0.000    0.000    0.311    0.311 connection.py:69(handle_request)
 
 PASSED
 profiler.py::TestClass::test_loop
@@ -607,7 +650,6 @@ CPU Time     : 6.455 seconds
         1    3.481    3.481    6.461    6.461 profiler.py:218(test_loop)
 100000001    2.980    0.000    2.980    0.000 profiler.py:219(<genexpr>)
         1    0.000    0.000    0.000    0.000 profiler.py:72(__exit__)
-
 
 PASSED
 ======================================= 2 passed in 8.96s =======================================
