@@ -15,8 +15,10 @@ The objective of this article is not to recreate Python's logging framework.
 Instead, it is to demonstrate how a well-designed abstraction can simplify an existing API while 
 keeping the underlying functionality intact.
 
-`mylogger.py`
+
 ```python
+# mylogger.py
+
 import logging
 from typing import Optional
 
@@ -31,7 +33,8 @@ class Logger:
     _LOG_FORMAT = "[%(levelname)s] [%(asctime)s]  %(message)s"
 
     def __init__(
-            self, name: str,
+            self, 
+            name: str,
             level: int = logging.INFO,
             handler: Optional[logging.Handler] = None
     ):
@@ -62,22 +65,11 @@ class Logger:
 
     @handler.setter
     def handler(self, value):
-        """
-        Set the logging handler.
-        """
+        """Set the logging handler."""
         self._handler = value if value else logging.StreamHandler()
 
     def _set_logger(self, name):
-        """
-        Create and configure a named logger.
-        Sets the logger's level, creates a formatter using the configured
-        log format, and applies the formatter to the configured handler.
-        The handler is added only when the logger has no existing handlers.
-        Args:
-            name: Name used to retrieve the logger.
-        Returns:
-            A configured :class:`logging.Logger` instance.
-        """
+        """Configure and return a logger with the configured level and handler."""
         logger = logging.getLogger(name)
         logger.setLevel(self._level)
         formatter = logging.Formatter(self._LOG_FORMAT)
@@ -110,8 +102,9 @@ object using `__getattr__` method.
 Let's look at an example on how we can use the above class. For demonstration purpose consider
 a python module `add.py` with simple function that adds two numbers, 
 
-`add.py`
 ```python
+# add.py
+
 def add(a: int, b: int):
     return a + b
 ```
@@ -119,6 +112,8 @@ We want to add log messages to the above function so that the messages will be p
 Here is how we can do it,
 
 ```python
+# add.py
+
 from mylogger import Logger
 
 logger = Logger(__name__)   # by default log level will be set to `INFO`
@@ -141,6 +136,8 @@ Now let's say someone is calling `add` function by passing arguments in a string
 something like below,
 
 ```python
+# add.py
+
 from mylogger import Logger
 
 logger = Logger(__name__)
@@ -167,6 +164,8 @@ that it is giving. For debugging purpose, we want our function to output some ex
 Let's modify our `add` function to output more information in case if we ran our code in debug
 mode.
 ```python
+# add.py
+
 from logging_demo import Logger
 
 logger = Logger(__name__)   # default log level is still `INFO`
@@ -191,6 +190,8 @@ To get the debug logs, we have to modify our `add.py` file and change the log le
 creating instance of `Logger` class. Below is the modified code from `add.py` file,
 
 ```python
+# add.py
+
 import logging
 from logging_demo import Logger
 
@@ -260,6 +261,8 @@ logging level. The resulting log level will then be used to initialize the `Logg
 
 Here is solution,
 ```python
+# mylogger.py
+
 import logging
 from typing import Optional
 import argparse
