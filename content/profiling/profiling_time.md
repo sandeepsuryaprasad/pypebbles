@@ -571,7 +571,6 @@ profiler.py::TestClass::test_loop
 Time Elapsed : 2.627 seconds
 CPU Time     : 2.626 seconds
 ------------------------------
-
 PASSED
 ============================================ 2 passed in 5.12s ====================================
 ```
