@@ -1,1 +1,1 @@
-### About
+<h1 class="articles-heading">About</h1>
