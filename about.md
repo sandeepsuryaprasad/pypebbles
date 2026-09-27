@@ -1,6 +1,6 @@
 <h1 class="articles-heading">About</h1>
 
-I am a seasoned Quality Assurance professional with 20 years of experience in software 
+I am Sandeep, a seasoned Quality Assurance professional with 20 years of experience in software 
 testing and automation, with deep expertise in Python-driven test automation. 
 Over the last decade, I have focused on designing and implementing scalable, reliable, 
 and maintainable automation solutions for UI, API, and mobile testing using Python, 
