@@ -9,8 +9,8 @@ interface.
 
 We will gradually build a `Logger` class that handles common logging concerns such as
 log levels, handlers, formatters, and logger configuration. As the implementation evolves,
-we will extend the logger to support runtime configuration, including controlling the 
-logging level through CLI.
+we will extend the logger to support runtime configuration, including **controlling the 
+logging level through CLI**.
 
 The objective of this article is not to recreate Python’s logging framework. 
 Instead, it is to demonstrate how a well-designed abstraction can simplify an 
