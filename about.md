@@ -13,11 +13,10 @@ the client library.
 
 You can explore my [contributions to the Selenium Python client on GitHub](https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad)
 
-As an experienced Technical Lead, I have provided architectural direction, 
-hands-on technical guidance, and delivery oversight while mentoring engineers and 
-promoting strong software engineering and coding practices. I have also built Python 
-capabilities across project teams by training and mentoring engineers in Python and 
-Selenium-based automation.
+As an experienced Technical Lead, I have provided hands-on technical guidance, 
+and delivery oversight while mentoring engineers and promoting strong software
+engineering and coding practices. I have also built Python capabilities across 
+project teams by training and mentoring engineers in Python and Selenium-based automation.
 
 I am passionate about Python, Linux, automation, and software engineering. 
 I have spent considerable time gaining hands-on experience with Python, developing a 
