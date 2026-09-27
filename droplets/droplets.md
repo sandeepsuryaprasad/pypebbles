@@ -1,4 +1,4 @@
-<h1 class="articles-heading">Articles</h1>
+<h1 class="articles-heading">Droplets</h1>
 
 Droplets is a collection of small, focused Python programming problems, coding challenges,
 and useful code snippets. 
