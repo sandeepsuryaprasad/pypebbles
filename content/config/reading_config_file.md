@@ -3,18 +3,22 @@
 
 ## Turning Configuration Files into Python Objects 
 
-Configuration files are commonly used to store application settings such as database details, 
-API endpoints, credentials, feature flags, and environment-specific parameters.
-Python provides built-in support for reading configuration files through modules 
-such as `configparser`, making it straightforward to load and access these values.
+Configuration files provide a convenient mechanism for externalizing application 
+settings such as database connection details, API endpoints, credentials, feature flags,
+and environment-specific parameters. Python’s built-in `configparser` module provides a straightforward interface for
+parsing and accessing values from INI-style configuration files.
 
-In this article, we will learn how to read a `config.ini` file using Python's built-in 
-`configparser` module and explore a clean, object-oriented approach to accessing 
-configuration values.
+In this article, we will examine how to parse a `config.ini` file using `configparser`
+and transform the resulting configuration data into a clean, object-oriented interface. 
+Rather than coupling application code directly to configuration sections and keys, 
+we will encapsulate configuration access behind Python objects and attributes, resulting
+in a more readable, maintainable, and reusable design.
 
-`config.ini`
+Consider below `config.ini` file,
 
 ```commandline
+# config.ini
+
 [APPLE]
 serial_number = APL123456789
 model = iPhone-17
@@ -47,7 +51,7 @@ from typing import Optional
 
 
 class Config:
-    """Provides a convenient way access to configuration values by section.
+    """Provides a convenient way to access configuration values by section.
     The class reads configuration data from `config.ini` and exposes
     configuration keys through attribute access. A configuration section
     is selected when the instance is created, and individual values can
@@ -69,7 +73,7 @@ class Config:
     @property
     def parser(self):
         """Return a configured `ConfigParser` instance.
-        The parser reads configuration data from ``config.ini``.
+        The parser reads configuration data from `config.ini`.
         """
         parser = ConfigParser()
         parser.read("config.ini")
@@ -90,7 +94,7 @@ class Config:
         """
         if self.section not in self._parser.sections():
             raise KeyError(f"Invalid section {self.section}")
-        return { key: value for key, value in self._parser[self.section].items() }
+        return self._parser[self.section]
 
     @property
     def value(self):
@@ -181,7 +185,7 @@ such as `config.phone_number.value`, the `__getattr__` method stores `"phone_num
 in the instance variable `_attr`. The `value` property then attempts to retrieve the 
 corresponding key from the underlying `self._data` dictionary. Since `"phone_number"`
 is not present, the dictionary's `get()` method returns the specified default 
-value—an empty string (`""`)—instead of raising a `KeyError`.
+value-an empty string (`""`)-instead of raising a `KeyError`.
 
 Finally, we implement the `__repr__` method to provide a clear and meaningful string 
 representation of the `Config` object, making the object's identity and associated 
