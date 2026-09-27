@@ -43,9 +43,10 @@ The above config file has two different sections `APPLE` and `GOOGLE`,
 lets see how we can use an object oriented design approach in reading the 
 config values in different sections of the file.
 
-`config.py`
 
 ```python
+# config.py
+
 from configparser import ConfigParser
 from typing import Optional
 
