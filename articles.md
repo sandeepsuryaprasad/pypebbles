@@ -69,7 +69,7 @@
   </div>
 
    <div class="article-box">
-      <h3>Memory Profiling in Python, Measuring Data Structure Memory Usage with a Large COVID-19 Dataset</h3>
+      <h3>Memory Profiling, Measuring Data Structure Memory Usage with a Large COVID-19 Dataset</h3>
     <p>
         In this article, we will explore memory profiling in Python 
         using the built-in tracemalloc module. We will represent the 
