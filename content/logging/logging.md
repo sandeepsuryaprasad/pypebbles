@@ -2,19 +2,20 @@
 
 ## Building a Flexible Logging Abstraction
 
-In this article, we will build a lightweight logging abstraction around Python's 
-built-in logging module. Rather than replacing the standard logging framework, 
-our goal is to encapsulate its configuration behind a simple, reusable interface.
+In this article, we will build a lightweight logging abstraction around Python’s 
+built-in `logging` module. Instead of exposing the underlying logging configuration 
+throughout the application, we will encapsulate it behind a consistent and reusable 
+interface.
 
-We will gradually build a Logger class that handles common logging concerns such as log 
-levels, handlers, formatters, and logger configuration. 
-We will also allow the logging level to be controlled through command-line arguments, 
-making the logger more practical for real-world applications.
+We will gradually build a `Logger` class that handles common logging concerns such as
+log levels, handlers, formatters, and logger configuration. As the implementation evolves,
+we will extend the logger to support runtime configuration, including controlling the 
+logging level through CLI.
 
-The objective of this article is not to recreate Python's logging framework. 
-Instead, it is to demonstrate how a well-designed abstraction can simplify an existing API while 
-keeping the underlying functionality intact.
-
+The objective of this article is not to recreate Python’s logging framework. 
+Instead, it is to demonstrate how a well-designed abstraction can simplify an 
+existing API while preserving its underlying capabilities, resulting in a logging
+interface that is easier to configure, reuse, and integrate into real-world applications.
 
 ```python
 # mylogger.py
