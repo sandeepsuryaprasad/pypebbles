@@ -122,12 +122,12 @@ def add(a: int, b: int):
     logger.info(f"add function called with args 'a': {a} and 'b': {b}")
     return a + b
 
-print(add(1, 2))   # calling our add function
+print(add(1, 2))   # calling add function
 ```
 When we run `add.py` from terminal, we get the below output, which is correct.
 ```commandline
 ~$ python3 add.py
-[2026-08-08 08:07:07,456] [INFO]  Calling add function with args 'a': 1 and 'b': 2
+[2026-08-04 08:07:07,456] [INFO]  Calling add function with args 'a': 1 and 'b': 2
 3
 ```
 `INFO` message is emitted in the terminal along with the actual result of addition.
@@ -146,12 +146,12 @@ def add(a: int, b: int):
     logger.info(f"Calling add function with args 'a': {a} and 'b': {b}")
     return a + b
 
-print(add("1", "2"))   # calling our add function by passing 1 and 2 in string format
+print(add("1", "2"))   # calling add function by passing 1 and 2 as strings
 ```
 when we run the above program in terminal, we get the below output,
 ```commandline
 ~$ python3 add.py
-[2026-08-09 08:22:08,788] [INFO]  Calling add function with args 'a': 1 and 'b': 2
+[2026-08-04 08:22:08,788] [INFO]  Calling add function with args 'a': 1 and 'b': 2
 12
 ```
 That's really interesting thing to debug and see what's really happening. The problem
@@ -183,11 +183,11 @@ we ran the code without setting the log level to `DEBUG`. If we run the code now
 we still get the below output,
 ```commandline
 ~$ python3 add.py
-[2026-08-08 09:28:37,721] [INFO]  Calling add function with args 'a': 1 and 'b': 2
+[2026-08-04 09:28:37,721] [INFO]  Calling add function with args 'a': 1 and 'b': 2
 12
 ```
-To get the debug logs, we have to modify our `add.py` file and change the log level while 
-creating instance of `Logger` class. Below is the modified code from `add.py` file,
+To get the debug logs, we have to modify our `add` function and change the log level while 
+creating instance of `Logger` class. Below is the modified code,
 
 ```python
 # add.py
@@ -207,8 +207,8 @@ print(add("1", "2"))
 Now when we run `add.py` from terminal, we get the below output,
 ```commandline
 ~$ python3 z_add.py
-[INFO] [2026-08-08 09:39:37,464]  Calling add function with args 'a': 1 and 'b': 2
-[DEBUG] [2026-08-08 09:39:37,464]  Type of arg 'a': <class 'str'> and 'b': <class 'str'>
+[INFO] [2026-08-04 09:39:37,464]  Calling add function with args 'a': 1 and 'b': 2
+[DEBUG] [2026-08-04 09:39:37,464]  Type of arg 'a': <class 'str'> and 'b': <class 'str'>
 12
 ```
 From the above `DEBUG` message it is very clear that the type of argument `a` is `str` and 
@@ -216,7 +216,7 @@ type of argument `b` is `str` and that is why `add` function is concatenating `a
 of adding.
 
 But the problem with the above mechanism is we need to modify the code to change the log level from
-`INFO` to `DEBUG`. Once we rectify the problem, we need to revert log level back to `DEBUG` for which
+`INFO` to `DEBUG`. Once we rectify the problem, we need to revert log level back to `INFO` for which
 again we need to modify the code. 
 
 Our intention here is to emit only `INFO` messages to terminal during normal run and `DEBUG` 
@@ -238,8 +238,8 @@ When the `--debug` option is not specified, the application should default to th
 Below is the mechanism that we are looking for,
 ```commandline
 ~$ python3 add.py --debug
-[2026-08-09 13:41:56,925] [INFO]  Calling add function with args 'a': 1 and 'b': 2
-[2026-08-09 13:41:56,925] [DEBUG]  The type of arg 'a': <class 'str'> and 'b': <class 'str'>
+[2026-08-04 13:41:56,925] [INFO]  Calling add function with args 'a': 1 and 'b': 2
+[2026-08-04 13:41:56,925] [DEBUG]  The type of arg 'a': <class 'str'> and 'b': <class 'str'>
 12
 ```
 When executing `add.py` from the terminal, we can optionally specify the `--debug`
@@ -250,14 +250,15 @@ should default to the `INFO` level and emit only `INFO` and higher-severity mess
 
 ```commandline
 ~$ python3 add.py        
-[2026-08-09 13:47:07,640] [INFO]  Calling add function with args 'a': 1 and 'b': 2
+[2026-08-04 13:47:07,640] [INFO]  Calling add function with args 'a': 1 and 'b': 2
 12
 ```
 
 To implement this mechanism, we will no longer configure the logging level through the 
-`level` property setter. Instead, we will define a separate function outside the
+`level` property setter. Instead, we will define a separate method in the
 `Logger` class to process the command-line arguments and determine the appropriate 
-logging level. The resulting log level will then be used to initialize the `Logger` instance.
+logging level. The resulting log level will then be used while initializing the `Logger` instance.
+
 
 Here is solution,
 ```python
@@ -281,7 +282,6 @@ class Logger:
     
     def _parse_cli(self):
         """Parse command-line arguments.
-
         Configures and parses the command-line arguments supported by the
         application. The ``--debug`` option enables DEBUG-level logging;
         otherwise, the application uses INFO-level logging.
@@ -296,7 +296,6 @@ class Logger:
 
     def _get_cli_log_level(self):
         """Determine the logging level from command-line arguments.
-
         Parses the command-line arguments and returns ``logging.DEBUG`` when
         the ``--debug`` option is specified. Otherwise, ``logging.INFO`` is
         returned as the default logging level.
@@ -319,9 +318,7 @@ class Logger:
 
     @handler.setter
     def handler(self, value):
-        """
-        Set the logging handler.
-        """
+        """Set the logging handler."""
         if value:
             if not isinstance(value, logging.Handler):
                 raise TypeError(f"{value} is not a valid Handler")
@@ -333,7 +330,6 @@ class Logger:
     @property
     def formatter(self):
         """Return a logging formatter configured with the application log format.
-
         Returns:
             logging.Formatter: A formatter configured with the application
                 logging format.
@@ -360,7 +356,6 @@ class Logger:
     def __getattr__(self, name):
         """
         Delegate unknown attribute lookups to the underlying logger.
-
         This allows methods such as ``debug()``, ``info()``, ``warning()``,
         ``error()``, and ``critical()`` to be called directly on the wrapper
         without explicitly defining each method.
