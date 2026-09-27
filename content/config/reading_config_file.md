@@ -4,9 +4,10 @@
 ## Turning Configuration Files into Python Objects 
 
 Configuration files provide a convenient mechanism for externalizing application 
-settings such as database connection details, API endpoints, credentials, feature flags,
-and environment-specific parameters. Python’s built-in `configparser` module provides a straightforward interface for
-parsing and accessing values from INI-style configuration files.
+settings such as database connection details, API endpoints, feature flags and 
+environment-specific parameters. Python’s built-in `configparser` module provides a 
+straightforward interface for parsing and accessing values from INI-style 
+configuration files.
 
 In this article, we will examine how to parse a `config.ini` file using `configparser`
 and transform the resulting configuration data into a clean, object-oriented interface. 
