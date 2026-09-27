@@ -298,8 +298,8 @@ class Logger:
 
     def _get_cli_log_level(self):
         """Determine the logging level from command-line arguments.
-        Parses the command-line arguments and returns ``logging.DEBUG`` when
-        the ``--debug`` option is specified. Otherwise, ``logging.INFO`` is
+        Parses the command-line arguments and returns `logging.DEBUG` when
+        the `--debug` option is specified. Otherwise, `logging.INFO` is
         returned as the default logging level.
 
         Returns:
@@ -358,8 +358,8 @@ class Logger:
     def __getattr__(self, name):
         """
         Delegate unknown attribute lookups to the underlying logger.
-        This allows methods such as ``debug()``, ``info()``, ``warning()``,
-        ``error()``, and ``critical()`` to be called directly on the wrapper
+        This allows methods such as `debug()`, `info()`, `warning()`,
+        `error()`, and `critical()` to be called directly on the wrapper
         without explicitly defining each method.
 
         Args:
