@@ -15,11 +15,11 @@ You can explore my [contributions to the Selenium Python client on GitHub](https
 
 As an experienced Technical Lead, I have provided hands-on technical guidance, 
 and delivery oversight while mentoring engineers and promoting strong software
-engineering and coding practices. I have also built Python capabilities across 
+engineering and best coding practices. I have also built Python capabilities across 
 project teams by training and mentoring engineers in Python and Selenium-based automation.
 
-I am passionate about Python, Linux, automation, and software engineering. 
+I am passionate about Automation using Python, Linux, and software engineering. 
 I have spent considerable time gaining hands-on experience with Python, developing a 
-deeper understanding of the language, and learning how to write clean, idiomatic Python.
+deeper understanding of the language and learning to write clean, idiomatic Python.
 Pypebbles is my way of sharing that knowledge, along with the practical lessons and 
 insights that I have gained through years of working with Python.
