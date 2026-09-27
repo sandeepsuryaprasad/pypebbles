@@ -1,4 +1,4 @@
-<h1 class="articles-heading">Articles</h1>
+<h1 class="articles-heading">Pebbles</h1>
 
 <div class="articles-grid">
   <div class="article-box">
