@@ -9,17 +9,14 @@ class JsonObject:
 
 ```python
 from json import loads
-from typing import Sequence, Mapping
-
 
 class JsonPath:
     def __init__(self, json_string: str):
         """Initialize the JSON parser with a JSON string."""
         self.json_string = json_string
-        self._py_object = self._deserialize_json
+        self._py_object = self._deserialize_json()
         self.root = self._build_root_object(self._py_object)
 
-    @property
     def _deserialize_json(self):
         """Deserialize the JSON string into a Python object."""
         return loads(self.json_string)
@@ -28,14 +25,14 @@ class JsonPath:
         """Wrap a dictionary in a dynamically created object."""
         return JsonObject(data)
 
-    def _process_list_like_object(self, list_like_object: Sequence):
+    def _process_list_like_object(self, list_like_object: list):
         """Recursively process items in a list-like object."""
         items = []
         for item in list_like_object:
             items.append(self._process_object(item))
         return items
 
-    def _process_dict_like_object(self, dict_like_object: Mapping):
+    def _process_dict_like_object(self, dict_like_object: dict):
         """Recursively process values in a dictionary-like object."""
         data = {}
         for key, value in dict_like_object.items():
