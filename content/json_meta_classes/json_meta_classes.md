@@ -19,10 +19,6 @@ class JsonPath:
         self._py_object = self._deserialize_json
         self.root = self.build_root_object(self._py_object)
 
-    def _create_dynamic_class(self, name):
-        """Create a dynamic JSON object class."""
-        return JsonMeta(name)
-
     @property
     def _deserialize_json(self):
         """Deserialize the JSON string into a Python object."""
@@ -30,9 +26,7 @@ class JsonPath:
 
     def _wrap_dict(self, data):
         """Wrap a dictionary in a dynamically created object."""
-        # create a dynamic class and wrap the dictionary inside the class
-        dynamic_class = self._create_dynamic_class("JsonObject")
-        return dynamic_class(data)  # return object instance of the dynamic class
+        return JsonObject(data)
 
     def _process_list_like_object(self, list_like_object: Sequence):
         """Recursively process items in a list-like object."""
