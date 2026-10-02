@@ -42,6 +42,16 @@
   </div>
 
    <div class="article-box">
+    <h3>Dynamic JSON Parsing with Python Metaclasses</h3>
+    <p>
+        Learn how to dynamically create Python classes from JSON data using metaclasses, 
+        eliminating the need to define data-model classes manually.
+        <br><br>October 02, 2026
+    </p>
+    <a href="./content/json_meta_classes/json_meta_classes.html">Read article →</a>
+  </div>
+
+   <div class="article-box">
     <h3>Building a Flexible Logging Abstraction</h3>
     <p>
         In this article, we will build a flexible logging abstraction 
