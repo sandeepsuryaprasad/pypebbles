@@ -42,14 +42,12 @@
   </div>
 
    <div class="article-box">
-    <h3>Dynamic JSON Parsing with Python Metaclasses</h3>
+    <h3>Dynamic JSON Parsing with Python Objects</h3>
     <p>
-        Learn how to dynamically create Python classes from JSON data 
-        using metaclasses, eliminating the need to define data-model 
-        classes manually. Explore how Python metaclasses can inspect the 
-        structure of JSON data and generate corresponding classes at 
-        runtime, enabling JSON objects to be accessed through familiar 
-        attribute-based notation.
+        Learn how to transform JSON data into Python objects dynamically, 
+        eliminating the need to define data-model classes manually. 
+        Explore recursive JSON processing, nested objects, and collections 
+        while accessing structured data through familiar dot notation.
         <br><br>October 02, 2026
     </p>
     <a href="./content/json_meta_classes/json_meta_classes.html">Read article →</a>
