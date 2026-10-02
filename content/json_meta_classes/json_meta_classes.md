@@ -17,7 +17,7 @@ class JsonPath:
         """Initialize the JSON parser with a JSON string."""
         self.json_string = json_string
         self._py_object = self._deserialize_json
-        self.root = self.build_root_object(self._py_object)
+        self.root = self._build_root_object(self._py_object)
 
     @property
     def _deserialize_json(self):
@@ -50,7 +50,7 @@ class JsonPath:
             return self._process_list_like_object(value)
         return value
 
-    def build_root_object(self, py_object):
+    def _build_root_object(self, py_object):
         """Build the root object from the deserialized JSON."""
         return self._process_object(py_object)
 ```
