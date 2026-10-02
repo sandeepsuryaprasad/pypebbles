@@ -1,12 +1,10 @@
 ### Creating JSON models dynamically
 
 ```python
-class JsonMeta(type):
-    """Metaclass for dynamically creating JSON object classes."""
-    def __new__(cls, clsname, bases=(), clsdict=None):
-        clsdict = clsdict if clsdict else {}
-        clsdict["__init__"] = lambda self, info: self.__dict__.update(info)
-        return super().__new__(cls, clsname, (), clsdict)
+class JsonObject:
+    """Represent a JSON object as a Python object."""
+    def __init__(self, info):
+        self.__dict__.update(info)
 ```
 
 ```python
