@@ -1,3 +1,5 @@
+[Next Article](../logging/logging.md) \| [Next Article](../descriptors/descriptors.md)
+
 ## JSON Parsing through DOT notation by Creating JSON models dynamically
 
 In the previous two articles, we explored how to parse JSON data into Python objects using 

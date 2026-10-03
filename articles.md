@@ -50,7 +50,7 @@
         while accessing structured data through familiar dot notation.
         <br><br>October 02, 2026
     </p>
-    <a href="./content/json_meta_classes/json_meta_classes.html">Read article →</a>
+    <a href="./content/json_meta_classes/json_dynamic_classes.html">Read article →</a>
   </div>
 
    <div class="article-box">
