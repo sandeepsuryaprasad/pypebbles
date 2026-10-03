@@ -14,6 +14,12 @@ class JsonObject:
         except KeyError:
             raise AttributeError(f"{self.__class__.__name__} has no attribute {name!r}") from None
 
+    def __setattr__(self, name, value):
+        if name == "_info":
+            super().__setattr__(name, value)
+        else:
+            self._info[name] = value
+
     def to_dict(self):
         """Convert a JsonObject to dictionary."""
         out_dict = {}
@@ -37,11 +43,18 @@ from json import loads, load
 class JsonPath:
     def __init__(self):
         """Initialize an empty JSON parser."""
-        self._json_object = None
+        self._root_json_object = None
 
     def __getattr__(self, name):
         """Delegate attribute access to the json object."""
-        return getattr(self._json_object, name)
+        print(f"delegating {name!r}")
+        return getattr(self._root_json_object, name)
+
+    def __setattr__(self, name, value):
+        if name == "_root_json_object":
+            super().__setattr__(name, value)
+        else:
+            setattr(self._root_json_object, name, value)
 
     def _wrap_dict(self, data):
         """Wrap a dictionary in a JsonObject."""
@@ -71,7 +84,7 @@ class JsonPath:
     @classmethod
     def _from_py_object(cls, py_object):
         obj = cls()
-        obj._json_object = obj._build_root_object(py_object)
+        obj._root_json_object = obj._build_root_object(py_object)
         return obj
 
     @classmethod
@@ -87,5 +100,4 @@ class JsonPath:
             raise FileNotFoundError(f"File not found {filename}")
         with open(path, mode="r", encoding="utf-8") as json_file:
             return cls._from_py_object(load(json_file))
-
 ```
