@@ -1,5 +1,19 @@
-## Creating JSON models dynamically
+## JSON Parsing through DOT notation by Creating JSON models dynamically
 
+In the previous two articles, we explored how to parse JSON data into Python objects using 
+object-oriented design. We created Python classes manually to represent the structure of the
+JSON data, making it possible to work with the data using familiar dot notation.
+
+In this article, we will take this approach a step further. Instead of manually defining Python 
+classes for every JSON structure, we will create the Python objects dynamically from the JSON
+data itself. we will build a simple approach to dynamically transform JSON data into Python 
+objects that can be accessed using dot notation.
+
+This allows us to work with different JSON structures without having to create a corresponding
+set of Python classes beforehand, while still providing a clean and intuitive dot-notation
+interface for accessing nested data.
+
+Consider the below class `JsonObject`
 ```python
 from json import dumps
 
@@ -15,6 +29,7 @@ class JsonObject:
             raise AttributeError(f"{self.__class__.__name__} has no attribute {name!r}") from None
 
     def __setattr__(self, name, value):
+        """Set an attribute (_info) or update the underlying JSON data."""
         if name == "_info":
             super().__setattr__(name, value)
         else:
@@ -36,6 +51,19 @@ class JsonObject:
         """Convert JsonObject to a JSON string."""
         return dumps(self.to_dict())
 ```
+This above class is the core building block of our dynamic JSON model. 
+It wraps a Python dictionary and exposes its data through **dot notation**, allowing 
+JSON properties to be accessed like regular Python attributes.
+
+The `JsonObject` class provides three functionalities,
+* **Provide dot-notation access** It allows JSON properties to be accessed as Python 
+attributes, such as json.name or json.address.city, instead of using dictionary keys.
+* **Allow data to be updated using dot notation** Assigning a value such 
+as `json.name = "Steve"` updates the underlying JSON data rather than creating a separate
+Python attribute.
+* **Convert the object back to JSON-compatible data** to_dict() converts the `JsonObject` 
+back into a Python dictionary, including nested objects and lists, while `to_json()` 
+serializes that dictionary into a `JSON` string.
 
 ```python
 from json import loads, load
