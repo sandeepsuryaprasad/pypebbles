@@ -47,7 +47,6 @@ class JsonPath:
 
     def __getattr__(self, name):
         """Delegate attribute access to the json object."""
-        print(f"delegating {name!r}")
         return getattr(self._root_json_object, name)
 
     def __setattr__(self, name, value):
@@ -83,6 +82,8 @@ class JsonPath:
 
     @classmethod
     def _from_py_object(cls, py_object):
+        if isinstance(py_object, (dict, list)) and len(py_object) == 0:
+            raise ValueError(f"Cannot create a JSON model from an empty object/response: {py_object}")
         obj = cls()
         obj._root_json_object = obj._build_root_object(py_object)
         return obj
