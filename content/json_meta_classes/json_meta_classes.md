@@ -1,4 +1,4 @@
-### Creating JSON models dynamically
+## Creating JSON models dynamically
 
 ```python
 from json import dumps
