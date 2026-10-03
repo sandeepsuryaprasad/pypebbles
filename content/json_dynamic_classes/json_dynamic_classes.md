@@ -1,4 +1,4 @@
-[Next Article](../descriptors/descriptors.md) \| [Next Article](../logging/logging.md)
+[Previous Article](../logging/logging.md) \| [Next Article](../descriptors/descriptors.md)
 
 ## JSON Parsing through DOT notation by Creating JSON models dynamically
 
