@@ -73,6 +73,14 @@ class JsonPath:
             super().__setattr__(name, value)
         else:
             setattr(self._root_json_object, name, value)
+    
+    def __getitem__(self, index):
+        """Return an item from the root JSON array."""
+        return self._root_json_object[index]
+
+    def __len__(self):
+        """Return the length of root JSON array"""
+        return len(self._root_json_object)
 
     def _wrap_dict(self, data):
         """Wrap a dictionary in a JsonObject."""
