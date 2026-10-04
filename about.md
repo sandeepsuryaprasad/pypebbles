@@ -12,6 +12,10 @@ implementing Python descriptors to improve the maintainability and extensibility
 the client library.
 
 You can explore my contributions to the Selenium Python client on [GitHub Repo](https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad)
+<a href="https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad"
+   class="github-repo-link">
+  GitHub Repo
+</a>
 
 I am the maintainer of **jsonobjectify**, an open-source Python library that dynamically 
 converts JSON data into Python objects, making complex and nested JSON structures easier 
