@@ -22,12 +22,12 @@ accessed using dot notation, without manually defining Python classes for each J
 structure.
 
 To keep the implementation simple and maintainable, the parsing process is divided into 
-multiple levels of abstraction. At the lowest level, the **`JsonObject`** class represents 
+multiple levels of abstraction. At the lowest level, the `JsonObject` class represents 
 an individual JSON object. It wraps a Python dictionary and provides dot-notation access 
 to its properties. It is also responsible for converting the object back to a 
 dictionary or JSON string.
 
-The **`JsonPath`** class acts as the parsing layer. It takes the deserialized JSON data 
+The `JsonPath` class acts as the parsing layer. It takes the deserialized JSON data 
 and recursively examines each value. Dictionaries are converted into `JsonObject` instances,
 while lists are processed element by element. This allows nested JSON objects and 
 arrays to be represented naturally as Python objects.
@@ -38,25 +38,23 @@ data using familiar Python dot notation.
 
 This separation of responsibilities gives us a simple flow:
 
-`JsonPath` → Parses and builds the object hierarchy
+`JsonPath` - Parses and builds the object hierarchy
 
-`JsonObject` → Represents and provides access to individual JSON objects
+`JsonObject` - Wraps parsed response and provides access to individual JSON objects
 
 By separating parsing from object representation, each part of the implementation has a
 clear responsibility and can be developed and tested independently.
 
-`JsonPath` - **The Parsing and Object-Building Layer**
-
-The `JsonPath` class is the **entry point for converting JSON data into our dynamic Python
-object model.**
+The `JsonPath` class is **The Parsing and Object-Building Layer** and the **entry point 
+for converting JSON data into our dynamic Python object model.**
 
 It supports two forms of input:
 * A JSON string through `from_json_string()`
 * A JSON file through `from_json_file()`
 
 Once the JSON has been parsed, `JsonPath` recursively walks through dictionaries and lists. 
-Every dictionary is converted into a JsonObject, while primitive values such as strings, 
-numbers, booleans, and None are retained as they are.
+Every dictionary is converted into a JsonObject, while primitive values such as `strings`, 
+`numbers`, `booleans`, and `None` are retained as they are.
 
 ```python
 from json import loads, load
@@ -123,10 +121,9 @@ class JsonPath:
         with open(path, mode="r", encoding="utf-8") as json_file:
             return cls._from_py_object(load(json_file))
 ```
-The most important thing for readers to understand is that JsonPath does not know the 
-details of how a JSON object behaves. It is responsible for walking the JSON structure and
-building the hierarchy.
-
+The most important thing to understand is that `JsonPath` does not know the details of how
+a JSON object behaves. It is responsible for walking the JSON structure and building the 
+hierarchy.
 
 Consider the below class `JsonObject`
 ```python
