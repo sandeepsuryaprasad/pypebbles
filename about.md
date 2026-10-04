@@ -11,7 +11,7 @@ I am an active open-source contributor to the Selenium Python client, with more 
 implementing Python descriptors to improve the maintainability and extensibility of 
 the client library.
 
-You can explore my contributions to the Selenium Python client on [GitHub Repo](https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad)
+You can explore my contributions to the Selenium Python client on
 <a href="https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad"
    class="github-repo-link">
   GitHub Repo
@@ -19,7 +19,11 @@ You can explore my contributions to the Selenium Python client on [GitHub Repo](
 
 I am the maintainer of **jsonobjectify**, an open-source Python library that dynamically 
 converts JSON data into Python objects, making complex and nested JSON structures easier 
-to work with using natural dot notation. [GitHub Repo](#)
+to work with using natural dot notation. 
+<a href="https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad"
+   class="github-repo-link">
+  GitHub Repo
+</a>
 
 As an experienced Technical Lead, I have provided hands-on technical guidance, 
 and delivery oversight while mentoring engineers and promoting strong software
