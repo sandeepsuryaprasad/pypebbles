@@ -15,57 +15,48 @@ This allows us to work with different JSON structures without having to create a
 set of Python classes beforehand, while still providing a clean and intuitive dot-notation
 interface for accessing nested data.
 
-Consider the below class `JsonObject`
-```python
-from json import dumps
+### Approach
 
-class JsonObject:
-    """Represent a JSON object as a Python object."""
-    def __init__(self, info):
-        self._info = info
+The goal is to transform a JSON response into a hierarchy of Python objects that can be
+accessed using dot notation, without manually defining Python classes for each JSON
+structure.
 
-    def __getattr__(self, name):
-        try:
-            return self._info[name]
-        except KeyError:
-            raise AttributeError(f"{self.__class__.__name__} has no attribute {name!r}") from None
+To keep the implementation simple and maintainable, the parsing process is divided into 
+multiple levels of abstraction. At the lowest level, the **`JsonObject`** class represents 
+an individual JSON object. It wraps a Python dictionary and provides dot-notation access 
+to its properties. It is also responsible for converting the object back to a 
+dictionary or JSON string.
 
-    def __setattr__(self, name, value):
-        """Set an attribute (_info) or update the underlying JSON data."""
-        if name == "_info":
-            super().__setattr__(name, value)
-        else:
-            self._info[name] = value
+The **`JsonPath`** class acts as the parsing layer. It takes the deserialized JSON data 
+and recursively examines each value. Dictionaries are converted into `JsonObject` instances,
+while lists are processed element by element. This allows nested JSON objects and 
+arrays to be represented naturally as Python objects.
 
-    def to_dict(self):
-        """Convert a JsonObject to dictionary."""
-        out_dict = {}
-        for key, value in self._info.items():
-            if isinstance(value, JsonObject):
-                out_dict[key] = value.to_dict()
-            elif isinstance(value, list):
-                out_dict[key] = [item.to_dict() if isinstance(item, JsonObject) else item for item in value]
-            else:
-                out_dict[key] = value
-        return out_dict
+Finally, the public interface hides these implementation details from the user. 
+The user only needs to provide a JSON string or file and can then access the resulting 
+data using familiar Python dot notation.
 
-    def to_json(self):
-        """Convert JsonObject to a JSON string."""
-        return dumps(self.to_dict())
-```
-This above class is the core building block of our dynamic JSON model. 
-It wraps a Python dictionary and exposes its data through **dot notation**, allowing 
-JSON properties to be accessed like regular Python attributes.
+This separation of responsibilities gives us a simple flow:
 
-The `JsonObject` class provides three functionalities,
-* **Provide dot-notation access** It allows JSON properties to be accessed as Python 
-attributes, such as json.name or json.address.city, instead of using dictionary keys.
-* **Allow data to be updated using dot notation** Assigning a value such 
-as `json.name = "Steve"` updates the underlying JSON data rather than creating a separate
-Python attribute.
-* **Convert the object back to JSON-compatible data** to_dict() converts the `JsonObject` 
-back into a Python dictionary, including nested objects and lists, while `to_json()` 
-serializes that dictionary into a `JSON` string.
+`JsonPath` → Parses and builds the object hierarchy
+
+`JsonObject` → Represents and provides access to individual JSON objects
+
+By separating parsing from object representation, each part of the implementation has a
+clear responsibility and can be developed and tested independently.
+
+`JsonPath` - **The Parsing and Object-Building Layer**
+
+The `JsonPath` class is the **entry point for converting JSON data into our dynamic Python
+object model.**
+
+It supports two forms of input:
+* A JSON string through `from_json_string()`
+* A JSON file through `from_json_file()`
+
+Once the JSON has been parsed, `JsonPath` recursively walks through dictionaries and lists. 
+Every dictionary is converted into a JsonObject, while primitive values such as strings, 
+numbers, booleans, and None are retained as they are.
 
 ```python
 from json import loads, load
@@ -132,3 +123,59 @@ class JsonPath:
         with open(path, mode="r", encoding="utf-8") as json_file:
             return cls._from_py_object(load(json_file))
 ```
+The most important thing for readers to understand is that JsonPath does not know the 
+details of how a JSON object behaves. It is responsible for walking the JSON structure and
+building the hierarchy.
+
+
+Consider the below class `JsonObject`
+```python
+from json import dumps
+
+class JsonObject:
+    """Represent a JSON object as a Python object."""
+    def __init__(self, info):
+        self._info = info
+
+    def __getattr__(self, name):
+        try:
+            return self._info[name]
+        except KeyError:
+            raise AttributeError(f"{self.__class__.__name__} has no attribute {name!r}") from None
+
+    def __setattr__(self, name, value):
+        """Set an attribute (_info) or update the underlying JSON data."""
+        if name == "_info":
+            super().__setattr__(name, value)
+        else:
+            self._info[name] = value
+
+    def to_dict(self):
+        """Convert a JsonObject to dictionary."""
+        out_dict = {}
+        for key, value in self._info.items():
+            if isinstance(value, JsonObject):
+                out_dict[key] = value.to_dict()
+            elif isinstance(value, list):
+                out_dict[key] = [item.to_dict() if isinstance(item, JsonObject) else item for item in value]
+            else:
+                out_dict[key] = value
+        return out_dict
+
+    def to_json(self):
+        """Convert JsonObject to a JSON string."""
+        return dumps(self.to_dict())
+```
+This above class is the core building block of our dynamic JSON model. 
+It wraps a Python dictionary and exposes its data through **dot notation**, allowing 
+JSON properties to be accessed like regular Python attributes.
+
+The `JsonObject` class provides three functionalities,
+* **Provide dot-notation access** It allows JSON properties to be accessed as Python 
+attributes, such as json.name or json.address.city, instead of using dictionary keys.
+* **Allow data to be updated using dot notation** Assigning a value such 
+as `json.name = "Steve"` updates the underlying JSON data rather than creating a separate
+Python attribute.
+* **Convert the object back to JSON-compatible data** to_dict() converts the `JsonObject` 
+back into a Python dictionary, including nested objects and lists, while `to_json()` 
+serializes that dictionary into a `JSON` string.
