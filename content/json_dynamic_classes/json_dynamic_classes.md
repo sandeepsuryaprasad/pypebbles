@@ -125,7 +125,8 @@ The most important thing to understand is that `JsonPath` does not know the deta
 a JSON object behaves. It is responsible for walking the JSON structure and building the 
 hierarchy.
 
-Consider the below class `JsonObject`
+### `JsonObject` - Representing JSON Objects
+
 ```python
 from json import dumps
 
@@ -163,16 +164,19 @@ class JsonObject:
         """Convert JsonObject to a JSON string."""
         return dumps(self.to_dict())
 ```
-This above class is the core building block of our dynamic JSON model. 
-It wraps a Python dictionary and exposes its data through **dot notation**, allowing 
-JSON properties to be accessed like regular Python attributes.
 
-The `JsonObject` class provides three functionalities,
-* **Provide dot-notation access** It allows JSON properties to be accessed as Python 
-attributes, such as json.name or json.address.city, instead of using dictionary keys.
-* **Allow data to be updated using dot notation** Assigning a value such 
-as `json.name = "Steve"` updates the underlying JSON data rather than creating a separate
-Python attribute.
-* **Convert the object back to JSON-compatible data** to_dict() converts the `JsonObject` 
-back into a Python dictionary, including nested objects and lists, while `to_json()` 
-serializes that dictionary into a `JSON` string.
+The `JsonObject` class represents an individual JSON object within the dynamically built 
+object hierarchy. While `JsonPath` is responsible for parsing the JSON structure and 
+recursively building the hierarchy, `JsonObject` is responsible for 
+**representing the individual JSON objects and providing an object-oriented interface to 
+their data**.
+
+The class has three main responsibilities:
+
+* Provide access to JSON properties using **dot notation** 
+such as `json.name` or `json.address.city`, instead of using dictionary keys
+* Allow JSON properties to be modified using **dot notation/attribute assignment**. 
+value such as `json.name = "Steve"` updates the underlying JSON data rather than creating 
+a separate Python attribute.
+* Convert the object hierarchy back into a Python dictionary or JSON string using `to_dict()`
+and `to_json()`
