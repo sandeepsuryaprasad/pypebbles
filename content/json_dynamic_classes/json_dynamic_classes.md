@@ -92,7 +92,10 @@ class JsonPath:
 
     def _process_dict(self, data: dict):
         """Recursively process values in a dictionary."""
-        _data = {key: self._process_object(value) for key, value in data.items()}
+        _data = {
+            key: self._process_object(value) 
+            for key, value in data.items() if key.isidentifier()
+        }
         return self._wrap_dict(_data)
 
     def _process_object(self, value):
@@ -163,7 +166,10 @@ class JsonObject:
             if isinstance(value, JsonObject):
                 out_dict[key] = value.to_dict()
             elif isinstance(value, list):
-                out_dict[key] = [item.to_dict() if isinstance(item, JsonObject) else item for item in value]
+                out_dict[key] = [
+                    item.to_dict() if isinstance(item, JsonObject) else item 
+                    for item in value
+                ]
             else:
                 out_dict[key] = value
         return out_dict
