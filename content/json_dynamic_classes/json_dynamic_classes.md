@@ -81,6 +81,16 @@ class JsonPath:
     def __len__(self):
         """Return the length of root JSON array"""
         return len(self._root_json_object)
+    
+        def __str__(self):
+        if isinstance(self._root_json_object, JsonObject):
+            return self._root_json_object.to_json()
+        return f"{self._root_json_object}"
+
+    def __repr__(self):
+        if isinstance(self._root_json_object, JsonObject):
+            return f"{type(self).__name__}({self._root_json_object.to_dict()})"
+        return f"{type(self).__name__}({self._root_json_object})"
 
     def _wrap_dict(self, data):
         """Wrap a dictionary in a JsonObject."""
@@ -130,6 +140,10 @@ class JsonPath:
     @classmethod
     def from_json_string(cls, json_string):
         """Create a JsonPath instance from a JSON string."""
+        if not isinstance(json_string, str):
+            raise TypeError("json_string must be a string")
+        if not json_string.strip():
+            raise ValueError("JSON string cannot be empty")
         return cls._from_py_object(loads(json_string))
 
     @classmethod
