@@ -82,7 +82,7 @@ class JsonPath:
         """Return the length of root JSON array"""
         return len(self._root_json_object)
     
-        def __str__(self):
+    def __str__(self):
         if isinstance(self._root_json_object, JsonObject):
             return self._root_json_object.to_json()
         return f"{self._root_json_object}"
