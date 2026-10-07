@@ -81,16 +81,6 @@ class JsonPath:
     def __len__(self):
         """Return the length of root JSON array"""
         return len(self._root_json_object)
-    
-    def __str__(self):
-        if isinstance(self._root_json_object, JsonObject):
-            return self._root_json_object.to_json()
-        return f"{self._root_json_object}"
-
-    def __repr__(self):
-        if isinstance(self._root_json_object, JsonObject):
-            return f"{type(self).__name__}({self._root_json_object.to_dict()})"
-        return f"{type(self).__name__}({self._root_json_object})"
 
     def _wrap_dict(self, data):
         """Wrap a dictionary in a JsonObject."""
@@ -181,25 +171,6 @@ class JsonObject:
             super().__setattr__(name, value)
         else:
             self._info[name] = value
-
-    def to_dict(self):
-        """Convert a JsonObject to dictionary."""
-        out_dict = {}
-        for key, value in self._info.items():
-            if isinstance(value, JsonObject):
-                out_dict[key] = value.to_dict()
-            elif isinstance(value, list):
-                out_dict[key] = [
-                    item.to_dict() if isinstance(item, JsonObject) else item 
-                    for item in value
-                ]
-            else:
-                out_dict[key] = value
-        return out_dict
-
-    def to_json(self):
-        """Convert JsonObject to a JSON string."""
-        return dumps(self.to_dict())
 ```
 
 The `JsonObject` class represents an individual JSON object within the dynamically built 
@@ -208,15 +179,13 @@ recursively building the hierarchy, `JsonObject` is responsible for
 **representing the individual JSON objects and providing an object-oriented interface to 
 their data**.
 
-The class has three main responsibilities:
+The class has two main responsibilities:
 
 * Provide access to JSON properties using **dot notation** 
 such as `json.name` or `json.address.city`, instead of using dictionary keys
 * Allow JSON properties to be modified using **dot notation/attribute assignment**. 
 value such as `json.name = "Steve"` updates the underlying JSON data rather than creating 
 a separate Python attribute.
-* Convert the object hierarchy back into a Python dictionary or JSON string using `to_dict()`
-and `to_json()`
 
 ### Final Thoughts
 
