@@ -121,8 +121,6 @@ class JsonPath:
 
     @classmethod
     def _from_py_object(cls, py_object):
-        if isinstance(py_object, (dict, list)) and len(py_object) == 0:
-            raise ValueError(f"Cannot create a JSON model from an empty object/response: {py_object}")
         obj = cls()
         obj._root_json_object = obj._build_root_object(py_object)
         return obj
@@ -130,10 +128,6 @@ class JsonPath:
     @classmethod
     def from_json_string(cls, json_string):
         """Create a JsonPath instance from a JSON string."""
-        if not isinstance(json_string, str):
-            raise TypeError("json_string must be a string")
-        if not json_string.strip():
-            raise ValueError("JSON string cannot be empty")
         return cls._from_py_object(loads(json_string))
 
     @classmethod
