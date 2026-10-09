@@ -50,7 +50,7 @@
         access to structured data.
         <br><br>October 08, 2026
     </p>
-    <a href="./content/descriptors/descriptors.html">Read article →</a>
+    <a href="./content/descriptors/meta_classes.html">Read article →</a>
   </div>
 
    <div class="article-box">
