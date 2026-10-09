@@ -10,7 +10,7 @@
 
 .main-content h2 {
   padding-bottom: 8px;
-  border-bottom: 1px solid #DDEEFF;
+  border-bottom: 1px solid #C9E0F5;
 }
 
 .main-content p {
@@ -20,7 +20,7 @@
 .articles-heading {
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #DDEEFF;
+  border-bottom: 1px solid #C9E0F5;
   font-weight: 700px;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .article-box {
-  border: 1px solid #DDEEFF;
+  border: 1px solid #C9E0F5;
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -72,6 +72,10 @@
 
 .site-nav a:hover {
   text-decoration: underline;
+}
+
+.site-footer {
+    border-top: 1px solid #C9E0F5;
 }
 
 .github-repo-link {
