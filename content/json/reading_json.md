@@ -105,7 +105,7 @@ class Employee:
     corresponding JSON fields as Python attributes.
     """
 
-    def __init__(self, employee_info):
+    def __init__(self, employee_info: dict):
         """Initialize an Employee object from employee data.
 
         Args:
@@ -285,7 +285,7 @@ class Employee:
     structured Python objects.
     """
 
-    def __init__(self, employee_info):
+    def __init__(self, employee_info: dict):
         """Initialize an EmployeeInfo instance from employee data.
         Args:
             employee_info: Dictionary containing employee details and
@@ -429,7 +429,7 @@ class Location:
     Args:
         location_info: Dictionary containing geographical coordinates.
     """
-    def __init__(self, location_info):
+    def __init__(self, location_info: dict):
         """Initialize a Location instance from geographical data.
 
         Args:
@@ -448,7 +448,7 @@ class Address:
     attributes.
     """
 
-    def __init__(self, address_info):
+    def __init__(self, address_info: dict):
         """Initialize an Address object from address data.
 
         Args:
