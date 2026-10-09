@@ -51,40 +51,16 @@ from pathlib import Path
 
 
 class Employees:
-    """Provide sequence-style access to employee information.
-
-    Loads employee records from ``employee.json`` and converts each record
-    into an :class:`Employee` object during object initialization. The
-    resulting collection supports sequence-style operations such as
-    indexing and retrieving its length.
-
-    Attributes:
-        _path: Path to the JSON file containing employee records.
-        _data: Raw employee records deserialized from the JSON file.
-        _employees: List of :class:`Employee` objects created from the raw
-            employee records.
-    """
-
+    """Provide sequence-style access to employee records."""
     def __init__(self):
-        """Initialize the Employees collection.
-
-        Resolves the JSON file path, loads and deserializes the employee
-        records, and converts each record into an :class:`Employee` object.
-        """
+        """Initialize the collection of employees."""
         self._path = self._json_file_path
         self._data = self._load_json_data
         self._employees = self._get_employees
 
     @property
     def _json_file_path(self) -> Path:
-        """Return the path to the employee JSON file.
-
-        Returns:
-            Path: Path to ``employee.json``.
-
-        Raises:
-            FileNotFoundError: If ``employee.json`` does not exist.
-        """
+        """Return the path to the employee JSON file."""
         path = Path("employee.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
@@ -92,57 +68,21 @@ class Employees:
 
     @property
     def _load_json_data(self) -> list[dict]:
-        """Load and deserialize employee data from the JSON file.
-
-        Reads the JSON file and deserializes its contents into Python
-        objects. The expected JSON structure is a list of dictionaries,
-        where each dictionary represents an employee record.
-
-        Returns:
-            list[dict]: A list of dictionaries representing employee
-                records.
-        """
+        """Load employee records from the JSON file."""
         with open(self._path, "r") as json_file:
             return load(json_file)
 
     @property
     def _get_employees(self) -> list[Employee]:
-        """Convert raw employee records into Employee objects.
-
-        Iterates over the deserialized employee records and creates an
-        :class:`Employee` object for each record.
-
-        Returns:
-            list[Employee]: A list containing the corresponding Employee
-                objects.
-        """
+        """Convert employee records into Employee objects."""
         return [Employee(employee) for employee in self._data]
 
     def __getitem__(self, index):
-        """Return the employee at the specified index.
-
-        Provides sequence-style indexed access to the employee collection.
-
-        Args:
-            index: Zero-based index of the employee to retrieve.
-
-        Returns:
-            Employee: The employee object at the specified index.
-
-        Raises:
-            IndexError: If the specified index is outside the valid range.
-        """
+        """Return the employee at the specified index."""
         return self._employees[index]
 
     def __len__(self):
-        """Return the number of employees in the collection.
-
-        Enables the use of the built-in :func:`len` function on an
-        ``Employees`` instance.
-
-        Returns:
-            int: Number of employees in the collection.
-        """
+        """Return the number of employees in the collection."""
         return len(self._employees)
 ```
 Technically, the class performs three main operations:
@@ -166,13 +106,6 @@ class Employee:
 
     Encapsulates the employee's personal information and exposes the
     corresponding JSON fields as Python attributes.
-
-    Attributes:
-        first_name: Employee's first name.
-        last_name: Employee's last name.
-        gender: Employee's gender.
-        date_of_birth: Employee's date of birth.
-        nationality: Employee's nationality.
     """
 
     def __init__(self, employee_info):
@@ -360,18 +293,13 @@ have the above JSON attributes.
 ```python
 class Employee:
     """Represent employee information as a structured Python object.
-
     Encapsulates the employee's personal, contact, address, and company
     information by converting the corresponding JSON data into strongly
     structured Python objects.
-
-    Args:
-        employee_info: Dictionary containing the employee information.
     """
 
     def __init__(self, employee_info):
         """Initialize an EmployeeInfo instance from employee data.
-
         Args:
             employee_info: Dictionary containing employee details and
             nested address and company information.
@@ -526,18 +454,9 @@ class Location:
 ```python
 class Address:
     """Represent an employee's address information.
-
     Encapsulates the address and geographical information associated with
     an employee and exposes the corresponding JSON fields as Python
     attributes.
-
-    Attributes:
-        street: Street address.
-        suite: Apartment, suite, or unit information.
-        city: City associated with the address.
-        state: State or administrative region.
-        zipcode: Postal or ZIP code.
-        geo_location: Geographical coordinates associated with the address.
     """
 
     def __init__(self, address_info):
@@ -557,23 +476,13 @@ class Address:
 ```python
 class Skills:
     """Represent a collection of skills associated with an employee.
-
     Encapsulates the list of skill records and converts each raw skill
     dictionary into a structured :class:`Skill` object. The collection
     supports indexed access to individual skills.
-
-    Attributes:
-        skills: List of :class:`Skill` objects representing the employee's
-            skills.
     """
 
     class Skill:
-        """Represent an individual employee skill.
-
-        Attributes:
-            name: Name of the skill.
-            level: Proficiency level associated with the skill.
-        """
+        """Represent an individual employee skill."""
 
         def __init__(self, skill_info):
             """Initialize a Skill object from skill data.
