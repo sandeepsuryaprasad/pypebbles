@@ -395,41 +395,16 @@ from pathlib import Path
 
 
 class Reservations:
-    """Provide sequence-style access to reservation information.
-
-    Loads reservation data from ``reservation.json`` and converts each
-    reservation record into a :class:`Reservation` object. The resulting
-    collection supports sequence-style operations such as indexed access
-    and retrieving the number of reservations.
-
-    Attributes:
-        _path: Path to the JSON file containing the reservation data.
-        _data: Parsed reservation data loaded from the JSON file.
-        _reservations: List of :class:`Reservation` objects created from
-            the parsed reservation data.
-    """
-
+    """Provide sequence-style access to reservation records."""
     def __init__(self):
-        """Initialize the Reservations collection.
-
-        Resolves the reservation JSON file path, loads and deserializes
-        the reservation data, and creates the corresponding
-        :class:`Reservation` objects.
-        """
+        """Initialize the reservation collection."""
         self._path = self._json_file_path
         self._data = self._load_json_data
         self._reservations = self._get_reservations
 
     @property
     def _json_file_path(self) -> Path:
-        """Return the path to the reservation JSON file.
-
-        Returns:
-            Path: Path to ``reservation.json``.
-
-        Raises:
-            FileNotFoundError: If ``reservation.json`` does not exist.
-        """
+        """Return the path to the reservations JSON file."""
         path = Path("reservations.json")
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
@@ -437,57 +412,21 @@ class Reservations:
 
     @property
     def _load_json_data(self):
-        """Load and deserialize reservation data from the JSON file.
-
-        Reads the JSON file and deserializes its contents into the
-        corresponding Python representation using :func:`json.load`.
-
-        Returns:
-            The parsed reservation data, typically a list of dictionaries
-            representing reservation records.
-        """
+        """Load reservation data from the JSON file."""
         with open(self._path, "r") as json_file:
             return load(json_file)
 
     @property
     def _get_reservations(self):
-        """Convert reservation records into Reservation objects.
-
-        Iterates over the parsed reservation data and creates a
-        :class:`Reservation` object for each reservation record.
-
-        Returns:
-            list[Reservation]: A list of :class:`Reservation` objects
-                created from the parsed reservation data.
-        """
+        """Convert reservation records into Reservation objects."""
         return [Reservation(reservation) for reservation in self._data]
 
     def __getitem__(self, index):
-        """Return the reservation at the specified index.
-
-        Provides sequence-style indexed access to the collection of
-        :class:`Reservation` objects.
-
-        Args:
-            index: Zero-based index of the reservation to retrieve.
-
-        Returns:
-            Reservation: The reservation object at the specified index.
-
-        Raises:
-            IndexError: If the specified index is outside the valid range.
-        """
+        """Return the reservation at the specified index."""
         return self._reservations[index]
 
     def __len__(self):
-        """Return the number of reservations in the collection.
-
-        Enables the use of the built-in :func:`len` function on a
-        ``Reservations`` instance.
-
-        Returns:
-            int: Number of :class:`Reservation` objects in the collection.
-        """
+        """Return the number of reservations in the collection."""
         return len(self._reservations)
 ```
 We can now instantiate the `Reservations` class to load the reservation data and access 
