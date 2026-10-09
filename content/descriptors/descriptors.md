@@ -872,7 +872,6 @@ corresponding class structure dynamically.***
 
 ### Why it is interesting design
 The real strength of your decorator is that it removes repetitive structural code from the model classes.
-
 Without the decorator, every class would need to explicitly define
 ```python
 field = Field(...)
@@ -890,7 +889,7 @@ _nodes = [
     ("address", Address),
 ]
 ```
-while the decorator and descriptor infrastructure define how that structure is implemented.
+While the decorator and descriptor infrastructure define how that structure is implemented.
 
 With the descriptor-based field mappings and class decorator in place, 
 we can now access the reservation data through a clean, attribute-based interface. 
