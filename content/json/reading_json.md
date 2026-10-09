@@ -3,7 +3,7 @@
 
 ## From JSON Data to Python Objects
 
-Python makes it easy to work with JSON through its built-in `json` module. 
+Python makes it easy to work with JSON through its built-in **`json`** module. 
 We can load a JSON document into Python and access its contents using dictionaries, 
 lists, and standard indexing operations. While this approach works well for simple data 
 structures, navigating deeply nested JSON using repeated dictionary lookups can quickly
@@ -39,10 +39,7 @@ makes complex structured data easier to work with.
 ]
 ```
 For the purpose demonstration, let's consider the above `json` file that has a list of 
-only two employee records. Each employee record has fields, 
-`id`, `first_name`, `last_name`, `gender`, `date_of_birth` and `nationality`. 
-
-Let's design an object-oriented solution for reading and accessing data from the above JSON file.
+only two employee records. Let's design an object-oriented solution for reading and accessing data from the above JSON file.
 
 `employee.py`
 ```python
@@ -158,19 +155,6 @@ Python's iteration protocol.
 >>> employees[1].last_name
 'White'
 ```
-
-```python
->>> employees[0].first_name
-'David'
->>> employees[0].last_name
-'Brown'
-```
-```python
->>> employees[1].first_name
-'Laura'
->>> employees[1].last_name
-'White'
-```
 We can iterate over `employees` object itself.
 ```python
 >>> for employee in employees:
@@ -187,6 +171,8 @@ You can ask for length of `employees` object.
 ```
 
 ### Nested JSON structure
+Let’s use a more complex JSON structure with multiple levels of nesting.
+
 `employees.json`
 ```json
 [
@@ -336,10 +322,10 @@ However, when we access `address` it returns one more `dict` object.
 >>> employees[0].address
 {'city': 'Austin', 'state': 'TX', 'country': 'United States', 'geo_location': {'lat': '30.2672', 'lng': '-97.7431'}}
 ```
-The expression correctly returns the nested JSON object associated with the address key,
+The expression correctly returns the nested JSON object associated with the `address` key,
 which contains the employee's complete address information. However, attempting to 
-access a nested field such as city or state using attribute notation at this stage will 
-result in an AttributeError, because the returned value is still a standard Python 
+access a nested field such as `city` or `state` using attribute notation at this stage will 
+result in an `AttributeError`, because the returned value is still a standard Python 
 dictionary rather than an Address object.
 
 ```python
@@ -488,7 +474,7 @@ class Skills:
     class Skill:
         """Represent an individual employee skill."""
 
-        def __init__(self, skill_info):
+        def __init__(self, skill_info: dict):
             """Initialize a Skill object from skill data.
 
             Args:
@@ -498,7 +484,7 @@ class Skills:
             self.name = skill_info["name"]
             self.level = skill_info["level"]
 
-    def __init__(self, skills):
+    def __init__(self, skills: list):
         """Initialize a Skills collection from skill data.
 
         Args:
@@ -507,7 +493,7 @@ class Skills:
         """
         self.skills = [self.Skill(skill) for skill in skills]
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int):
         """Return the skill at the specified index.
 
         Args:
@@ -520,8 +506,8 @@ class Skills:
             raise IndexError(f"Skill index must be less than {len(self.skills)}")
         return self.skills[index]
 ```
-Now, let's modify the Employee class so that the address and skills attributes are 
-represented by corresponding Address and Skills objects, rather than exposing the 
+Now, let's modify the `Employee` class so that the `address` and `skills` attributes are 
+represented by corresponding `Address` and `Skills` objects, rather than exposing the 
 underlying JSON structures directly. 
 ```python
 class Employee:
@@ -535,7 +521,7 @@ class Employee:
         employee_info: Dictionary containing the employee information.
     """
 
-    def __init__(self, employee_info):
+    def __init__(self, employee_info: dict):
         """Initialize an EmployeeInfo instance from employee data.
 
         Args:
