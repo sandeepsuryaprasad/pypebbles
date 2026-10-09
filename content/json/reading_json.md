@@ -293,6 +293,7 @@ have the above JSON attributes.
 ```python
 class Employee:
     """Represent employee information as a structured Python object.
+    
     Encapsulates the employee's personal, contact, address, and company
     information by converting the corresponding JSON data into strongly
     structured Python objects.
@@ -436,6 +437,7 @@ of abstraction for the above scenario `Address`, `Location`, and `Skills`.
 ```python
 class Location:
     """Represent geographical location information.
+    
     Encapsulates the latitude and longitude associated with an address.
 
     Args:
@@ -454,6 +456,7 @@ class Location:
 ```python
 class Address:
     """Represent an employee's address information.
+    
     Encapsulates the address and geographical information associated with
     an employee and exposes the corresponding JSON fields as Python
     attributes.
@@ -476,6 +479,7 @@ class Address:
 ```python
 class Skills:
     """Represent a collection of skills associated with an employee.
+    
     Encapsulates the list of skill records and converts each raw skill
     dictionary into a structured :class:`Skill` object. The collection
     supports indexed access to individual skills.
