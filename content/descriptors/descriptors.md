@@ -755,7 +755,7 @@ The JSON node name and the corresponding Python attribute name are intentionally
 kept identical to maintain a consistent and easily identifiable mapping between the 
 JSON structure and the Python object model.
 
-### Importance of _setattr_
+### Importance of setattr
 
 The `setattr` function dynamically binds a `Field` descriptor instance to the target class.
 The attribute name is determined at runtime for each `(node, mapping)` tuple defined 
@@ -793,7 +793,7 @@ class Passenger:
 The important point is that **we did not explicitly write those Field assignments**. 
 They were generated dynamically at runtime.
 
-### Injecting _ _ init_ _ to class
+### Injecting initializer to class
 The decorator also dynamically creates an initializer and attaches it to the class
 
 ```python
@@ -846,7 +846,7 @@ class Passenger:
         self.__dict__.update(info)
 ```
 
-### How this works with the _Field_ descriptor
+### How this works with the Field descriptor
 
 The decorator itself does not retrieve values from the JSON. It only establishes the mapping
 The actual retrieval is delegated to the `Field` descriptor.
