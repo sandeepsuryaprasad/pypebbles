@@ -2,28 +2,22 @@
 
 ## Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach
 
-When working with real-world APIs, JSON responses are often far more complex than 
-simple key-value structures. A single response can contain deeply nested objects, 
-collections, optional fields, and multiple levels of related data. Accessing such 
-data directly through dictionary lookups can quickly become verbose, difficult to read,
-and tightly coupled to the structure of the response. 
+This article demonstrates how Python's **descriptors** and **class decorators** can be 
+used to eliminate boilerplate code and improve readability when working with complex JSON 
+data. We will use a class decorator to inspect a class's declarative field mappings and
+dynamically attach descriptor instances to the class. Each descriptor implements attribute
+access through the descriptor protocol, retrieving the corresponding value from the 
+underlying JSON data and, when required, converting nested dictionaries into instances of 
+their mapped Python classes. The class decorator also injects an initializer to associate 
+the JSON data with each object. Together, these mechanisms provide a declarative approach 
+to mapping JSON structures to Python objects, enabling intuitive dot-notation access without
+manually implementing repetitive attribute-handling logic.
 
-In one of the projects I worked on in the airline domain, we had to work with complex
-JSON responses containing information about reservations, passengers, flights, 
-airports, aircraft, baggage, and several other related entities. As the response 
-structure became more complex, accessing and working with the data through conventional 
-dictionary lookups became increasingly difficult to read and maintain.
-
-This article presents a real-world scenario inspired by that project and demonstrates how I approached the problem using Python's object-oriented capabilities.
-The solution uses Python descriptors to map fields from the JSON response to Python attributes and to transparently construct objects for nested structures.
-
-Let us consider the following JSON response. For this demonstration, 
-we will work with a representative JSON containing reservation and 
-associated passenger information. The source JSON is structured as a list of 
-reservation records, with each record representing the reservation details of an 
-individual passenger. To keep the example concise and focused, we will use a 
-single reservation record from that collection.
-
+Let us begin with a representative JSON response containing reservation and passenger
+information. The original data consists of a collection of reservation records, with each 
+record representing a passenger's reservation details. To keep the example focused on 
+descriptors and class decorators, we will work with a single representative record from 
+that collection.
 
 <details>
 <summary><strong> Click here to expand/collapse complete JSON response</strong></summary>
@@ -224,13 +218,6 @@ single reservation record from that collection.
 and any resemblance to real-world data is purely coincidental.
 
 Below is the hierarchical structure of the `reservations.json` response. 
-Let us break down the response structure to understand its composition.
-The root response object contains nine top-level nodes: `reservation`, `passenger`, 
-`flight`, `seat`, `baggage`, `payment`, `services`, `emergency_contact`, and `notifications`.
-Several of these top-level nodes contain nested objects, forming a hierarchical 
-JSON structure. For example, the `passenger` node contains child objects such as 
-`contact`, `address`, and `frequent_flyer`. These nested objects, in turn, contain 
-their own attributes and, in some cases, additional nested objects.
 
 <details>
 <summary><strong> Click here to expand/collapse complete JSON tree</strong></summary>
