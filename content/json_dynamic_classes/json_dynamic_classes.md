@@ -187,7 +187,7 @@ concepts clearly. The complete **`jsonobjectify`** library includes additional v
 error handling, tests, and other improvements required for a reusable open-source Python
 library. 
 You can explore the complete implementation and contribute to the project on 
-<a href="https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad"
+<a href="https://github.com/sandeepsuryaprasad/jsonobjectify"
    class="github-repo-link">
   GitHub Repo
 </a>
