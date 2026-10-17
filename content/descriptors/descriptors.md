@@ -854,7 +854,7 @@ conventional sense. It is modifying the class object at decoration time by dynam
 attaching descriptors and injecting its `__init__` method. 
 This is a classic example of Python metaprogramming
 
-***The class declares its data model through **`_nodes`**, while the decorator generates the 
+***The class declares its data model through `_nodes`, while the decorator generates the 
 corresponding class structure dynamically.***
 
 ### Why it is interesting design
