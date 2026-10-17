@@ -24,7 +24,7 @@ making complex and nested JSON structures easier to work with using
 natural dot notation. 
 
 
-As an experienced Technical Lead, I have provided hands-on technical guidance, 
+As an experienced Automation developer, I have provided hands-on technical guidance, 
 and delivery oversight while mentoring engineers and promoting strong software
 engineering and best coding practices. I have also built Python capabilities across 
 project teams by training and mentoring engineers in Python and Selenium-based automation.
