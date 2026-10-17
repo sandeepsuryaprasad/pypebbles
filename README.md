@@ -1,6 +1,6 @@
 <h1 class="articles-heading">Welcome!</h1>
 
-With more than 20 years of experience in automation script development, 
+With more than 20 years of experience as an Automation developer, 
 I use this platform to share practical engineering techniques, design approaches, and 
 best practices for solving real-world programming problems.
 
