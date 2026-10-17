@@ -16,7 +16,7 @@ the client library. You can explore my contributions to the Selenium Python clie
 </a>
 
 I am the maintainer of **jsonobjectify**, an open-source Python library 
-<a href="https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad"
+<a href="https://github.com/sandeepsuryaprasad/jsonobjectify"
    class="github-repo-link">
   GitHub Repo
 </a> that dynamically converts JSON data into Python objects, 
