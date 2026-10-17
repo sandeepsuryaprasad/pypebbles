@@ -6,7 +6,7 @@ This article demonstrates how Python's **descriptors** and **class decorators** 
 used to eliminate boilerplate code and improve readability when working with complex JSON 
 data. We will use a class decorator to inspect a class's declarative field mappings and
 dynamically attach descriptor instances to the class. Each descriptor implements attribute
-access through the descriptor protocol, retrieving the corresponding value from the 
+access through the **descriptor protocol**, retrieving the corresponding value from the 
 underlying JSON data and, when required, converting nested dictionaries into instances of 
 their mapped Python classes. The class decorator also injects an initializer to associate 
 the JSON data with each object. Together, these mechanisms provide a declarative approach 
@@ -447,8 +447,8 @@ objects through a structured, attribute-based interface.
 class Passenger:
     """Represent passenger information using descriptor-based field mappings.
 
-    The class uses the :func:`map_fields` decorator to dynamically create
-    :class:`Field` descriptors for the JSON nodes declared in ``_nodes``.
+    The class uses the :class decorator:`map_fields` to dynamically create `Field` descriptors 
+    for the JSON nodes declared in ``_nodes``.
     Scalar fields are mapped directly to their corresponding JSON values,
     while nested objects are mapped to their respective Python classes.
 
@@ -487,8 +487,8 @@ class Passenger:
 class Contact:
     """Represent passenger contact information using descriptor mappings.
 
-    The class uses the :func:`map_fields` decorator to dynamically create
-    :class:`Field` descriptors for the contact-related JSON nodes declared
+    The class uses the class decorator`map_fields` to dynamically create
+    `Field` descriptors for the contact-related JSON nodes declared
     in ``_nodes``. Each field represents a scalar value in the underlying
     JSON data and is therefore mapped directly without additional object
     conversion.
@@ -523,8 +523,8 @@ class Services:
     class Service:
         """Represent an individual service associated with a reservation.
 
-        Uses the :func:`map_fields` decorator to create :class:`Field`
-        descriptors for the scalar attributes defined in ``_nodes``.
+        Uses the class decorator `map_fields` to create `Field` descriptors 
+        for the scalar attributes defined in ``_nodes``.
 
         Attributes:
             _nodes: Mapping of service JSON fields to their corresponding
@@ -538,7 +538,7 @@ class Services:
             ("status", None),
         ]
 
-    def __init__(self, services_info):
+    def __init__(self, services_info: list):
         """Initialize the service collection from JSON data.
 
         Converts each service dictionary into a :class:`Service` object.
@@ -657,7 +657,7 @@ def map_fields(cls):
             generated ``__init__`` method.
     """
 
-    def _mapping(cls, nodes):
+    def _mapping(cls, nodes: tuple):
         """Create and attach Field descriptors for the specified nodes.
         Args:
             cls: Class to which the descriptors are added.
@@ -669,7 +669,7 @@ def map_fields(cls):
     
     _mapping(cls, cls._nodes)   # creating descriptor objects on the class 
 
-    def __init__(self, info):
+    def __init__(self, info: dict):
         """Initialize an instance with its underlying JSON data.
         Args:
             info: Dictionary containing the JSON data represented by the
@@ -840,21 +840,21 @@ The actual retrieval is delegated to the `Field` descriptor.
 
 So the responsibilities are clearly separated as shown below,
 
-| Component  | Responsibility                                   |
-| ---------- | ------------------------------------------------ |
-| `_nodes`   | Declares the JSON-to-Python mapping              |
-| `map_fields` | Dynamically creates the descriptors            |
-| `Field`    | Implements attribute access                      |
-| `__get__`  | Retrieves the corresponding JSON value           |
-| `field_type` | Determines whether nested data should be wrapped |
-| `__init__` | Stores the underlying JSON dictionary            |
+| Component  | Responsibility                                           |
+| ---------- |----------------------------------------------------------|
+| `_nodes`   | Declares the JSON-to-Python mapping                      |
+| `map_fields` | Dynamically creates the descriptors and injects `__init__` |
+| `Field`    | Implements attribute access                              |
+| `__get__`  | Retrieves the corresponding JSON value                   |
+| `field_type` | Determines whether nested data should be wrapped         |
+| `__init__` | Stores the underlying JSON dictionary                    |
 
 The `map_fields` decorator is doing more than simply "decorating" the class in the 
 conventional sense. It is modifying the class object at decoration time by dynamically
 attaching descriptors and injecting its `__init__` method. 
 This is a classic example of Python metaprogramming
 
-***The class declares its data model through `_nodes`, while the decorator generates the 
+***The class declares its data model through **`_nodes`**, while the decorator generates the 
 corresponding class structure dynamically.***
 
 ### Why it is interesting design
