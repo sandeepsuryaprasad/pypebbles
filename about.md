@@ -1,10 +1,11 @@
 <h1 class="articles-heading">About</h1>
 
-I am Sandeep, a seasoned Quality Assurance professional with 20 years of experience in 
-test automation, with deep expertise in Python-driven automation. 
-Over the last decade, I have focused on designing and implementing scalable, reliable, 
-and maintainable automation solutions for UI, API, and mobile testing using Python, 
-Selenium, Appium, and related technologies.
+I am Sandeep, a seasoned Quality Assurance professional with more than 20 years 
+of experience as an Automation developer, with deep expertise in 
+Python-driven automation. Over the last decade, I have focused on designing 
+and implementing scalable, reliable, and maintainable automation solutions 
+for UI, API, and mobile testing using Python, Selenium, Appium, and related 
+technologies.
 
 I am an active open-source contributor to the Selenium Python client, with more than 
 50 accepted and merged pull requests. My contributions include designing and 
