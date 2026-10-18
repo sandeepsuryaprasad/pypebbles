@@ -49,8 +49,8 @@ The `JsonPath` class is **The Parsing and Object-Building Layer** and the **entr
 for converting JSON data into our dynamic Python object model.**
 
 It supports two forms of input:
-* A JSON string through `from_json_string()`
-* A JSON file through `from_json_file()`
+* A JSON string through `from_string`
+* A JSON file through `from_file`
 
 Once the JSON has been parsed, `JsonPath` recursively walks through dictionaries and lists. 
 Every dictionary is converted into a JsonObject, while primitive values such as `strings`, 
@@ -85,14 +85,6 @@ class JsonPath:
     def _wrap_dict(self, data):
         """Wrap a dictionary in a JsonObject."""
         return JsonObject(data)
-    
-    def _is_valid_json_key(self, key):
-        """Check whether a JSON key can be used as a Python attribute."""
-        if key.isidentifier():
-            return True
-        else:
-            print(f"Skipping invalid JSON key {key!r}")
-            return False
 
     def _process_list(self, data: list):
         """Recursively process items in a list."""
@@ -103,7 +95,6 @@ class JsonPath:
         _data = {
             key: self._process_object(value)
             for key, value in data.items()
-            if self._is_valid_json_key(key)
         }
         return self._wrap_dict(_data)
 
@@ -126,12 +117,12 @@ class JsonPath:
         return obj
 
     @classmethod
-    def from_json_string(cls, json_string):
+    def from_string(cls, json_string):
         """Create a JsonPath instance from a JSON string."""
         return cls._from_py_object(loads(json_string))
 
     @classmethod
-    def from_json_file(cls, filename: str):
+    def from_file(cls, filename: str):
         """Create a JsonPath instance from a JSON file."""
         path = Path(filename)
         if not path.is_file():
@@ -146,8 +137,6 @@ hierarchy.
 ### Representing JSON Objects
 
 ```python
-from json import dumps
-
 class JsonObject:
     """Represent a JSON object as a Python object."""
     def __init__(self, info):
@@ -158,28 +147,67 @@ class JsonObject:
             return self._info[name]
         except KeyError:
             raise AttributeError(f"{self.__class__.__name__} has no attribute {name!r}") from None
-
-    def __setattr__(self, name, value):
-        """Set an attribute (_info) or update the underlying JSON data."""
-        if name == "_info":
-            super().__setattr__(name, value)
-        else:
-            self._info[name] = value
 ```
-
 The `JsonObject` class represents an individual JSON object within the dynamically built 
 object hierarchy. While `JsonPath` is responsible for parsing the JSON structure and 
 recursively building the hierarchy, `JsonObject` is responsible for 
 **representing the individual JSON objects and providing an object-oriented interface to 
 their data**.
 
-The class has two main responsibilities:
-
-* Provide access to JSON properties using **dot notation** 
-such as `json.name` or `json.address.city`, instead of using dictionary keys
-* Allow JSON properties to be modified using **dot notation/attribute assignment**. 
-value such as `json.name = "Steve"` updates the underlying JSON data rather than creating 
-a separate Python attribute.
+### Usage
+Let's consider a sample JSON response,
+```python
+response = """{
+    "id": 1,
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "website": "www.example.dev",
+    "address": {
+      "city": "Austin",
+      "state": "TX",
+      "country": "United States",
+      "geo_location": {"lat": "30.2672", "lng": "-97.7431"}
+    },
+    "skills": [
+      {"name": "Python", "level": "Advanced"},
+      {"name": "C", "level": "Advanced"},
+      {"name": "C++", "level": "Intermediate"}
+    ]
+}"""
+```
+```console
+>>> from jsonobjecctify import JsonPath
+```
+Create `JsonPath` object from JSON string/response
+```console
+>>> employee = JsonPath.from_string(response)
+```
+You can now access and traverse nested JSON objects using dot notation. 
+For JSON arrays, use the standard Python indexing syntax.
+```console
+>>> employee.name
+'John Doe'
+>>> employee.address.city
+'Austin'
+>>> employee.address.geo_location.lng
+'-97.7431'
+>>> employee.skills[0].name
+'Python'
+>>> employee.skills[1].level
+'Advanced'
+>>>
+```
+You can also iterate over JSON arrays using a standard Python for loop and access
+each element's properties using dot notation.
+```console
+>>> for skill in employee.skills:
+...     print(f"{skill.name}, {skill.level}")
+...     
+Python, Advanced
+C, Advanced
+C++, Intermediate
+>>> 
+```
 
 ### Full Implementation
 The implementation presented in this article is a simplified version to explain the core 
