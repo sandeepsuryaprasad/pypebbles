@@ -88,9 +88,6 @@ that collection.
 </div>
 </details>
 
-**Disclaimer:** The JSON data used in this article is for demonstration purposes. It does not represent actual production data, 
-and any resemblance to real-world data is purely coincidental.
-
 Below is the hierarchical structure of the `reservations.json` response. 
 
 <details>
@@ -497,7 +494,7 @@ class Field:
     corresponding Python class.
 
     Attributes:
-        json_node: Name/node/key of the corresponding field in the JSON data.
+        json_node: key/node of the corresponding field in the JSON data.
         _field_type: Optional Python type used to represent a nested JSON
             object.
     """
