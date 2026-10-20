@@ -251,11 +251,27 @@ class Reservation:
         ("flight", Flight)
     ]
 ```
+**Mapping:**
+
+The `_nodes` class variable defines the top-level JSON fields and their corresponding 
+Python mapping classes.
+
+- `passenger`: Maps the `passenger` JSON object to an instance of the `Passenger` class,
+providing access to passenger details, contact information, and address.
+- `flight`: Maps the `flight` JSON object to an instance of the `Flight` class, 
+providing access to flight details, aircraft information, seat details, 
+and associated services.
+
+Each tuple contains the name of a JSON field/node and the class responsible for 
+representing its data. Unlike scalar mappings that use `None`, these entries reference 
+classes because both fields contain nested JSON objects.
+
+Now let's implement `Passenger` and `Flight` classes
 
 ```python
 @map_fields
 class Passenger:
-        """Represent passenger information using descriptor mappings.
+    """Represent passenger information using descriptor mappings.
 
     The `map_fields` class decorator processes the field definitions declared
     in `_nodes` and dynamically creates `Field` descriptors for accessing
@@ -297,43 +313,8 @@ class Passenger:
 
 ```python
 @map_fields
-class Contact:
-    """Represent a passenger's contact information using descriptor mappings.
-
-    The `map_fields` class decorator processes the field definitions declared
-    in `_nodes` and dynamically creates `Field` descriptors for accessing
-    the corresponding values in the underlying JSON data.
-
-    Each field represents a scalar contact property and is mapped directly
-    without additional object conversion.
-
-    Attributes:
-        email (str): The passenger's primary email address.
-        phone (str): The passenger's primary contact phone number.
-        alternate_phone (str): An alternative phone number for contacting
-            the passenger.
-
-    Mapping:
-        `_nodes` defines the contact fields to be mapped from the JSON
-        response. Each entry is a tuple containing the JSON field name and
-        its associated mapping type. A value of `None` indicates that the
-        field is mapped directly as a scalar value.
-
-    The decorator uses these definitions to provide descriptor-based access
-    to the contact information through the corresponding Python attributes.
-    """
-
-    _nodes = [
-        ("email", None),
-        ("phone", None),
-        ("alternate_phone", None),
-    ]
-```
-
-```python
-@map_fields
 class Flight:
-        """Represent flight information and its associated details.
+    """Represent flight information and its associated details.
 
     The class defines the mapping between JSON fields and their corresponding
     Python attributes using the `_nodes` class variable.
@@ -366,7 +347,47 @@ class Flight:
         ("services", Services)
     ]
 ```
+The `contact` node in the `Passenger` class is mapped to the `Contact` class, 
+which encapsulates the passenger's contact information. Let us implement the 
+`Contact` class to define the mapping for its individual fields.
 
+```python
+@map_fields
+class Contact:
+    """Represent a passenger's contact information using descriptor mappings.
+
+    The `map_fields` class decorator processes the field definitions declared
+    in `_nodes` and dynamically creates `Field` descriptors for accessing
+    the corresponding values in the underlying JSON data.
+
+    Each field represents a scalar contact property and is mapped directly
+    without additional object conversion.
+
+    Attributes:
+        email (str): The passenger's primary email address.
+        phone (str): The passenger's primary contact phone number.
+        alternate_phone (str): An alternative phone number for contacting
+            the passenger.
+
+    Mapping:
+        `_nodes` defines the contact fields to be mapped from the JSON
+        response. Each entry is a tuple containing the JSON field name and
+        its associated mapping type. A value of `None` indicates that the
+        field is mapped directly as a scalar value.
+
+    The decorator uses these definitions to provide descriptor-based access
+    to the contact information through the corresponding Python attributes.
+    """
+
+    _nodes = [
+        ("email", None),
+        ("phone", None),
+        ("alternate_phone", None),
+    ]
+```
+Similarly, The `services` node in the `Flight` class is mapped to the `Services` class, 
+which encapsulates the service information. Let us implement the `Services` class to 
+define the mapping for its individual fields.
 ```python
 class Services:
     """Represent a collection of flight services using mapped service objects.
@@ -485,7 +506,7 @@ class Field:
         """Initialize a Field descriptor.
 
         Args:
-            json_node: Name/node/key of the field in the underlying JSON data.
+            json_node: key/node of the field in the underlying JSON data.
             field_type: Optional Python class used to map nested JSON data
                 to a Python object.
         """
