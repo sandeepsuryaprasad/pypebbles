@@ -551,7 +551,7 @@ class Field:
 * `json_node` stores the corresponding key/node in the JSON object.
 * `field_type` optionally specifies the Python class used to represent a nested JSON object.
 
-### A class Decorator that performs dynamic class configuration 
+### A class decorator that performs dynamic class configuration 
 ```python
 def map_fields(cls):
     """Configure a JSON-backed class using its declared field mappings.

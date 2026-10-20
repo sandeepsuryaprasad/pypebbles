@@ -30,24 +30,24 @@
   </div>
   
    <div class="article-box">
-    <h3>Metaprogramming: Declarative JSON-to-Object Mapping using Class Decorator</h3>
+    <h3>Metaprogramming: Declarative JSON-to-Object Mapping Using a Class Decorator</h3>
     <p>
-        This article explores Python metaprogramming through a practical 
-        JSON-to-object mapping problem. The solution uses metaprogramming 
-        techniques to dynamically interpret class definitions and JSON 
-        fields and construct nested Python objects.
+        This article explores Python metaprogramming through a practical JSON-to-object 
+        mapping problem. The solution uses a class decorator to dynamically install field 
+        mappings, reducing boilerplate code and enabling intuitive attribute-based access 
+        to nested JSON data.
         <br><br>August 10, 2026
     </p>
     <a href="./content/descriptors/descriptors.html">Read article →</a>
   </div>
 
    <div class="article-box">
-    <h3>Metaprogramming: Declarative JSON-to-Object Mapping with Metaclass</h3>
+    <h3>Metaprogramming: Declarative JSON-to-Object Mapping Using a Metaclass</h3>
     <p>
-        Explore how Python metaclasses enable declarative mapping of complex, 
-        nested JSON data to Python objects. Reduce boilerplate code by dynamically 
-        creating classes with field mappings, enabling intuitive attribute-based 
-        access to structured data.
+        This article explores Python metaclasses through a practical JSON-to-object 
+        mapping problem. The solution uses a custom metaclass to process field mappings 
+        during class creation and enable intuitive attribute-based access to nested JSON 
+        data.
         <br><br>October 08, 2026
     </p>
     <a href="./content/descriptors/meta_classes.html">Read article →</a>
