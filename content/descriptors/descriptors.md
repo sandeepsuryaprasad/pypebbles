@@ -291,7 +291,7 @@ class Passenger:
         ("first_name", None),
         ("last_name", None),
         ("contact", Contact),
-        ("address", Address),
+        ("address", Address),   # Not implemented in this article
     ]
 ```
 
@@ -361,15 +361,15 @@ class Flight:
     _nodes = [
         ("flight_number", None),
         ("flight_status", None),
-        ("aircraft", Aircraft),
-        ("seat", Seat),
+        ("aircraft", Aircraft),     # Not implemented in this article
+        ("seat", Seat),             # Not implemented in this article
         ("services", Services)
     ]
 ```
 
 ```python
 class Services:
-        """Represent a collection of flight services using mapped service objects.
+    """Represent a collection of flight services using mapped service objects.
 
     The class encapsulates a list of services associated with a flight.
     Each service is represented by an instance of the nested `Service` class,
@@ -416,7 +416,7 @@ class Services:
     """
     @map_fields
     class Service:
-            """Represent an individual flight service using descriptor mappings.
+        """Represent an individual flight service using descriptor mappings.
 
         The `map_fields` decorator processes `_nodes` to provide attribute
         access to the service properties defined in the JSON response.
