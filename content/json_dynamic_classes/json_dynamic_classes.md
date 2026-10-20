@@ -1,6 +1,6 @@
 [Previous Article](../descriptors/descriptors.md) \| [Next Article](../logging/logging.md)
 
-## JSON Parsing through DOT notation by Creating JSON models dynamically
+## JSON Parsing by Creating JSON models dynamically
 
 In the previous two articles, we explored how to parse JSON data into Python objects using 
 object-oriented design. We created Python classes manually to represent the structure of the

@@ -54,7 +54,7 @@
   </div>
 
    <div class="article-box">
-    <h3>JSON Parsing through DOT notation by Creating JSON models dynamically</h3>
+    <h3>JSON Parsing by Creating JSON models dynamically</h3>
     <p>
         Learn how to transform JSON data into Python objects dynamically, 
         eliminating the need to define data-model classes manually. 
