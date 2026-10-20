@@ -239,3 +239,5 @@ property names, additional Python object behavior, and more comprehensive test c
 The main takeaway is that **JSON parsing does not have to be limited to dictionaries 
 and key-based access**. With a small amount of abstraction, we can dynamically transform 
 JSON into a Python object hierarchy that is easier and more natural to work with.
+
+[Previous Article](../descriptors/descriptors.md) \| [Next Article](../logging/logging.md)

@@ -1,3 +1,5 @@
+[Previous Article](../descriptors/descriptors.md) \| [Next Article](../json_dynamic_classes/json_dynamic_classes.md)
+
 ## Building a Declarative JSON-to-Object Mapper - Metaclass
 
 In the previous article, we implemented a JSON-to-Python object mapping system using a 
@@ -85,7 +87,7 @@ Let's examine the implementation step by step,
 
 #### Defining a Custom Metaclass
 ```python
-class MapFieldsMeta(type)
+class MapFieldsMeta(type):
 ```
 
 By inheriting from `type`, `MapFieldsMeta` customizes how Python creates classes 
@@ -232,3 +234,5 @@ where the customization belongs and how much control is needed over class creati
 For this example, the metaclass provides a centralized way to process mapping 
 declarations and demonstrates how Python can use its own class-construction mechanism
 to reduce repetitive code.
+
+[Previous Article](../descriptors/descriptors.md) \| [Next Article](../json_dynamic_classes/json_dynamic_classes.md)
