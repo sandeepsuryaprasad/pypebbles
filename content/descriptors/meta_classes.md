@@ -84,7 +84,9 @@ class** creation, allowing the mapping logic to be centralized in a single place
 Let's examine the implementation step by step,
 
 #### Defining a Custom Metaclass
-`class MapFieldsMeta(type):`
+```python
+class MapFieldsMeta(type)
+```
 
 By inheriting from `type`, `MapFieldsMeta` customizes how Python creates classes 
 that use it.
@@ -104,8 +106,10 @@ This makes a metaclass suitable for processing declarative mappings such as `_no
 where developers specify what should be mapped rather than writing the mapping 
 logic repeatedly.
 
-#### Understanding the __new__ Method
-`def __new__(mcls, clsname, bases, clsdict):`
+#### Understanding the `__new__` Method
+```python
+def __new__(mcls, clsname, bases, clsdict):
+```
 
 The `__new__` method is the central part of the metaclass implementation. 
 It is responsible for creating the class object.
@@ -126,7 +130,9 @@ This provides an opportunity to inspect and modify the namespace before passing 
 to `type.__new__`.
 
 #### Injecting the initializer
-`clsdict["__init__"] = lambda self, info: self.__dict__.update(info)`
+```python
+clsdict["__init__"] = lambda self, info: self.__dict__.update(info)
+```
 
 The metaclass adds an `__init__` method to the class namespace. 
 This initializer accepts an `info` dictionary and copies its entries into the instance's
@@ -197,7 +203,9 @@ The `Field` descriptor can use that mapping information to construct or expose a
 nested `Contact` object, depending on how the descriptor is implemented.
 
 #### Creating the Class Object
-`return super().__new__(mcls, clsname, bases, clsdict)`
+```python
+return super().__new__(mcls, clsname, bases, clsdict)
+```
 
 After modifying the namespace, the metaclass delegates the actual class creation 
 to its parent implementation, `type.__new__`.
