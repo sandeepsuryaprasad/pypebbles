@@ -1,4 +1,4 @@
-## Mapping JSON Data Using Python Metaclasses
+## Building a Declarative JSON-to-Object Mapper - Metaclass
 
 In the previous article, we implemented a JSON-to-Python object mapping system using a 
 class decorator to dynamically attach `Field` descriptors to mapping classes. 
