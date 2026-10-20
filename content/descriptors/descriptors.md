@@ -25,16 +25,9 @@ that collection.
 <div markdown="1">
 
 `reservations.json`
-```json
+```console
 [
     {
-      "reservation": {
-        "confirmation_number": "X7K9PQ",
-        "booking_status": "CONFIRMED",
-        "booking_date": "2026-08-10T14:32:18-05:00",
-        "ticket_status": "TICKETED",
-        "currency": "USD"
-      },
       "passenger": {
         "passenger_id": "PAX-104582",
         "first_name": "John",
@@ -48,24 +41,9 @@ that collection.
           "city": "Sampleville",
           "state": "California",
           "country": "United States"
-        },
-        "frequent_flyer": {
-          "program": "Spam Airlines dvantage",
-          "membership_number": "SA987654321",
-          "status": "Executive Platinum",
-          "miles_balance": 184250
         }
       },
       "flight": {
-        "airline": {
-          "code": "SA",
-          "name": "Spam Airlines",
-          "headquarters": {
-            "city": "Austin",
-            "state": "Texas",
-            "state_code": "TX"
-          }
-        },
         "flight_number": "SA1234",
         "flight_status": "SCHEDULED",
         "aircraft": {
@@ -74,140 +52,36 @@ that collection.
           "model": "737-800",
           "configuration": "160"
         },
-        "departure": {
-          "airport": {
-            "code": "AUS",
-            "name": "Austin-Bergstrom International Airport",
-            "city": "Austin",
-            "state": "Texas",
-            "state_code": "TX",
-            "country": "United States",
-            "terminal": "South Terminal"
-          },
-          "scheduled": {
-            "date": "2026-09-15",
-            "time": "08:30",
-            "timezone": "America/Chicago"
-          },
-          "gate": "34",
-          "boarding_time": "07:50"
+        "seat": {
+          "number": "12A",
+          "class": "Business",
+          "cabin": "Business",
+          "position": "Window",
+          "is_exit_row": false,
+          "is_extra_legroom": true
         },
-        "arrival": {
-          "airport": {
-            "code": "JFK",
-            "name": "John F. Kennedy International Airport",
-            "city": "New York",
-            "state": "New York",
-            "state_code": "NY",
-            "country": "United States",
-            "terminal": "Terminal 8"
+        "services": [
+          {
+            "code": "MEAL",
+            "name": "Premium Meal",
+            "description": "Chicken and roasted vegetables",
+            "status": "CONFIRMED"
           },
-          "scheduled": {
-            "date": "2026-09-15",
-            "time": "13:25",
-            "timezone": "America/New_York"
+          {
+            "code": "WIFI",
+            "name": "Inflight Wi-Fi",
+            "description": "High-speed internet access",
+            "status": "CONFIRMED"
           },
-          "gate": "B22"
-        },
-        "duration": {
-          "hours": 3,
-          "minutes": 55
-        },
-        "distance": {
-          "value": 1511,
-          "unit": "miles"
-        }
-      },
-      "seat": {
-        "number": "12A",
-        "class": "Business",
-        "cabin": "Business",
-        "position": "Window",
-        "is_exit_row": false,
-        "is_extra_legroom": true
-      },
-      "baggage": {
-        "checked": {
-          "allowed_pieces": 2,
-          "weight_limit": {
-            "value": 50,
-            "unit": "lbs"
+          {
+            "code": "LOUNGE",
+            "name": "Elite Club",
+            "description": "Airport lounge access",
+            "status": "CONFIRMED"
           }
-        },
-        "carry_on": {
-          "allowed_pieces": 1,
-          "weight_limit": {
-            "value": 40,
-            "unit": "lbs"
-          }
-        },
-        "personal_item": {
-          "allowed": true,
-          "description": "One small personal item"
-        }
-      },
-      "payment": {
-        "status": "PAID",
-        "method": {
-          "type": "CREDIT_CARD",
-          "provider": "Visa"
-        },
-        "fare": {
-          "base_fare": 485,
-          "taxes": 72.75,
-          "airport_fees": 18.4,
-          "service_fee": 25,
-          "total": 601.15
-        }
-      },
-      "services": [
-        {
-          "code": "MEAL",
-          "name": "Premium Meal",
-          "description": "Chicken and roasted vegetables",
-          "status": "CONFIRMED"
-        },
-        {
-          "code": "WIFI",
-          "name": "Inflight Wi-Fi",
-          "description": "High-speed internet access",
-          "status": "CONFIRMED"
-        },
-        {
-          "code": "LOUNGE",
-          "name": "Elite Club",
-          "description": "Airport lounge access",
-          "status": "CONFIRMED"
-        }
-      ],
-      "emergency_contact": {
-        "name": "Sarah Emergency",
-        "relationship": "Spouse",
-        "phone": "+1-000-999-0199",
-        "address": {
-          "street": "890 Another Example Avenue",
-          "suite": "Suite 205",
-          "city": "Springfield",
-          "state": "Illinois",
-          "state_code": "IL",
-          "zip_code": "62700",
-          "country": "United States"
-        }
-      },
-      "notifications": {
-        "email": {
-          "enabled": true,
-          "address": "john.doe@example.com"
-        },
-        "sms": {
-          "enabled": true,
-          "phone": "+1-000-000-0000"
-        },
-        "push": {
-          "enabled": false
-        }
+        ]
       }
-    }
+      }
 ]
 ```
 
@@ -224,149 +98,53 @@ Below is the hierarchical structure of the `reservations.json` response.
 
 <div markdown="1">
 
-```commandline
-ReservationInfo
-│
-├── reservation
-│   ├── confirmation_number
-│   ├── booking_status
-│   ├── booking_date
-│   ├── ticket_status
-│   └── currency
-│
-├── passenger
-│   ├── passenger_id
-│   ├── first_name
-│   ├── last_name
-│   ├── contact
-│   │   ├── email
-│   │   ├── phone
-│   │   └── alternate_phone
-│   ├── address
-│   │   ├── city
-│   │   ├── state
-│   │   └── country
-│   └── frequent_flyer
-│       ├── program
-│       ├── membership_number
-│       ├── status
-│       └── miles_balance
-│
-├── flight
-│   ├── airline
-│   │   ├── code
-│   │   ├── name
-│   │   └── headquarters
-│   │       ├── city
-│   │       ├── state
-│   │       └── state_code
-│   ├── flight_number
-│   ├── flight_status
-│   ├── aircraft
-│   │   ├── registration
-│   │   ├── manufacturer
-│   │   ├── model
-│   │   └── configuration
-│   ├── departure
-│   │   ├── airport
-│   │   │   ├── code
-│   │   │   ├── name
-│   │   │   ├── city
-│   │   │   ├── state
-│   │   │   ├── state_code
-│   │   │   ├── country
-│   │   │   └── terminal
-│   │   ├── scheduled
-│   │   │   ├── date
-│   │   │   ├── time
-│   │   │   └── timezone
-│   │   ├── gate
-│   │   └── boarding_time
-│   ├── arrival
-│   │   ├── airport
-│   │   │   ├── code
-│   │   │   ├── name
-│   │   │   ├── city
-│   │   │   ├── state
-│   │   │   ├── state_code
-│   │   │   ├── country
-│   │   │   └── terminal
-│   │   ├── scheduled
-│   │   │   ├── date
-│   │   │   ├── time
-│   │   │   └── timezone
-│   │   └── gate
-│   ├── duration
-│   │   ├── hours
-│   │   └── minutes
-│   └── distance
-│       ├── value
-│       └── unit
-│
-├── seat
-│   ├── number
-│   ├── class
-│   ├── cabin
-│   ├── position
-│   ├── is_exit_row
-│   └── is_extra_legroom
-│
-├── baggage
-│   ├── checked
-│   │   ├── allowed_pieces
-│   │   └── weight_limit
-│   │       ├── value
-│   │       └── unit
-│   ├── carry_on
-│   │   ├── allowed_pieces
-│   │   └── weight_limit
-│   │       ├── value
-│   │       └── unit
-│   └── personal_item
-│       ├── allowed
-│       └── description
-│
-├── payment
-│   ├── status
-│   ├── method
-│   │   ├── type
-│   │   └── provider
-│   └── fare
-│       ├── base_fare
-│       ├── taxes
-│       ├── airport_fees
-│       ├── service_fee
-│       └── total
-│
-├── services [array]
-│   └── Service
-│       ├── code
-│       ├── name
-│       ├── description
-│       └── status
-│
-├── emergency_contact
-│   ├── name
-│   ├── relationship
-│   ├── phone
-│   └── address
-│       ├── street
-│       ├── suite
-│       ├── city
-│       ├── state
-│       ├── state_code
-│       ├── zip_code
-│       └── country
-│
-└── notifications
-    ├── email
-    │   ├── enabled
-    │   └── address
-    ├── sms
-    │   ├── enabled
-    │   └── phone
-    └── push
-        └── enabled
+```console
+Reservations (List)
+└── [0] (Object)
+    ├── passenger (Object)
+    │   ├── passenger_id : str
+    │   ├── first_name : str
+    │   ├── last_name : str
+    │   ├── contact (Object)
+    │   │   ├── email : str
+    │   │   ├── phone : str
+    │   │   └── alternate_phone : str
+    │   └── address (Object)
+    │       ├── city : str
+    │       ├── state : str
+    │       └── country : str
+    │
+    └── flight (Object)
+        ├── flight_number : str
+        ├── flight_status : str
+        ├── aircraft (Object)
+        │   ├── registration : str
+        │   ├── manufacturer : str
+        │   ├── model : str
+        │   └── configuration : str
+        ├── seat (Object)
+        │   ├── number : str
+        │   ├── class : str
+        │   ├── cabin : str
+        │   ├── position : str
+        │   ├── is_exit_row : bool
+        │   └── is_extra_legroom : bool
+        └── services (List)
+            ├── [0] (Object)
+            │   ├── code : str
+            │   ├── name : str
+            │   ├── description : str
+            │   └── status : str
+            ├── [1] (Object)
+            │   ├── code : str
+            │   ├── name : str
+            │   ├── description : str
+            │   └── status : str
+            └── [2] (Object)
+                ├── code : str
+                ├── name : str
+                ├── description : str
+                └── status : str
 ```
 </div>
 </details>
@@ -436,7 +214,7 @@ The returned value is a `Reservation` object representing that record,
 rather than the raw JSON dictionary.
 
 For the purpose of this demonstration and to keep the article concise, 
-we will implement only the `Passenger`, and `Services` classes. 
+we will implement only the `Passenger`, and `Flight` classes. 
 Each JSON node is mapped to its corresponding Python attribute through the `Field` 
 descriptor. This provides a sufficient foundation to demonstrate how descriptors can 
 abstract the underlying JSON structure and expose both scalar values and nested 
@@ -444,8 +222,8 @@ objects through a structured, attribute-based interface.
 
 ```python
 @map_fields
-class Passenger:
-    """Represent passenger information using descriptor-based field mappings.
+class Reservation:
+    """Represent reservation information using descriptor-based field mappings.
 
     The class uses the :class decorator:`map_fields` to dynamically create `Field` descriptors 
     for the JSON nodes declared in ``_nodes``.
@@ -469,33 +247,80 @@ class Passenger:
     """
 
     _nodes = [
+        ("passenger", Passenger),
+        ("flight", Flight)
+    ]
+```
+
+```python
+@map_fields
+class Passenger:
+        """Represent passenger information using descriptor mappings.
+
+    The `map_fields` class decorator processes the field definitions declared
+    in `_nodes` and dynamically creates `Field` descriptors for accessing
+    the corresponding values in the underlying JSON data.
+
+    Scalar fields are mapped directly, while nested JSON objects are mapped
+    to their corresponding Python classes. This allows passenger information
+    to be accessed through a structured, object-oriented interface.
+
+    Attributes:
+        passenger_id (str): The unique identifier assigned to the passenger.
+        first_name (str): The passenger's first name.
+        last_name (str): The passenger's last name.
+        contact (Contact): The passenger's contact information, represented
+            by a `Contact` object.
+        address (Address): The passenger's address information, represented
+            by an `Address` object.
+
+    Mapping:
+        `_nodes` defines the passenger fields to be mapped from the JSON
+        response. Each entry is a tuple containing the JSON field name and
+        its associated mapping type.
+
+        A value of `None` indicates a direct scalar field mapping, while a
+        class reference specifies the mapping class used to represent a
+        nested JSON object.
+
+    The decorator uses these definitions to establish descriptor-based
+    attribute access for both scalar values and nested passenger details.
+    """
+    _nodes = [
         ("passenger_id", None),
-        ("title", None),
         ("first_name", None),
-        ("middle_name", None),
         ("last_name", None),
-        ("date_of_birth", None),
-        ("gender", None),
         ("contact", Contact),
         ("address", Address),
-        ("frequent_flyer", FrequentFlyer),
     ]
 ```
 
 ```python
 @map_fields
 class Contact:
-    """Represent passenger contact information using descriptor mappings.
+    """Represent a passenger's contact information using descriptor mappings.
 
-    The class uses the class decorator`map_fields` to dynamically create
-    `Field` descriptors for the contact-related JSON nodes declared
-    in ``_nodes``. Each field represents a scalar value in the underlying
-    JSON data and is therefore mapped directly without additional object
-    conversion.
+    The `map_fields` class decorator processes the field definitions declared
+    in `_nodes` and dynamically creates `Field` descriptors for accessing
+    the corresponding values in the underlying JSON data.
+
+    Each field represents a scalar contact property and is mapped directly
+    without additional object conversion.
 
     Attributes:
-        _nodes: Mapping of contact JSON field names to their corresponding
-            Python representations.
+        email (str): The passenger's primary email address.
+        phone (str): The passenger's primary contact phone number.
+        alternate_phone (str): An alternative phone number for contacting
+            the passenger.
+
+    Mapping:
+        `_nodes` defines the contact fields to be mapped from the JSON
+        response. Each entry is a tuple containing the JSON field name and
+        its associated mapping type. A value of `None` indicates that the
+        field is mapped directly as a scalar value.
+
+    The decorator uses these definitions to provide descriptor-based access
+    to the contact information through the corresponding Python attributes.
     """
 
     _nodes = [
@@ -506,31 +331,102 @@ class Contact:
 ```
 
 ```python
-class Services:
-    """Represent a collection of services selected for a reservation.
+@map_fields
+class Flight:
+        """Represent flight information and its associated details.
 
-    Encapsulates the ``services`` JSON array and converts each service
-    dictionary into a structured :class:`Service` object. The nested
-    :class:`Service` class represents the individual service entries,
-    while ``Services`` provides indexed access to the collection.
+    The class defines the mapping between JSON fields and their corresponding
+    Python attributes using the `_nodes` class variable.
 
     Attributes:
-        _services: List of :class:`Service` objects created from the JSON service
-            records.
-    """
+        flight_number (str): The flight's unique flight number.
+        flight_status (str): The current status of the flight, such as
+            SCHEDULED, BOARDING, or CANCELLED.
+        aircraft (Aircraft): The aircraft assigned to the flight, represented
+            by an Aircraft object.
+        seat (Seat): The passenger's seat details, represented by a Seat
+            object.
+        services (Services): The flight's associated services, represented
+            by a Services object.
 
+    Mapping:
+        `_nodes` defines the fields to be mapped from the JSON response.
+        Each tuple contains a field name and its associated node mapping.
+        A value of None indicates a direct field mapping, while a class
+        reference specifies the mapping to use for nested data.
+
+    The `@map_fields` decorator processes this mapping definition to
+    establish the corresponding attributes on the Flight class.
+    """
+    _nodes = [
+        ("flight_number", None),
+        ("flight_status", None),
+        ("aircraft", Aircraft),
+        ("seat", Seat),
+        ("services", Services)
+    ]
+```
+
+```python
+class Services:
+        """Represent a collection of flight services using mapped service objects.
+
+    The class encapsulates a list of services associated with a flight.
+    Each service is represented by an instance of the nested `Service` class,
+    which uses the `map_fields` decorator to provide descriptor-based access
+    to the service properties.
+
+    The constructor accepts a list of service dictionaries and converts each
+    dictionary into a `Service` instance. The resulting objects are stored
+    internally in `_services` and can be accessed individually using the
+    indexing operator.
+
+    Attributes:
+        _services (list[Services.Service]): The collection of mapped service
+            objects created from the supplied service information.
+
+    Nested Classes:
+        Service: Represents an individual flight service and maps its JSON
+            fields to Python attributes.
+
+            Attributes:
+                code (str): The service code, such as MEAL, WIFI, or LOUNGE.
+                name (str): The display name of the service.
+                description (str): A description of the service.
+                status (str): The current status of the service, such as
+                    CONFIRMED.
+
+    Methods:
+        __init__(services_info): Convert the supplied list of service
+            dictionaries into `Service` instances.
+        __getitem__(index): Return the service object at the specified index,
+            allowing indexed access to the collection.
+
+    Example:
+        Given a list of service dictionaries, the collection can be accessed
+        as follows:
+
+            services = Services(services_info)
+            meal = services[0]
+            print(meal.name)
+
+    This design separates the collection of services from the representation
+    of an individual service while providing convenient indexed access to
+    the mapped service objects.
+    """
     @map_fields
     class Service:
-        """Represent an individual service associated with a reservation.
+            """Represent an individual flight service using descriptor mappings.
 
-        Uses the class decorator `map_fields` to create `Field` descriptors 
-        for the scalar attributes defined in ``_nodes``.
+        The `map_fields` decorator processes `_nodes` to provide attribute
+        access to the service properties defined in the JSON response.
 
         Attributes:
-            _nodes: Mapping of service JSON fields to their corresponding
-                Python representation.
+            code (str): The service code.
+            name (str): The service name.
+            description (str): A description of the service.
+            status (str): The current service status.
         """
-
         _nodes = [
             ("code", None),
             ("name", None),
@@ -539,30 +435,26 @@ class Services:
         ]
 
     def __init__(self, services_info: list):
-        """Initialize the service collection from JSON data.
-
-        Converts each service dictionary into a :class:`Service` object.
+        """Initialize the collection from a list of service dictionaries.
 
         Args:
-            services_info: List of dictionaries containing service
-                information.
+            services_info (list): A list of dictionaries containing the
+                JSON data for individual flight services.
         """
         self._services = [self.Service(service) for service in services_info]
 
     def __getitem__(self, index):
         """Return the service at the specified index.
 
-        Provides sequence-style indexed access to the individual
-        :class:`Service` objects.
-
         Args:
-            index: Zero-based index of the service to retrieve.
+            index: The zero-based index of the service to retrieve.
 
         Returns:
-            Service: The service object at the specified index.
+            Services.Service: The mapped service object at the specified index.
 
         Raises:
-            IndexError: If the specified index is outside the valid range.
+            IndexError: If the index is outside the valid range for the list.
+            TypeError: If the index is not a valid list index.
         """
         return self._services[index]
 ```
@@ -691,16 +583,8 @@ then injects a common `__init__` implementation into the decorated class.
 define `_nodes`,
 ```python
 _nodes = [
-    ("passenger_id", None),
-    ("title", None),
-    ("first_name", None),
-    ("middle_name", None),
-    ("last_name", None),
-    ("date_of_birth", None),
-    ("gender", None),
-    ("contact", Contact),
-    ("address", Address),
-    ("frequent_flyer", FrequentFlyer),
+    ("passenger", Passenger),
+    ("flight", Flight)
 ]
 ```
 Each tuple contains two pieces of information, `("field_name", field_type)`, for example,
@@ -728,8 +612,10 @@ For example, when `Passenger` class is decorated,
 @map_fields
 class Passenger:
     _nodes = [
+        ("passenger_id", None),
         ("first_name", None),
         ("last_name", None),
+        ("contact", Contact),
         ("address", Address),
     ]
 ```
@@ -768,13 +654,16 @@ Once the mapping is done, the class looks like,
 ```python
 class Passenger:
     _nodes = [
+        ("passenger_id", None),
         ("first_name", None),
         ("last_name", None),
+        ("contact", Contact),
         ("address", Address),
     ]
 
     first_name = Field("first_name")
     last_name = Field("last_name")
+    contact = Field("contact", field_type=Contact)
     address = Field("address", field_type=Address)
 ```
 The important point is that **we did not explicitly write those Field assignments**. 
@@ -813,21 +702,28 @@ All the above of them automatically receive the same initialization behavior.
 ```python
 @map_fields
 class Passenger:
-    _nodes = [
-        ("first_name", None),
-        ("contact", Contact),
-    ]
+_nodes = [
+    ("passenger_id", None),
+    ("first_name", None),
+    ("last_name", None),
+    ("contact", Contact),
+    ("address", Address),
+]
 ```
 Conceptually, the decorator transforms it into something similar to
 ```python
 class Passenger:
-    _nodes = [
-        ("first_name", None),
-        ("contact", Contact),
-    ]
+_nodes = [
+    ("passenger_id", None),
+    ("first_name", None),
+    ("last_name", None),
+    ("contact", Contact),
+    ("address", Address),
+]
 
     first_name = Field("first_name", field_type=None)
     contact = Field("contact", field_type=Contact)
+    address = Field("address", field_type=Address)
 
     def __init__(self, info):
         self.__dict__.update(info)
