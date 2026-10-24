@@ -141,16 +141,15 @@ from pathlib import Path
 
 class Reservations:
     """Provide sequence-style access to reservation records."""
-    def __init__(self):
+    def __init__(self, file_path):
         """Initialize the reservation collection."""
-        self._path = self._json_file_path
+        self._path = self.get_file_path(file_path)
         self._data = self._load_json_data
         self._reservations = self._get_reservations
 
-    @property
-    def _json_file_path(self) -> Path:
+    def get_file_path(self, file_path) -> Path:
         """Return the path to the reservations JSON file."""
-        path = Path("reservations.json")
+        path = Path(file_path)
         if not path.exists():
             raise FileNotFoundError(f"{path} does not exist")
         return path
@@ -177,7 +176,7 @@ class Reservations:
 We can now instantiate the `Reservations` class to load the reservation data and access 
 individual reservation records through the resulting collection.
 ```python
->>> reservations = Reservations()
+>>> reservations = Reservations("employees.json")
 >>> reservations
 <__main__.Reservations object at 0x107332850>
 >>> type(reservations)
@@ -386,7 +385,7 @@ class Services:
         _services (list[Services.Service]): The collection of mapped service
             objects created from the supplied service information.
 
-    Nested Classes:
+    Nested Class:
         Service: Represents an individual flight service and maps its JSON
             fields to Python attributes.
 
@@ -402,14 +401,6 @@ class Services:
             dictionaries into `Service` instances.
         __getitem__(index): Return the service object at the specified index,
             allowing indexed access to the collection.
-
-    Example:
-        Given a list of service dictionaries, the collection can be accessed
-        as follows:
-
-            services = Services(services_info)
-            meal = services[0]
-            print(meal.name)
 
     This design separates the collection of services from the representation
     of an individual service while providing convenient indexed access to
@@ -732,7 +723,7 @@ _nodes = [
 
 ### How this works with the Field descriptor
 
-The decorator itself does not retrieve values from the JSON. It only establishes the mapping
+The decorator itself does not retrieve values from the JSON. It only establishes the mapping.
 The actual retrieval is delegated to the `Field` descriptor.
 
 So the responsibilities are clearly separated as shown below,
@@ -749,7 +740,7 @@ So the responsibilities are clearly separated as shown below,
 The `map_fields` decorator is doing more than simply "decorating" the class in the 
 conventional sense. It is modifying the class object at decoration time by dynamically
 attaching descriptors and injecting its `__init__` method. 
-This is a classic example of Python metaprogramming
+This is a classic example of Python ***metaprogramming***
 
 ***The class declares its data model through `_nodes`, while the decorator generates the 
 corresponding class structure dynamically.***
