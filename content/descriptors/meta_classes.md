@@ -85,7 +85,7 @@ class** creation, allowing the mapping logic to be centralized in a single place
 
 Let's examine the implementation step by step,
 
-#### Defining a Custom Metaclass
+### Defining a Custom Metaclass
 ```python
 class MapFieldsMeta(type):
 ```
@@ -108,7 +108,7 @@ This makes a metaclass suitable for processing declarative mappings such as `_no
 where developers specify what should be mapped rather than writing the mapping 
 logic repeatedly.
 
-#### Understanding the `__new__` Method
+### Understanding the `__new__` Method
 ```python
 def __new__(mcls, clsname, bases, clsdict):
 ```
@@ -131,7 +131,7 @@ has not yet been created.
 This provides an opportunity to inspect and modify the namespace before passing it 
 to `type.__new__`.
 
-#### Injecting the initializer
+### Injecting the initializer
 ```python
 clsdict["__init__"] = lambda self, info: self.__dict__.update(info)
 ```
@@ -204,7 +204,7 @@ Here, `contact` is associated with the `Contact` mapping class.
 The `Field` descriptor can use that mapping information to construct or expose a
 nested `Contact` object, depending on how the descriptor is implemented.
 
-#### Creating the Class Object
+### Creating the Class Object
 ```python
 return super().__new__(mcls, clsname, bases, clsdict)
 ```
@@ -218,7 +218,7 @@ generated initializer and the `Field` descriptors.
 This process allows each mapping class to declare its fields while leaving the 
 repetitive class-construction logic to the metaclass.
 
-#### Final Thoughts
+### Final Thoughts
 `MapFieldsMeta` demonstrates how Python metaclasses can be used to build declarative 
 object-mapping systems. By processing `_nodes` during class creation, the metaclass 
 automatically create field descriptors and a common initializer, eliminating the
