@@ -19,11 +19,6 @@ record representing a passenger's reservation details. To keep the example focus
 descriptors and class decorators, we will work with a single representative record from 
 that collection.
 
-<details>
-<summary><strong> Click here to expand/collapse complete JSON response</strong></summary>
-
-<div markdown="1">
-
 `reservations.json`
 ```console
 [
@@ -85,15 +80,7 @@ that collection.
 ]
 ```
 
-</div>
-</details>
-
 Below is the hierarchical structure of the `reservations.json` response. 
-
-<details>
-<summary><strong> Click here to expand/collapse complete JSON tree</strong></summary>
-
-<div markdown="1">
 
 ```console
 Reservations (List)
@@ -143,10 +130,6 @@ Reservations (List)
                 ├── description : str
                 └── status : str
 ```
-</div>
-</details>
-
-
 Let us implement the `Reservations` class, which serves as the **data access layer** 
 responsible for loading and deserializing reservation data from the JSON file
 and making it available through a structured Python interface.
