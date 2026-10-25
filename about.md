@@ -15,7 +15,7 @@ the client library. You can explore my contributions to the Selenium Python clie
   GitHub Repo
 </a>
 
-I am the maintainer of **jsonobjectify**, an open-source Python library 
+I maintain **jsonobjectify**, an open-source Python library 
 <a href="https://github.com/sandeepsuryaprasad/jsonobjectify"
    class="github-repo-link">
   GitHub Repo
@@ -23,12 +23,12 @@ I am the maintainer of **jsonobjectify**, an open-source Python library
 making complex and nested JSON structures easier to work with using 
 natural dot notation. 
 
-As an experienced Automation developer, I have provided hands-on technical guidance and 
-promoting strong software engineering and best coding practices. 
-I have also built Python capabilities across project teams by training and mentoring 
-engineers in Python and Selenium-based automation.
-
+As an experienced Automation developer, I provide hands-on technical guidance and 
+promote strong software engineering and best coding practices.
 I have spent considerable time gaining hands-on experience with Python, developing a 
-deeper understanding of the language and learning to write clean, idiomatic Python.
-Pypebbles is my way of sharing that knowledge, along with the practical lessons and 
+deeper understanding of the language. I help engineers strengthen their Python and 
+Selenium skills, adopt maintainable automation practices, and build 
+technical confidence to deliver high-quality, scalable automation solutions.
+
+**Pypebbles** is my way of sharing that knowledge, along with the practical lessons and 
 insights that I have gained through years of working with Python.
