@@ -23,13 +23,11 @@ I am the maintainer of **jsonobjectify**, an open-source Python library
 making complex and nested JSON structures easier to work with using 
 natural dot notation. 
 
+As an experienced Automation developer, I have provided hands-on technical guidance and 
+promoting strong software engineering and best coding practices. 
+I have also built Python capabilities across project teams by training and mentoring 
+engineers in Python and Selenium-based automation.
 
-As an experienced Automation developer, I have provided hands-on technical guidance, 
-and delivery oversight while mentoring engineers and promoting strong software
-engineering and best coding practices. I have also built Python capabilities across 
-project teams by training and mentoring engineers in Python and Selenium-based automation.
-
-I am passionate about Software engineering, Linux, Automation using Python.
 I have spent considerable time gaining hands-on experience with Python, developing a 
 deeper understanding of the language and learning to write clean, idiomatic Python.
 Pypebbles is my way of sharing that knowledge, along with the practical lessons and 
