@@ -22,7 +22,7 @@ class MapFieldsMeta(type):
 
     The metaclass processes the `_nodes` declaration of a class and
     dynamically attaches `Field` descriptors for the specified JSON fields.
-    It also provides an initializer that populates the instance dictionary
+    It also injects an initializer that populates the instance dictionary
     with the supplied JSON data.
 
     Classes using this metaclass can declare their field mappings through
@@ -50,7 +50,7 @@ class MapFieldsMeta(type):
             clsname (str): The name of the class being created.
             bases (tuple): The base classes inherited by the new class.
             clsdict (dict): The namespace containing the attributes defined
-                in the class body, including the optional `_nodes` mapping.
+                in the class body, including the `_nodes` mapping.
 
         Returns:
             type: The newly created class with its initializer and field
@@ -74,7 +74,7 @@ class MapFieldsMeta(type):
         return super().__new__(mcls, clsname, bases, clsdict)
 ```
 ### Understanding MapFieldsMeta
-The `MapFieldsMeta` class is a custom Python metaclass that automates the creation of 
+The `MapFieldsMeta` is a custom Python metaclass that automates the creation of 
 mapping classes. It processes a class's `_nodes` declaration, dynamically creates `Field` 
 descriptors for the specified JSON fields, and provides a common initializer for mapping
 objects.
@@ -118,7 +118,7 @@ It is responsible for creating the class object.
 
 Python calls this method with four arguments:
 
-- **mcls** — The metaclass itself, which is MapFieldsMeta in this example.
+- **mcls** — The metaclass itself, which is `MapFieldsMeta` in this example.
 - **clsname** — The name of the class being created, such as `Contact`.
 - **bases** — A tuple containing the class's base classes.
 - **clsdict** — The namespace containing the attributes defined in the class body, 
@@ -153,7 +153,7 @@ When `Contact` is instantiated, the generated initializer stores the supplied va
 Because the initializer is injected by the metaclass, individual mapping classes do not
 need to define their own repetitive initialization methods.
 
-#### Processing the _nodes Declaration
+### Processing the _nodes Declaration
 ```python
 nodes = clsdict.get("_nodes")
 for node, mapping in nodes:
