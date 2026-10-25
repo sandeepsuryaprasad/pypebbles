@@ -1,4 +1,4 @@
-[Previous Article](../json_dynamic_classes/json_dynamic_classes.md) \| [Next Article](../logging/logging.md)
+[Previous Article](../descriptors/meta_classes.md) \| [Next Article](../logging/logging.md)
 
 ## JSON Parsing by Creating JSON models dynamically
 
@@ -240,4 +240,4 @@ The main takeaway is that **JSON parsing does not have to be limited to dictiona
 and key-based access**. With a small amount of abstraction, we can dynamically transform 
 JSON into a Python object hierarchy that is easier and more natural to work with.
 
-[Previous Article](../descriptors/descriptors.md) \| [Next Article](../logging/logging.md)
+[Previous Article](../descriptors/meta_classes.md) \| [Next Article](../logging/logging.md)

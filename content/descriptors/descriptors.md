@@ -1,6 +1,6 @@
 [Previous Article](../json/reading_json.md) \| [Next Article](../descriptors/meta_classes.md)
 
-## Building a Declarative JSON-to-Object Mapper - A Metaprogramming Approach
+## Building a Declarative JSON-to-Object Mapper - Class decorators
 
 This article demonstrates how Python's **descriptors** and **class decorators** can be 
 used to eliminate boilerplate code and improve readability when working with complex JSON 
@@ -816,4 +816,4 @@ deeply nested JSON structures. Instead of exposing dictionaries and requiring ca
 to perform repeated key-based lookups.
 
 
-[Previous Article](../json/reading_json.md) \| [Next Article](../logging/logging.md)
+[Previous Article](../json/reading_json.md) \| [Next Article](../descriptors/meta_classes.md)
