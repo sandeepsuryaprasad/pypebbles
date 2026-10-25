@@ -1,4 +1,4 @@
-[Next Article](../profiling/profiling_memory.md) \| [Previous Article](../logging/logging.md)
+[Previous Article](../logging/logging.md) \| [Next Article](../profiling/profiling_memory.md) 
 
 ## Time Profiling in Python
 

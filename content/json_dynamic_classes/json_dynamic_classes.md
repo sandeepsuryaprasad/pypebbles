@@ -1,4 +1,4 @@
-[Previous Article](../descriptors/descriptors.md) \| [Next Article](../logging/logging.md)
+[Previous Article](../json_dynamic_classes/json_dynamic_classes.md) \| [Next Article](../logging/logging.md)
 
 ## JSON Parsing by Creating JSON models dynamically
 
