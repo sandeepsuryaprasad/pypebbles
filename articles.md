@@ -30,7 +30,8 @@
   </div>
   
    <div class="article-box">
-    <h3>Metaprogramming: Declarative JSON-to-Object Mapping Using a Class Decorator</h3>
+    <h3>Metaprogramming: Declarative JSON-to-Object Mapping Using
+        Python Descriptor and Class Decorator</h3>
     <p>
         This article explores class decorators through a practical JSON-to-object 
         mapping problem. The solution uses a class decorator to dynamically install field 
