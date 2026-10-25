@@ -49,7 +49,6 @@ that collection.
         },
         "seat": {
           "number": "12A",
-          "class": "Business",
           "cabin": "Business",
           "position": "Window",
           "is_exit_row": false,
@@ -108,7 +107,6 @@ Reservations (List)
         │   └── configuration : str
         ├── seat (Object)
         │   ├── number : str
-        │   ├── class : str
         │   ├── cabin : str
         │   ├── position : str
         │   ├── is_exit_row : bool
