@@ -23,12 +23,12 @@ I maintain **jsonobjectify**, an open-source Python library
 making complex and nested JSON structures easier to work with using 
 natural dot notation. 
 
-As an experienced Automation developer, I provide hands-on technical guidance and 
-promote strong software engineering and best coding practices.
-I have spent considerable time gaining hands-on experience with Python, developing a 
-deeper understanding of the language. I help engineers strengthen their Python and 
-Selenium skills, adopt maintainable automation practices, and build 
-technical confidence to deliver high-quality, scalable automation solutions.
+As an experienced Automation developer, I provide technical guidance by promoting 
+software engineering and best coding practices. I have spent considerable time 
+gaining hands-on experience with Python, developing a deeper understanding of the 
+language. I help engineers strengthen their Python and Selenium skills, adopt 
+maintainable automation practices, and build technical confidence to deliver 
+high-quality, scalable automation solutions.
 
-**Pypebbles** is my way of sharing that knowledge, along with the practical lessons and 
+**Pypebbles** is my way of sharing that knowledge, along with the practical examples and 
 insights that I have gained through years of working with Python.
