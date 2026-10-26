@@ -18,25 +18,6 @@ alternative mechanism for customizing class creation and centralizing mapping lo
 
 ```python
 class MapFieldsMeta(type):
-    """Metaclass for dynamically mapping JSON fields to Python attributes.
-
-    The metaclass processes the `_nodes` declaration of a class and
-    dynamically attaches `Field` descriptors for the specified JSON fields.
-    It also injects an initializer that populates the instance dictionary
-    with the supplied JSON data.
-
-    Classes using this metaclass can declare their field mappings through
-    `_nodes`, where each entry specifies a field name and its associated
-    mapping type. A mapping type of `None` represents a direct field mapping,
-    while a class reference identifies the mapping used for nested data.
-
-    During class creation, the metaclass adds the initializer and constructs
-    the corresponding `Field` descriptors before delegating class creation
-    to the parent `type` implementation.
-
-    This approach centralizes the mapping logic in the metaclass, eliminating
-    the need to apply a separate class decorator to every mapping class.
-    """
     def __new__(mcls, clsname, bases, clsdict):
         """Create a class with dynamically generated field descriptors.
 
@@ -60,10 +41,6 @@ class MapFieldsMeta(type):
             Each `_nodes` entry is a tuple containing a field name and its
             associated mapping type. The descriptors are added to the class
             namespace before `type.__new__` creates the class object.
-
-            The initializer assumes that the supplied information is a
-            dictionary and updates the instance dictionary directly.
-            Consequently, descriptor setters are not invoked by this update.
         """
         clsdict["__init__"] = lambda self, info: self.__dict__.update(info)
 

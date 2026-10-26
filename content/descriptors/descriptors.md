@@ -351,9 +351,6 @@ class Contact:
         response. Each entry is a tuple containing the JSON field name and
         its associated mapping type. A value of `None` indicates that the
         field is mapped directly as a scalar value.
-
-    The decorator uses these definitions to provide descriptor-based access
-    to the contact information through the corresponding Python attributes.
     """
 
     _nodes = [
