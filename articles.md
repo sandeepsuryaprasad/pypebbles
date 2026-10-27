@@ -107,7 +107,7 @@
   </div>
 
    <div class="article-box">
-      <h3>Building a Cross-Platform System Information CLI with Python</h3>
+      <h3>Building Better Python CLIs with the Result Object Pattern</h3>
     <p>
         Explore Python's psutil library to retrieve system, CPU, memory, disk, 
         process, and network information, and build a practical CLI application to 
