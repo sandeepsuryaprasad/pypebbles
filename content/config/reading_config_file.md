@@ -94,8 +94,8 @@ class Config:
         Raises:
             KeyError: If the selected section does not exist.
         """
-        if self.section not in self._parser.sections():
-            raise KeyError(f"Invalid section {self.section}")
+        if not self._parser.has_section(self.section):
+            raise KeyError(f"Invalid section {self.section!r}")
         return self._parser[self.section]
 
     @property
