@@ -165,16 +165,16 @@ response = """{
     ]
 }"""
 ```
-```console
+```commandline
 >>> from jsonobjecctify import JsonPath
 ```
 Create `JsonPath` object from JSON string/response
-```console
+```commandline
 >>> employee = JsonPath.from_string(response)
 ```
 You can now access and traverse nested JSON objects using dot notation. 
 For JSON arrays, use the standard Python indexing syntax.
-```console
+```commandline
 >>> employee.name
 'John Doe'
 >>> employee.address.city
@@ -189,7 +189,7 @@ For JSON arrays, use the standard Python indexing syntax.
 ```
 You can also iterate over JSON arrays using a standard Python for loop and access
 each element's properties using dot notation.
-```console
+```commandline
 >>> for skill in employee.skills:
 ...     print(f"{skill.name}, {skill.level}")
 ...     
