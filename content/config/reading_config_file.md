@@ -204,6 +204,14 @@ Config("APPLE")
 Config("GOOGLE")
 ```
 
+### Full Implementation and Installable package
+You can install the library and explore the complete implementation and contribute to
+the project on 
+<a href="https://github.com/sandeepsuryaprasad/configobjectify"
+   class="github-repo-link">
+  GitHub Repo
+</a>
+
 ### Final Thoughts
 
 In this article, we transformed a traditional configuration file into a clean, 
