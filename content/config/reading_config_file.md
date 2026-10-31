@@ -205,8 +205,11 @@ Config("GOOGLE")
 ```
 
 ### Full Implementation and Installable package
-You can install the library and explore the complete implementation and contribute to
-the project on 
+The complete **`configobjectify`** library includes additional validation,
+error handling, tests, and other improvements required for a reusable open-source 
+Python library.
+You can install the library and explore the complete implementation and contribute 
+to the project on 
 <a href="https://github.com/sandeepsuryaprasad/configobjectify"
    class="github-repo-link">
   GitHub Repo
