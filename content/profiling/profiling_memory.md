@@ -6,12 +6,26 @@ Two different data structures may represent exactly the same information while r
 very different amounts of memory. To explore this, this article uses a real-world COVID-19 
 dataset containing approximately half a million records collected from countries around the world.
 
+### Large CSV file
+You can download the entire dataset  [HERE](https://data.who.int/dashboards/covid19/data)
+
+The size of the csv file around 19MB and it has 583441 rows of data in it.
+```commandline
+Date_reported,Country_code,Country,WHO_region,New_cases,New_deaths
+04/01/20,AF,Afghanistan,EMR,,
+04/01/20,DZ,Algeria,AFR,,
+04/01/20,AL,Albania,EUR,,
+04/01/20,AI,Anguilla,AMR,,
+04/01/20,AS,American Samoa,WPR,0,0
+...
+```
+
 Each record contains information such as the reporting date, country, WHO region, number 
 of new cases, and number of new deaths. Rather than simply loading the CSV file and 
 measuring its memory consumption, we will represent the same dataset using several 
-different Python data structures, including tuples, dictionaries, namedtuples, class instances,
-class instances with slots attribute defined and dataclass objects. 
-We will then use Python's built-in tracemalloc module to measure and compare the memory 
+different Python data structures, including **tuples**, **dictionaries**, **namedtuples**, 
+**class instances**, class instances with **slots** attribute defined and **dataclass** objects. 
+We will then use Python's built-in **tracemalloc** module to measure and compare the memory 
 allocated by each representation.
 
 The objective is not only to learn how tracemalloc works, but also to understand how 
@@ -27,4 +41,3 @@ By the end of the article, we will have a clearer understanding of how Python da
 structures affect memory usage and how memory profiling can replace assumptions with 
 measurable evidence when making design decisions.
 
-You can download the dataset  [HERE](https://data.who.int/dashboards/covid19/data)
