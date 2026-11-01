@@ -9,7 +9,7 @@ dataset containing approximately half a million records collected from countries
 ### Large CSV file
 You can download the entire dataset  [HERE](https://data.who.int/dashboards/covid19/data)
 
-The size of the csv file around 19MB and it has 583441 rows of data in it.
+The size of the csv file around 19 MB and it has 583440 rows of data in it.
 ```commandline
 Date_reported,Country_code,Country,WHO_region,New_cases,New_deaths
 04/01/20,AF,Afghanistan,EMR,,
@@ -28,7 +28,7 @@ different Python data structures, including **tuples**, **dictionaries**, **name
 We will then use Python's built-in **tracemalloc** module to measure and compare the memory 
 allocated by each representation.
 
-The objective is not only to learn how tracemalloc works, but also to understand how 
+The objective is to learn how tracemalloc works, but to understand how 
 our choice of data structure can affect the memory footprint of a Python application 
 when working with large collections of objects.
 
@@ -40,4 +40,29 @@ pieces of application code.
 By the end of the article, we will have a clearer understanding of how Python data 
 structures affect memory usage and how memory profiling can replace assumptions with 
 measurable evidence when making design decisions.
+
+Let's write a function that reads data from csv file.
+```python
+from csv import reader
+
+def read_csv():
+    with open("data.csv") as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            records.append(row)
+    return records
+```
+```commandline
+>>> csv_data = read_csv()
+>>> len(csv_data)
+583440
+>>> csv_data[0]
+>>> d[0]
+['04/01/20', 'AF', 'Afghanistan', 'EMR', '', '']
+>>> d[1]
+['04/01/20', 'DZ', 'Algeria', 'AFR', '', '']
+>>> 
+```
 
