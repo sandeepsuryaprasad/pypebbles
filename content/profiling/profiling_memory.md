@@ -41,46 +41,6 @@ By the end of the article, we will have a clearer understanding of how Python da
 structures affect memory usage and how memory profiling can replace assumptions with 
 measurable evidence when making design decisions.
 
-Let's start by writing a simple function to read the COVID-19 dataset from a CSV file.
-We'll use Python's built-in csv module to read the file and store each record as a list.
-```python
-from csv import reader
-
-def read_csv(filename):
-    with open(filename) as f:
-        records = [ ]
-        rows = reader(f)
-        headers = next(rows)        # skipping headers
-        for row in rows:
-            records.append(row)
-    return records
-```
-Here, `csv.reader()` reads the file one row at a time. We use `next(rows)` to retrieve 
-and skip the header row, since our objective is to work with the actual data records.
-Each subsequent row is appended to the records list.
-
-Let's load the dataset and examine the resulting collection:
-```commandline
->>> records = read_csv("data.csv")
->>> len(records)
-583440
->>> records[0]
-['04/01/20', 'AF', 'Afghanistan', 'EMR', '', '']
->>> records[1]
-['04/01/20', 'DZ', 'Algeria', 'AFR', '', '']
->>> 
-```
-The dataset contains **583,440** records, with each record represented as a list of 
-strings. This gives us our first data representation to measure, a list containing
-individual lists.
-
-In the following sections, we'll represent the same dataset using different 
-Python data structures and compare their memory consumption.
-
-Before comparing the memory consumption of different data structures, 
-let's build a small, reusable memory profiler using Python's built-in `tracemalloc` 
-module.
-
 ### Building a Memory Profiling Decorator
 Before measuring the memory consumption of different data structures, 
 let's build a small, reusable memory profiler.
@@ -93,7 +53,7 @@ Rather than repeating the profiling logic every time we want to measure memory u
 we can encapsulate it in a class-based decorator.
 
 ```python
-class Memory:
+class MemoryProfiler:
     def __init__(self, func):
         """Initialize the memory profiler with the function to be profiled."""
         self.trace = tracemalloc
@@ -120,6 +80,7 @@ class Memory:
         self.start()
         try:
             result = self.func(*args, **kwargs)
+            print(f"Total Number of Rows: {len(result)}")
             self.memory_usage()
             return result
         finally:
@@ -134,3 +95,44 @@ working with the data structure after measuring its memory consumption.
 
 We'll use this decorator throughout the experiment to profile the different Python 
 data representations.
+
+In the following sections, we'll represent the same dataset using different 
+Python data structures and compare their memory consumption.
+
+### 1. List of Lists
+Let's begin with the simplest representation. We'll store the CSV data in a Python 
+list, where each record is represented by an individual list containing the values 
+from that CSV row.
+
+Let's start by writing a simple function to read the COVID-19 dataset from a CSV file
+and decorate the function with class implementation of `MemoryProfiler` decorator.
+We'll use Python's built-in csv module to read the file and store each record as a
+list.
+```python
+from csv import reader
+
+@MemoryProfiler
+def read_csv(filename):
+    with open(filename) as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            records.append(row)
+    return records
+```
+Let's load the dataset and examine the results:
+```commandline
+>>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 184.45 MB
+Peak Memory Usage:    184.60 MB
+>>> 
+>>> records[0]
+['04/01/20', 'AF', 'Afghanistan', 'EMR', '', '']
+>>> records[1]
+['04/01/20', 'DZ', 'Algeria', 'AFR', '', '']
+>>> 
+```
+The dataset contains **583,440** records, with each record is represented as a list of 
+strings.
