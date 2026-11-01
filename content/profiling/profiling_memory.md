@@ -166,6 +166,17 @@ def read_csv(filename):
             records.append(_row)
     return records
 ```
+```commandline
+>>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 269.05 MB
+Peak Memory Usage:    269.20 MB
+>>> records[0]
+{'Date_reported': '04/01/20', 'Country_code': 'AF', 'Country': 'Afghanistan', 'WHO_region': 'EMR', 'New_cases': '', 'New_deaths': ''}
+>>> records[1]
+{'Date_reported': '04/01/20', 'Country_code': 'DZ', 'Country': 'Algeria', 'WHO_region': 'AFR', 'New_cases': '', 'New_deaths': ''}
+>>> 
+```
 After converting the dataset into a list of dictionaries, we can see that its peak memory 
 consumption has increased to **269.18 MB**, compared with **184.60 MB** for the list of
 lists. That's an increase of approximately **45.8%**.
@@ -180,3 +191,50 @@ dictionaries, this overhead accumulates across the dataset.
 
 Although this representation makes the data easier to understand and access using 
 meaningful column names, it comes at a higher memory cost.
+
+### 3. List of Tuples
+Next, let's represent each CSV record as a tuple instead of a list. Like lists, 
+tuples store an ordered collection of values and allow access through numeric indexes.
+
+The key difference is that tuples are immutable, meaning their elements cannot be 
+modified after creation. Since our dataset is primarily used for storing and analysing 
+records, tuples provide a suitable alternative for evaluating memory consumption.
+```python
+@Memory
+def read_csv():
+    with open("data.csv", encoding="utf-8-sig") as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            records.append(tuple(row))
+    return records
+```
+```commandline
+>>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 171.13 MB
+Peak Memory Usage:    171.28 MB
+>>> records[0]
+('04/01/20', 'AF', 'Afghanistan', 'EMR', '', '')
+>>> 
+>>> records[1]
+('04/01/20', 'DZ', 'Algeria', 'AFR', '', '')
+```
+After converting the dataset into a list of tuples, the peak memory consumption drops to
+**171.28 MB**, compared with **184.60 MB** for the list of lists. That's a reduction of **7.2%**
+compare to lists.
+
+The reduction in memory consumption is primarily due to the difference in how Python 
+manages the internal storage of lists and tuples. Lists are mutable and support dynamic 
+resizing, so Python over-allocates their internal storage to accommodate future additions 
+through operations such as `append`. Tuples, being immutable, have a fixed size after
+creation and do not require this additional capacity for subsequent modifications.
+
+### 4. List of Class instances
+
+### 5. List of Class instances with `__slots__`
+
+### 6. List of Data classes
+
+### 7. List of Class NamedTuples
