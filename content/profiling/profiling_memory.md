@@ -314,7 +314,7 @@ an instance dictionary, but the values are stored inside a tuple like immutable 
 
 ```python
 class Covid:
-    __slots__ = ("date", "country_code", "country", "who_region", "new_cases", "new_deaths")
+    __slots__ = ("date", "country_code", "country", "who_region", "new_cases", "new_deaths") 
     def __init__(self, date, country_code, country, who_region, new_cases, new_deaths):
         self.date = date
         self.country_code = country_code
