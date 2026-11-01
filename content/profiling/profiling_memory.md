@@ -200,9 +200,9 @@ The key difference is that tuples are immutable, meaning their elements cannot b
 modified after creation. Since our dataset is primarily used for storing and analysing 
 records, tuples provide a suitable alternative for evaluating memory consumption.
 ```python
-@Memory
-def read_csv():
-    with open("data.csv", encoding="utf-8-sig") as f:
+@MemoryProfiler
+def read_csv(filename):
+    with open(filename, encoding="utf-8-sig") as f:
         records = [ ]
         rows = reader(f)
         headers = next(rows)        # skipping headers
@@ -231,10 +231,244 @@ resizing, so Python over-allocates their internal storage to accommodate future 
 through operations such as `append`. Tuples, being immutable, have a fixed size after
 creation and do not require this additional capacity for subsequent modifications.
 
-### 4. List of Class instances
+### 4. List of Class Instances
+Next, let's represent each CSV record as an instance of a custom Python class named `Covid`.
+Instead of storing values in a list, tuple, or dictionary, we'll define attributes for the
+fields in each record.
+
+```python
+class Covid:
+    def __init__(self, date, country_code, country, who_region, new_cases, new_deaths):
+        self.date = date
+        self.country_code = country_code
+        self.country = country
+        self.who_region = who_region
+        self.new_cases = new_cases
+        self.new_deaths = new_deaths
+
+@MemoryProfiler
+def read_csv(filename):
+    with open(filename, encoding="utf-8-sig") as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            covid = Covid(*row)
+            records.append(covid)
+    return records
+```
+```commandline
+>>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 184.48 MB
+Peak Memory Usage:    184.63 MB
+>>> 
+>>> records[0]
+<__main__.Covid object at 0x1050156a0>
+>>> 
+>>> records[1]
+<__main__.Covid object at 0x104fb74d0>
+>>> 
+>>> records[0].__dict__
+{'date': '04/01/20', 'country_code': 'AF', 'country': 'Afghanistan', 'who_region': 'EMR', 'new_cases': '', 'new_deaths': ''}
+>>> 
+>>> records[1].__dict__
+{'date': '04/01/20', 'country_code': 'DZ', 'country': 'Algeria', 'who_region': 'AFR', 'new_cases': '', 'new_deaths': ''}
+>>> 
+>>> records[0].date
+'04/01/20'
+>>> 
+>>> records[0].country_code
+'AF'
+```
+When each CSV record is represented as an instance of the `Covid` class, the peak memory 
+consumption is approximately **184 MB**. Although we are using a custom class to represent 
+each record, Python stores the instance attributes in an internal instance dictionary 
+(`__dict__`).
+
+An interesting observation emerges when we compare this result with the list-of-dictionaries 
+representation. In that case, each record is stored as a regular Python dictionary,
+resulting in a peak memory consumption of approximately **269 MB**. However,
+storing the same data as class instances requires only around **184 MB**.
+
+This difference is largely due to Python's memory optimisation for instance dictionaries.
+When multiple instances of the same class are created, 
+Python can use **key-sharing dictionaries** (PEP 412). Since all instances share the same 
+set of attribute names, Python can share the dictionary keys and their associated 
+metadata rather than maintaining a separate copy of the keys for every instance. 
+Each instance then maintains its own attribute values.
+
+Regular dictionaries, on the other hand, generally maintain their own key storage. 
+Consequently, representing records as instances of a common class can be more
+memory-efficient than representing them as independent dictionaries, even though both 
+approaches provide key-based access to their values.
 
 ### 5. List of Class instances with slots
+In the previous representation, each `Covid` instance maintained an instance dictionary 
+`__dict__` to store its attributes. Python dictionaries provide flexibility for 
+dynamically adding and modifying attributes, but they introduce additional memory overhead.
 
-### 6. List of Data classes
+To reduce this overhead, we can use Python's `__slots__` mechanism. By declaring the 
+permitted attribute names at the class level, Python doesn't store the attribute values in
+an instance dictionary, but the values are stored inside a tuple like immutable object.
 
-### 7. List of Class NamedTuples
+```commandline
+>>> records = read_csv("data.csv")
+>>> records[0]
+<__main__.Covid object at 0x101b953f0>
+>>> 
+>>> records[0].__dict__
+Traceback (most recent call last):
+  File "<python-input-3>", line 1, in <module>
+    records[0].__dict__
+AttributeError: 'Covid' object has no attribute '__dict__'. Did you mean: '__dir__'?
+>>> 
+>>> hasattr(records[0], "__dict__")
+False
+>>> 
+```
+With `__slots__`, the peak memory consumption drops to **162.37 MB**, compared with 
+approximately **184.23 MB** without slots, representing a reduction of **11.86%**.
+
+This demonstrates how `__slots__` can improve memory efficiency when creating large
+numbers of instances with a fixed set of attributes.
+
+### 6. List of Dataclass Instances
+Python's `dataclasses` module provides a convenient way to define classes primarily 
+intended to store data. Instead of writing an explicit `__init__` method, we can use
+the `@dataclass` decorator to generate it automatically based on the declared fields.
+
+Let's represent each CSV record as an instance of the `Covid` dataclass.
+
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Covid:
+    data: str
+    country_code: str
+    country: str
+    who_region: str
+    new_cases: str
+    new_deaths: str
+
+@MemoryProfiler
+def read_csv():
+    with open("data.csv", encoding="utf-8-sig") as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            covid = Covid(*row)
+            records.append(covid)
+    return records
+```
+```commandline
+>>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 184.48 MB
+Peak Memory Usage:    184.63 MB
+>>> 
+```
+The resulting peak memory consumption is **184.63 MB**, which is almost identical to
+the memory consumed by instances of our regular `Covid` class without `__slots__`.
+
+This is expected because, by default, dataclasses use a regular instance dictionary 
+`__dict__` to store their attributes. The `@dataclass` decorator simplifies class 
+definition and object initialization, but it does not inherently reduce the memory 
+footprint of instances.
+
+Therefore, while dataclasses offer a cleaner and more concise way to define data-oriented 
+classes, they do not provide the memory savings achieved through `__slots__` by default.
+
+### 7. List of Dataclass Instances with slots
+Python's dataclasses module provides built-in support for `__slots__` through the 
+`slots=True` parameter. This feature, introduced in Python 3.10, allows us to create 
+dataclass instances with slot-based attribute storage without explicitly declaring 
+`__slots__` in the class definition.
+
+When `slots=True` is specified, Python generates slot descriptors for the declared 
+dataclass fields. As a result, instances do not require a separate instance dictionary 
+`__dict__` to store their attributes.
+
+For our dataset of 583,440 records, the peak memory consumption drops to **162.37 MB**, 
+matching the result obtained with our manually implemented `__slots__` class.
+
+This demonstrates that we can achieve the same memory efficiency as a manually 
+implemented slotted class while retaining the convenience of dataclasses, including
+automatically generated initialization and other useful methods.
+
+```python
+from dataclasses import dataclass
+
+@dataclass(slots=True)
+class Covid:
+    date: str
+    country_code: str
+    country: str
+    who_region: str
+    new_cases: str
+    new_deaths: str
+```
+```commandline
+>>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 162.22 MB
+Peak Memory Usage:    162.37 MB
+>>>
+```
+### 8. List of Class NamedTuples
+So far, we have represented each CSV record using lists, dictionaries, tuples, and 
+custom class instances. Another useful alternative is namedtuple, available in Python's 
+collections module.
+
+A `namedtuple` is a tuple subclass that allows its elements to be accessed using 
+meaningful attribute names instead of numeric indexes. Like regular tuples, 
+namedtuples are immutable, but they provide a more descriptive and readable way to
+work with structured records.
+
+Let's define a Covid namedtuple with the six fields from our dataset and create one
+instance for each CSV record.
+
+```python
+from collections import namedtuple
+
+Covid = namedtuple("Covid", ("date", "country_code", "country", "who_region", "new_cases", "new_deaths"))
+
+@MemoryProfiler
+def read_csv(filename):
+    with open(filename, encoding="utf-8-sig") as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            covid = Covid(*row)
+            records.append(covid)
+    return records
+```
+```commandline
+>>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 175.58 MB
+Peak Memory Usage:    175.73 MB
+>>> 
+>>> records[0]
+Covid(date='04/01/20', country_code='AF', country='Afghanistan', who_region='EMR', new_cases='', new_deaths='')
+>>> 
+>>> records[1]
+Covid(date='04/01/20', country_code='DZ', country='Algeria', who_region='AFR', new_cases='', new_deaths='')
+>>> 
+>>> records[0][0]   # indexing
+'04/01/20'
+>>> 
+>>> records[0].date  # attribute access
+'04/01/20' 
+```
+The measured peak memory consumption is **175.73 MB**. This is higher than the **171.28 MB**
+consumed by the list of regular tuples. The additional memory is associated with the
+namedtuple instance structure, which provides attribute-based access while retaining 
+tuple behaviour.
+
+However, namedtuples still consume less memory than ordinary class instances with
+an instance dictionary or a list of dictionaries. They offer a useful balance between
+memory efficiency and readable attribute access.
