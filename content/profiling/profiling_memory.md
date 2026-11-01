@@ -41,12 +41,13 @@ By the end of the article, we will have a clearer understanding of how Python da
 structures affect memory usage and how memory profiling can replace assumptions with 
 measurable evidence when making design decisions.
 
-Let's write a function that reads data from csv file.
+Let's start by writing a simple function to read the COVID-19 dataset from a CSV file.
+We'll use Python's built-in csv module to read the file and store each record as a list.
 ```python
 from csv import reader
 
-def read_csv():
-    with open("data.csv") as f:
+def read_csv(filename):
+    with open(filename) as f:
         records = [ ]
         rows = reader(f)
         headers = next(rows)        # skipping headers
@@ -54,8 +55,13 @@ def read_csv():
             records.append(row)
     return records
 ```
+Here, `csv.reader()` reads the file one row at a time. We use `next(rows)` to retrieve 
+and skip the header row, since our objective is to work with the actual data records.
+Each subsequent row is appended to the records list.
+
+Let's load the dataset and examine the resulting collection:
 ```commandline
->>> records = read_csv()
+>>> records = read_csv("data.csv")
 >>> len(records)
 583440
 >>> records[0]
@@ -64,4 +70,10 @@ def read_csv():
 ['04/01/20', 'DZ', 'Algeria', 'AFR', '', '']
 >>> 
 ```
+The dataset contains **583,440** records, with each record represented as a list of 
+strings. This gives us our first data representation to measure, a list containing
+individual lists.
+
+In the following sections, we'll represent the same dataset using different 
+Python data structures and compare their memory consumption.
 
