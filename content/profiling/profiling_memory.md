@@ -233,7 +233,7 @@ creation and do not require this additional capacity for subsequent modification
 
 ### 4. List of Class instances
 
-### 5. List of Class instances with `__slots__`
+### 5. List of Class instances with slots
 
 ### 6. List of Data classes
 
