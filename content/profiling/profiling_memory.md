@@ -498,3 +498,15 @@ tuple behaviour.
 However, namedtuples still consume less memory than ordinary class instances with
 an instance dictionary or a list of dictionaries. They offer a useful balance between
 memory efficiency and readable attribute access.
+
+### Memory Consumption Summary
+| No. | Data Representation | Current Memory (MB) | Peak Memory (MB) |
+|---:|---|---:|---:|
+| 1 | List of Lists | 184.45 | 184.60 |
+| 2 | List of Dictionaries | 269.05 | 269.20 |
+| 3 | List of Tuples | 171.13 | 171.28 |
+| 4 | List of Class Instances | 184.48 | 184.63 |
+| 5 | List of Class Instances with Slots | 162.22 | 162.37 |
+| 6 | List of Dataclass Instances | 184.48 | 184.63 |
+| 7 | List of Dataclass Instances with Slots | 162.22 | 162.37 |
+| 8 | List of NamedTuples | 175.58 | 175.73 |
