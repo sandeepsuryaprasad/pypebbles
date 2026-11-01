@@ -55,13 +55,12 @@ def read_csv():
     return records
 ```
 ```commandline
->>> csv_data = read_csv()
+>>> records = read_csv()
 >>> len(csv_data)
 583440
->>> csv_data[0]
->>> d[0]
+>>> records[0]
 ['04/01/20', 'AF', 'Afghanistan', 'EMR', '', '']
->>> d[1]
+>>> records[1]
 ['04/01/20', 'DZ', 'Algeria', 'AFR', '', '']
 >>> 
 ```
