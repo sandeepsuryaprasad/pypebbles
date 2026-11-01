@@ -113,7 +113,7 @@ from csv import reader
 
 @MemoryProfiler
 def read_csv(filename):
-    with open(filename) as f:
+    with open(filename, encoding="utf-8-sig") as f:
         records = [ ]
         rows = reader(f)
         headers = next(rows)        # skipping headers
@@ -136,3 +136,47 @@ Peak Memory Usage:    184.60 MB
 ```
 The dataset contains **583,440** records, with each record is represented as a list of 
 strings.
+
+### Understanding the Memory Consumption
+In this representation, the dataset is stored as a list of lists. The outer list holds 
+583,440 individual record lists, and each inner list contains six items corresponding 
+to the columns in the CSV file.
+
+For this dataset, `tracemalloc` reports a peak memory usage of **184.60 MB** while constructing 
+the list of lists. This gives us a baseline against which we can compare the memory
+consumption of the other data structures.
+
+### 2. List of Dictionaries
+Next, let's represent the same dataset using a list of dictionaries. 
+Instead of storing each CSV record as a list of values, we'll represent it as a
+dictionary containing key-value pairs, where the CSV column names serve as dictionary 
+keys and the corresponding row values serve as dictionary values.
+
+```python
+from csv import reader
+
+@MemoryProfiler
+def read_csv(filename):
+    with open(filename, encoding="utf-8-sig") as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            _row = { header: value for header, value in zip(headers, row)}
+            records.append(_row)
+    return records
+```
+After converting the dataset into a list of dictionaries, we can see that its peak memory 
+consumption has increased to **269.18 MB**, compared with **184.60 MB** for the list of
+lists. That's an increase of approximately **45.8%**.
+
+This increase is primarily due to the additional memory overhead introduced by Python 
+dictionaries. Each record is now represented by a dictionary that maintains key-value 
+pairs instead of a simple list of values.
+
+Every dictionary stores references to its keys and values, along with additional internal 
+storage required to manage and retrieve those entries. Since we create 583,440 individual 
+dictionaries, this overhead accumulates across the dataset.
+
+Although this representation makes the data easier to understand and access using 
+meaningful column names, it comes at a higher memory cost.
