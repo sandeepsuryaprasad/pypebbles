@@ -501,7 +501,7 @@ memory efficiency and readable attribute access.
 
 ### Memory Consumption Summary
 | No. | Data Representation | Current Memory (MB) | Peak Memory (MB) |
-|---:|---|---:|---:|
+|---|---|---|---|
 | 1 | List of Lists | 184.45 | 184.60 |
 | 2 | List of Dictionaries | 269.05 | 269.20 |
 | 3 | List of Tuples | 171.13 | 171.28 |
