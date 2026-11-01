@@ -284,7 +284,7 @@ Peak Memory Usage:    184.63 MB
 When each CSV record is represented as an instance of the `Covid` class, the peak memory 
 consumption is approximately **184 MB**. Although we are using a custom class to represent 
 each record, Python stores the instance attributes in an internal instance dictionary 
-(`__dict__`).
+`__dict__`.
 
 An interesting observation emerges when we compare this result with the list-of-dictionaries 
 representation. In that case, each record is stored as a regular Python dictionary,
@@ -312,8 +312,34 @@ To reduce this overhead, we can use Python's `__slots__` mechanism. By declaring
 permitted attribute names at the class level, Python doesn't store the attribute values in
 an instance dictionary, but the values are stored inside a tuple like immutable object.
 
+```python
+class Covid:
+    __slots__ = ("date", "country_code", "country", "who_region", "new_cases", "new_deaths")
+    def __init__(self, date, country_code, country, who_region, new_cases, new_deaths):
+        self.date = date
+        self.country_code = country_code
+        self.country = country
+        self.who_region = who_region
+        self.new_cases = new_cases
+        self.new_deaths = new_deaths
+
+@MemoryProfiler
+def read_csv():
+    with open("data.csv", encoding="utf-8-sig") as f:
+        records = [ ]
+        rows = reader(f)
+        headers = next(rows)        # skipping headers
+        for row in rows:
+            covid = Covid(*row)
+            records.append(covid)
+    return records
+```
 ```commandline
 >>> records = read_csv("data.csv")
+Total Number of Rows: 583440
+Current Memory Usage: 162.22 MB
+Peak Memory Usage:    162.37 MB
+>>> 
 >>> records[0]
 <__main__.Covid object at 0x101b953f0>
 >>> 
@@ -417,7 +443,7 @@ Current Memory Usage: 162.22 MB
 Peak Memory Usage:    162.37 MB
 >>>
 ```
-### 8. List of Class NamedTuples
+### 8. List of NamedTuples
 So far, we have represented each CSV record using lists, dictionaries, tuples, and 
 custom class instances. Another useful alternative is namedtuple, available in Python's 
 collections module.
