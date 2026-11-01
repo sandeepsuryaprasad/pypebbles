@@ -77,3 +77,60 @@ individual lists.
 In the following sections, we'll represent the same dataset using different 
 Python data structures and compare their memory consumption.
 
+Before comparing the memory consumption of different data structures, 
+let's build a small, reusable memory profiler using Python's built-in `tracemalloc` 
+module.
+
+### Building a Memory Profiling Decorator
+Before measuring the memory consumption of different data structures, 
+let's build a small, reusable memory profiler.
+
+Python provides the built-in `tracemalloc` module, which allows us to trace memory 
+allocations made by Python code. We'll use it to measure the memory consumed while 
+constructing each data representation.
+
+Rather than repeating the profiling logic every time we want to measure memory usage,
+we can encapsulate it in a class-based decorator.
+
+```python
+class Memory:
+    def __init__(self, func):
+        """Initialize the memory profiler with the function to be profiled."""
+        self.trace = tracemalloc
+        self.func = func
+
+    def start(self):
+        """Start tracing memory allocations if tracing is inactive."""
+        if not self.trace.is_tracing():
+            self.trace.start()
+
+    def stop(self):
+        """Stop tracing memory allocations if tracing is active."""
+        if self.trace.is_tracing():
+            self.trace.stop()
+
+    def memory_usage(self):
+        """Display the current and peak memory usage in megabytes."""
+        current, peak = self.trace.get_traced_memory()
+        print(f"Current Memory Usage: {current / 1024 / 1024:.2f} MB")
+        print(f"Peak Memory Usage:    {peak / 1024 / 1024:.2f} MB")
+
+    def __call__(self, *args, **kwargs):
+        """Profile the memory usage of the decorated function."""
+        self.start()
+        try:
+            result = self.func(*args, **kwargs)
+            self.memory_usage()
+            return result
+        finally:
+            self.stop()
+```
+The Memory class implements the decorator protocol through its `__call__` method. 
+When applied to a function, it starts memory tracing, executes the function, 
+reports the current and peak memory usage, and stops tracing.
+
+The decorator also returns the original function's result, allowing us to continue '
+working with the data structure after measuring its memory consumption.
+
+We'll use this decorator throughout the experiment to profile the different Python 
+data representations.
