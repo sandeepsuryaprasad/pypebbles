@@ -510,3 +510,32 @@ memory efficiency and readable attribute access.
 | 6 | List of Dataclass Instances | 184.48 | 184.63 |
 | 7 | List of Dataclass Instances with Slots | 162.22 | 162.37 |
 | 8 | List of NamedTuples | 175.58 | 175.73 |
+
+## Final Thoughts
+In this article, we explored how different Python data structures affect memory 
+consumption when working with a large dataset containing 583,440 COVID-19 records.
+
+Using `tracemalloc`, we measured the memory consumption of eight different representations:
+lists of lists, lists of dictionaries, lists of tuples, custom class instances,
+slotted class instances, dataclass instances, slotted dataclass instances, and namedtuples.
+
+The results demonstrate that the choice of data structure can have a significant 
+impact on memory usage. While dictionaries provide convenient key-based access,
+they introduce additional memory overhead. Tuples offer a more memory-efficient 
+alternative for storing immutable records, while namedtuples combine tuple efficiency 
+with readable attribute-based access.
+
+We also explored how Python's instance dictionaries use key-sharing optimisations and
+how `__slots__` can further reduce the memory footprint of objects by eliminating the
+need for a separate instance dictionary. The experiments showed that slotted class
+instances and slotted dataclasses consumed the least memory among the representations we
+tested.
+
+The key takeaway is that **choosing the right data structure involves balancing memory
+efficiency, mutability, readability, and ease of access**. Understanding how Python
+manages memory internally helps us make better design decisions, particularly when
+working with large datasets.
+
+Although the measurements in this article are specific to our dataset and Python
+environment, the techniques demonstrated here can be applied to profile and compare data
+structures in other Python applications.
