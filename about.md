@@ -12,23 +12,20 @@ insights that I have gained through years of working with Python.
 I am an active open-source contributor to the Selenium Python client, with more than 
 50 accepted and merged pull requests. My contributions include designing and 
 implementing Python descriptors to improve the maintainability and extensibility of 
-the client library. You can explore my contributions to the Selenium Python client on
-<a href="https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad"
-   class="github-repo-link">
-  GitHub Repo
-</a>
+the client library. You can explore my contributions to the Selenium Python client on [GitHub](https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad)
 
 ## Open-source Projects
 Alongside writing Python tutorials, I develop and maintain open-source Python libraries
 and command-line utilities. These projects focus on solving practical programming problems
 through simple interfaces, reusable components, and maintainable code.
 
-### Python Libraries
 All projects are open source and available on GitHub. Their source code, documentation,
 and installation instructions can be found in their respective repositories.
 
-| Project         | Github Repo                                                     | PyPI downloads 
-|-----------------|-----------------------------------------------------------------|---|
-| jsonobjectify   | [GitHub](https://github.com/sandeepsuryaprasad/jsonobjectify)   | [![PyPI Downloads](https://static.pepy.tech/personalized-badge/jsonobjectify?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/jsonobjectify)
+### Python Libraries
+
+| Project         | Github Repo                                                   | PyPI downloads 
+|-----------------|---------------------------------------------------------------|---|
+| jsonobjectify   | [GitHub](https://github.com/sandeepsuryaprasad/jsonobjectify) | [![PyPI Downloads](https://static.pepy.tech/personalized-badge/jsonobjectify?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/jsonobjectify)
 | configobjectify | [GitHub](https://github.com/sandeepsuryaprasad/configobjectify) | [![PyPI Downloads](https://static.pepy.tech/personalized-badge/configobjectify?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/configobjectify)
-| fsort           | [GitHub](https://github.com/sandeepsuryaprasad/fsort)           | [![PyPI Downloads](https://static.pepy.tech/personalized-badge/fsort-cli?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/fsort-cli)
+| fsort           | [GitHub](https://github.com/sandeepsuryaprasad/fsort)         | [![PyPI Downloads](https://static.pepy.tech/personalized-badge/fsort-cli?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/fsort-cli)
