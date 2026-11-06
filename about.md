@@ -12,7 +12,7 @@ insights that I have gained through years of working with Python.
 I am an active open-source contributor to the Selenium Python client, with more than 
 50 accepted and merged pull requests. My contributions include designing and 
 implementing Python descriptors to improve the maintainability and extensibility of 
-the client library. You can explore my contributions to the Selenium Python client on [GitHub](https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad)
+the client library. You can explore my contributions to the Selenium Python client on **[GitHub](https://github.com/SeleniumHQ/selenium/commits?author=sandeepsuryaprasad)**
 
 ## Open-source Projects
 Alongside writing Python tutorials, I develop and maintain open-source Python libraries
