@@ -15,13 +15,38 @@ the client library. You can explore my contributions to the Selenium Python clie
   GitHub Repo
 </a>
 
-I maintain **jsonobjectify**, an open-source Python library 
+## Open-source Projects
+Alongside writing Python tutorials, I develop and maintain open-source Python libraries
+and command-line utilities. These projects focus on solving practical programming problems
+through simple interfaces, reusable components, and maintainable code.
+
+### Python Libraries
+- **jsonobjectify** &nbsp;&nbsp;&nbsp;[![PyPI Downloads](https://static.pepy.tech/personalized-badge/jsonobjectify?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/jsonobjectify)
+
+    A lightweight Python library that dynamically converts JSON data into Python objects,
+    allowing nested properties to be accessed using dot notation without manually defining 
+    data-model classes.
+
+
+- **configobjectify** &nbsp;&nbsp;&nbsp;[![PyPI Downloads](https://static.pepy.tech/personalized-badge/configobjectify?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/configobjectify)
+
+    A lightweight Python library that provides dot-notation access to configuration values 
+    stored in INI files.
+
+
+- **fsort**  &nbsp;&nbsp;&nbsp;[![PyPI Downloads](https://static.pepy.tech/personalized-badge/fsort-cli?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/fsort-cli)
+
+    A Python command-line utility for displaying files in sorted order based on attributes 
+    such as file size and modification date.
+
+All projects are open source and available on GitHub. Their source code, documentation,
+and installation instructions can be found in their respective repositories.
+
+
 <a href="https://github.com/sandeepsuryaprasad/jsonobjectify"
    class="github-repo-link">
   GitHub Repo
-</a> that dynamically converts JSON data into Python objects, 
-making complex and nested JSON structures easier to work with using 
-natural dot notation. 
+</a> 
 
 As an experienced Automation developer, I provide technical guidance by promoting 
 software engineering and best coding practices. I have spent considerable time 
