@@ -17,10 +17,8 @@ the client library. You can explore my contributions to the Selenium Python clie
 ## Open-source Projects
 Alongside writing Python tutorials, I develop and maintain open-source Python libraries
 and command-line utilities. These projects focus on solving practical programming problems
-through simple interfaces, reusable components, and maintainable code.
-
-All projects are open source and available on GitHub. Their source code, documentation,
-and installation instructions can be found in their respective repositories.
+through simple interfaces, reusable components, and maintainable code. The source code, 
+documentation, and installation instructions can be found in their respective repositories.
 
 ### Python Libraries
 
