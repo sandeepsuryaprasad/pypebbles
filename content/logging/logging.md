@@ -382,4 +382,4 @@ application starts. This allows developers to enable more detailed `DEBUG` loggi
 troubleshooting without changing the application code.
 
 
-[Previous Article](../json/reading_json.md) \| [Next Article](../profiling/profiling_time.md)
+[Previous Article](../json_dynamic_classes/json_dynamic_classes.md) \| [Next Article](../profiling/profiling_time.md)
