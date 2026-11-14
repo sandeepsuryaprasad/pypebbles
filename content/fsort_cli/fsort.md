@@ -231,5 +231,42 @@ def main(argv=None) -> int:
     file.sort(path=path, by_what=key, pattern=extension)
     return 0
 ```
+### Why Separate Validation into a Validate Class?
+Keeping validation logic in a dedicated Validate class provides a clear separation of 
+responsibilities. Instead of embedding input checks directly into the main() function, 
+each validation rule is implemented as an independent method.
+
+This offers several advantages:
+
+* **Separation of concerns**: The main() function focuses on coordinating application execution,
+while the Validate class handles input validation.
+
+* **Reusability**: Validation methods can be reused wherever the same inputs need to be
+validated, without duplicating the checks.
+
+* **Maintainability**: New validation rules can be introduced or existing ones modified without
+making the main application flow increasingly complex.
+
+By keeping validation logic independent of argparse and the application's sorting 
+implementation, we create a cleaner structure that is easier to extend, test, and maintain.
+
+### Final Thoughts
+In this article, we explored the Result Object Pattern as a way to handle expected validation 
+failures in Python command-line applications.
+
+Using fsort as an example, we introduced a lightweight Result class to represent the outcome 
+of validation operations explicitly. The Validate class uses this object to report whether 
+an input is valid or provide an error message explaining why validation failed.
+
+This approach keeps validation logic independent of the command-line interface while
+allowing main() to handle failures consistently. It also avoids using exceptions for
+expected validation scenarios, making the application's execution flow easier to follow.
+
+The Result Object Pattern is not intended to replace exceptions entirely. Exceptions remain
+appropriate for unexpected failures, while a Result object provides a structured way to 
+communicate outcomes that are part of an operation's normal behaviour.
+
+By introducing this small abstraction, we can make validation code more predictable, readable,
+and easier to maintain as a Python CLI application grows.
 
 [Previous Article](../profiling/profiling_memory.md)
