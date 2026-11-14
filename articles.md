@@ -10,7 +10,6 @@
         attributes. This creates a clean and intuitive interface for
         working with configuration data while keeping it separate from the 
         application logic.
-        <br><br>August 01, 2026
     </p>
     <a href="./content/config/reading_config_file.html">Read article →</a>
   </div>
@@ -24,7 +23,6 @@
         This provides a cleaner and more intuitive way to work with 
         nested data without repeatedly navigating through dictionaries 
         and keys.
-        <br><br>August 04, 2026
     </p>
     <a href="./content/json/reading_json.html">Read article →</a>
   </div>
@@ -37,7 +35,6 @@
         mapping problem. The solution uses a class decorator to dynamically install field 
         mappings, reducing boilerplate code and enabling intuitive attribute-based access 
         to nested JSON data.
-        <br><br>August 10, 2026
     </p>
     <a href="./content/descriptors/descriptors.html">Read article →</a>
   </div>
@@ -49,7 +46,6 @@
         mapping problem. The solution uses a custom metaclass to process field mappings 
         during class creation and enable intuitive attribute-based access to nested JSON 
         data.
-        <br><br>October 08, 2026
     </p>
     <a href="./content/descriptors/meta_classes.html">Read article →</a>
   </div>
@@ -61,7 +57,6 @@
         eliminating the need to define data-model classes manually. 
         Explore recursive JSON processing, nested objects, and collections 
         while accessing structured data through familiar dot notation.
-        <br><br>October 02, 2026
     </p>
     <a href="./content/json_dynamic_classes/json_dynamic_classes.html">Read article →</a>
   </div>
@@ -75,7 +70,6 @@
         configurable log levels, handlers, and consistent message 
         formatting while keeping the application code independent of the
         underlying logging configuration.
-        <br><br>August 26, 2026
     </p>
     <a href="./content/logging/logging.html">Read article →</a>
   
@@ -88,7 +82,6 @@
         profiling tools to examine where execution time is being spent and 
         differentiate time spent waiting from time spent actively using 
         the processor.
-        <br><br>September 17, 2026
     </p>
     <a href="./content/profiling/profiling_time.html">Read article →</a>
   </div>
@@ -101,7 +94,6 @@
         same large dataset using different Python data structures and
         measure their memory footprints to understand the trade-offs
         between different data representations.
-        <br><br>September 28, 2026
     </p>
     <a href="./content/profiling/profiling_memory.html">Read article →</a>
   </div>
@@ -112,7 +104,6 @@
         Explore how to implement the Result Object Pattern in Python CLI applications to handle
         input validation, represent success and failure explicitly, and manage errors without relying
         on exceptions for expected validation scenarios.
-        <br><br>September 28, 2026
     </p>
     <a href="./content/fsort_cli/fsort.html">Read article →</a>
   </div>
