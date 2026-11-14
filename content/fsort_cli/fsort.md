@@ -10,8 +10,8 @@ A common approach is to use conditional checks or exceptions to handle validatio
 validation rules grows, managing these outcomes can make the application logic increasingly difficult to maintain.
 
 In this article, we explore the **Result Object Pattern** and how it can simplify input validation in Python
-CLI applications. Using `fsort`, a Python command-line utility for sorting files, we will introduce a lightweight
-`Result` class that explicitly represents the outcome of validation operations.
+CLI applications. Using **fsort** a Python command-line utility for sorting files, we will introduce a lightweight
+**Result** class that explicitly represents the outcome of validation operations.
 
 We will see how this approach separates validation logic from command-line error handling, makes success and failure
 outcomes explicit, and helps keep the application's execution flow clean and maintainable.
