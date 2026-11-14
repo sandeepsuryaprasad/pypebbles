@@ -108,4 +108,14 @@
     <a href="./content/fsort_cli/fsort.html">Read article →</a>
   </div>
 
+   <div class="article-box">
+      <h3>Transforming Mappings into Semantic Attribute Interfaces</h3>
+    <p>
+        Explore how to transform mapped data into expressive, attribute-based 
+        interfaces using dynamic attribute access, eliminating repetitive key 
+        lookups and simplifying data access.
+    </p>
+    <a href="./content/data_mapping/data_mapping.html">Read article →</a>
+  </div>
+
 </div>
