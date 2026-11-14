@@ -114,7 +114,7 @@
         on exceptions for expected validation scenarios.
         <br><br>September 28, 2026
     </p>
-    <a href="./content/system_info_cli/sys_info_cli.html">Read article →</a>
+    <a href="./content/fsort_cli/fsort.html">Read article →</a>
   </div>
 
 </div>
