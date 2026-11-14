@@ -1,3 +1,5 @@
+[Previous Article](../profiling/profiling_time.md) \| [Next Article](../fsort_cli/fsort.md)
+
 ## Memory Profiling
 
 When working with large datasets, the way data is represented in memory can have a 
@@ -540,3 +542,5 @@ working with large datasets.
 Although the measurements in this article are specific to our dataset and Python
 environment, the techniques demonstrated here can be applied to profile and compare data
 structures in other Python applications.
+
+[Previous Article](../profiling/profiling_time.md) \| [Next Article](../fsort_cli/fsort.md)

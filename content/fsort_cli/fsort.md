@@ -15,3 +15,5 @@ CLI applications. Using **fsort** a Python command-line utility for sorting file
 
 We will see how this approach separates validation logic from command-line error handling, makes success and failure
 outcomes explicit, and helps keep the application's execution flow clean and maintainable.
+
+[Previous Article](../profiling/profiling_memory.md)
