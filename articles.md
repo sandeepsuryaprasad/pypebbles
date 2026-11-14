@@ -107,11 +107,11 @@
   </div>
 
    <div class="article-box">
-      <h3>Building Better Python CLIs with the Result Object Pattern</h3>
+      <h3>Implementing the Result Object Pattern for Robust Python CLI Validation</h3>
     <p>
-        Explore Python's psutil library to retrieve system, CPU, memory, disk, 
-        process, and network information, and build a practical CLI application to 
-        present this information through a structured command-line interface.
+        Explore how to implement the Result Object Pattern in Python CLI applications to handle
+        input validation, represent success and failure explicitly, and manage errors without relying
+        on exceptions for expected validation scenarios.
         <br><br>September 28, 2026
     </p>
     <a href="./content/system_info_cli/sys_info_cli.html">Read article →</a>
