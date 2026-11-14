@@ -712,4 +712,4 @@ Instead of decorating every test method individually, the class decorator can
 automatically apply the profiling behavior to the relevant methods in the class. 
 This provides a more scalable solution when profiling a larger collection of tests.
 
-[Next Article](../profiling/profiling_memory.md) \| [Previous Article](../logging/logging.md)
+[Previous Article](../logging/logging.md) \| [Next Article](../profiling/profiling_memory.md)
