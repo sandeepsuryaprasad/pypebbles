@@ -154,8 +154,8 @@ class HttpCodeLookup:
             str: The normalized attribute name.
 
         Example:
-            >>> HttpCodeLookup._normalize("class")
-            'class_'
+            >>> HttpCodeLookup._normalize("continue")
+            'continue_'
             >>> HttpCodeLookup._normalize("not_found")
             'not_found'
         """
@@ -179,35 +179,6 @@ and see how we can access the values through dot notation.
 >>> http.conflict
 409
 ```
-Let's understand how this works.
-
-### 1. Iterating through the mapping
-
-The constructor accepts the HTTP status-code dictionary and iterates through its entries.
-Each iteration provides a numeric status code and a tuple containing its associated symbolic 
-names.
-
-For example, the entry **200: ("ok", "success")** provides the status code 200 and two 
-symbolic names: ok and success.
-
-### 2. Creating attributes dynamically
-The inner loop iterates through the symbolic names associated with each status code.
-Python's built-in setattr() function allows us to create object attributes dynamically.
-
-As the constructor processes the mapping, it creates attributes such as ok, success, created, 
-and not_found, assigning each its corresponding numeric status code.
-
-### 3. Handling Python keywords
-
-The _normalize() method checks whether a symbolic name is a reserved Python keyword using 
-the standard-library keyword module.
-
-Python keywords cannot be used directly as attribute names in dot notation. 
-Appending an underscore provides a convenient way to avoid such conflicts.
-
-For example, a mapping key named `continue` would become the attribute `continue_`.
-
-This normalization ensures that reserved keywords can also be represented safely as attributes.
 
 ### Country Telephone Calling Codes
 
