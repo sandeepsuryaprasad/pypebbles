@@ -319,7 +319,7 @@ access. Whether a mapping contains a single value, multiple aliases, or structur
 we can design a suitable object-oriented interface that makes the underlying data easier
 to access and understand.
 
-By using `setattr` to create attributes dynamically, we can avoid manually defining individual
+By using **`setattr`** to create attributes dynamically, we can avoid manually defining individual
 attributes for every mapping entry. This also allows us to keep the original mapping data separate
 from the interface through which application code accesses it.
 
